@@ -2,13 +2,14 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthConfig struct {
-	AccessToken  string
-	RefreshToken string
+	AccessToken         string
+	AccessTokenLifetime uint64
 }
 
 type DataBaseConfig struct {
@@ -32,10 +33,14 @@ var (
 )
 
 func New() *TConfig {
+	accessTokenLifetime, err := strconv.ParseInt(getEnv("ACCESS_JWT_TOKEN_LIFETIME", "900"), 10, 32)
+	if err != nil {
+		panic("Can't parse ACCESS_JWT_TOKEN_LIFETIME")
+	}
 	Config = &TConfig{
 		Auth: AuthConfig{
-			AccessToken: getEnv("ACCESS_JWT_TOKEN", ""),
-			RefreshToken: getEnv("REFRESH_JWT_TOKEN", ""),
+			AccessToken:         getEnv("ACCESS_JWT_TOKEN", ""),
+			AccessTokenLifetime: uint64(accessTokenLifetime),
 		},
 		DataBase: DataBaseConfig{
 			Link: getEnv("DATABASE_LINK", ""),
