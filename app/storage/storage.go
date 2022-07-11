@@ -1,4 +1,4 @@
-package utils
+package storage
 
 import (
 	"crypto/md5"
@@ -17,13 +17,13 @@ type FileCreate struct {
 	Public   bool
 }
 
-type FileUtils interface {
-	Save(file FileCreate) (models.File, error)
-	Load(fileId string) (models.File, error)
-	Delete(fileId string) (bool, error)
+type Storage interface {
+	SaveFile(file FileCreate) (models.File, error)
+	LoadFile(fileId string) (models.File, error)
+	DeleteFile(fileId string) (bool, error)
 }
 
-func (fileRaw FileCreate) Save() (*models.File, error) {
+func () Save(fileRaw FileCreate) (*models.File, error) {
 	md5 := md5.Sum(fileRaw.Data)
 	fileStorage := models.FileStorage{
 		ID:      uuid.New(),

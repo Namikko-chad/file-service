@@ -11,7 +11,8 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"gorm.io/driver/postgres"
+	// "gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite" 
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )
@@ -26,7 +27,7 @@ var (
 
 func ConnectDB() *gorm.DB {
 	conf := config.New()
-	db, err := gorm.Open(postgres.Open(conf.DataBase.Link), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(conf.DataBase.Link), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			NoLowerCase: true,
 			NameReplacer: strings.NewReplacer("ID", "id"),

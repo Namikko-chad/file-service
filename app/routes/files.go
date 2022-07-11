@@ -1,14 +1,11 @@
 package routes
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"file-service/app/models"
 	"file-service/app/types"
 	"file-service/app/utils"
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -96,7 +93,7 @@ func CreateFiles(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
 		return
 	}
-	file := utils.FileUtils.Save(utils.FileCreate{
+	file, err := utils.FileUtils.Save(utils.FileCreate{
 		Data: fileData,
 		UserId: uuid.New(),
 		Filename: uploadedFile.Filename,
