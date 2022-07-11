@@ -12,7 +12,8 @@ import {
 } from "../src/server/utils";
 import pinoConfig from "../src/server/config/pino";
 import { config } from "../src/server/config/config";
-import { initDatabase } from "../src/server/models";
+import { Database, loadDatabaseConfig, } from '../src/server/db';
+import { StoragePlugin, } from '../src/server/storages';
 
 type IQuery = Record<string, string>;
 type IPayload = Record<string, unknown> | FormData;
@@ -41,14 +42,19 @@ export class Test {
     });
     server.realm.modifiers.route.prefix = "/api";
     await server.register(HapiBearer);
-
+    await server.register({
+      plugin: Database,
+      options: loadDatabaseConfig(),
+    });
+    await server.register({
+      plugin: StoragePlugin,
+    })
     if (process.env["DEBUG"] === "true") {
       await server.register({
         plugin: HapiPino,
         options: pinoConfig(false),
       });
     }
-    config.db = await initDatabase({});
 
     // JWT Auth
     server.auth.strategy(Strategies.Header, "bearer-access-token", {
@@ -126,7 +132,7 @@ export class Test {
   }
 
   public async stop(): Promise<void> {
-    await config.db.close();
+    await this.server.app.db.close();
     await this.server.stop({ timeout: 100 });
     return;
   }

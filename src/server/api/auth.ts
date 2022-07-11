@@ -16,11 +16,11 @@ import { Errors, ErrorsMessages, } from '../enum';
 export function tokenGenerate(r: Request): IOutputOk<{ token: string }> | Boom {
 	/* eslint-disable security/detect-object-injection */
 	try {
-		const { userId, } = r.payload as { userId: string };
+		const { userId, fileId, } = r.payload as { userId: string; fileId?: string };
 		const tokenType = r.params.tokenType as Token;
 		const token = sign(
-			{ userId, timestamp: Date.now(), },
-			String(config.auth.jwt[tokenType].secret),
+			{ userId, fileId, timestamp: Date.now(), },
+			config.auth.jwt[tokenType].secret as string,
 			{ expiresIn: config.auth.jwt[tokenType].lifetime, }
 		);
 

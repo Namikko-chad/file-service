@@ -1,6 +1,6 @@
 import { IFileResponse, } from '../interfaces/file';
-import { File, } from '../models/File';
-import { FileStorage, } from '../models/FileStorage';
+import { File, } from '../db/models/File';
+import { FileStorage, } from '../db/models/FileStorage';
 
 export function fileResponse(
 	file: File,

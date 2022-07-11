@@ -7,7 +7,7 @@ import {
 	ForeignKey,
 	BelongsTo,
 } from 'sequelize-typescript';
-import { getUUID, } from '../utils/index';
+import { getUUID, } from '../../utils/index';
 import { FileStorage, } from './FileStorage';
 
 @Scopes(() => ({

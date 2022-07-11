@@ -1,7 +1,5 @@
 import { Request, ResponseObject, ResponseToolkit, } from '@hapi/hapi';
 import { Boom, } from '@hapi/boom';
-import * as p from 'path';
-import { config, } from '../config/config';
 import {
 	IOutputEmpty,
 	IOutputOk,
@@ -15,15 +13,12 @@ import {
 	outputEmpty,
 	Exception,
 	splitFilename,
-	getExt,
-	saveFile,
 	handlerError,
 	outputPagination,
 	Token,
-	getHash, 
 } from '../utils';
 import { Errors, ErrorsMessages, } from '../enum';
-import { File, FileStorage, Storage, } from '../models';
+import { File, FileStorage, } from '../db';
 import { fileResponse, } from '../helper/fileResponse';
 
 function editAccess(r: Request, file: File): void {
@@ -99,14 +94,7 @@ export async function retrieve(
 ): Promise<ResponseObject | Boom> {
 	try {
 		const { fileId, } = r.params as { fileId: string };
-		const file = await File.findByPk(fileId, {
-			include: [
-				{
-					model: FileStorage.scope('withData'),
-					required: true,
-				}
-			],
-		});
+		const file = await File.findByPk(fileId);
 		if (!file)
 			throw new Exception(
 				Errors.FileNotFound,
@@ -116,23 +104,17 @@ export async function retrieve(
 
 		viewAccess(r, file);
 
-		if (config.storage === Storage.FOLDER) {
-			const filePath = p.join(
-				config.files.filesDir,
-				file.fileStorage.id + '.' + file.fileStorage.ext
-			);
-			file.fileStorage.data = Buffer.from(filePath);
-		}
+		const fileStorage = await r.server.app.storage.loadFile(file.fileStorageId);
 
 		const response: ResponseObject = h
-			.response(file.fileStorage.data)
-			.type(file.fileStorage.mime)
+			.response(fileStorage.data)
+			.type(fileStorage.mime)
 			.header('Connection', 'keep-alive')
 			.header('Cache-Control', 'no-cache')
 			.header(
 				'Content-Disposition',
 				'attachment; filename*=UTF-8\'\'' +
-          encodeURIComponent(file.name + '.' + file.fileStorage.ext)
+          encodeURIComponent(file.name + '.' + fileStorage.ext)
 			);
 		return response;
 	} catch (err) {
@@ -171,8 +153,6 @@ export async function info(
 export async function create(
 	r: Request
 ): Promise<IOutputOk<IFileResponse> | Boom> {
-	console.log(r.payload)
-	const transaction = await config.db.transaction();
 	try {
 		const payload = r.payload as IFileCreatePayload;
 		if (
@@ -191,40 +171,16 @@ export async function create(
 				ErrorsMessages[Errors.UserNotFound]
 			);
 		const { id: userId, } = user;
+		const fileStorage = await r.server.app.storage.saveFile(payload.file);
 		const { name, } = splitFilename(payload.file.filename);
-		const { mime, ext, } = await getExt(
-			payload.file.filename,
-			payload.file.payload
-		);
-		const hash = getHash(payload.file.payload);
-		console.log(hash)
-		const [fileStorage, created] = await FileStorage.findOrCreate({
-			where: {
-				hash,
-			},
-			defaults: {
-				ext,
-				mime,
-				storage: config.storage,
-				hash,
-				data: config.storage === Storage.DB ? payload.file.payload : null,
-			},
-			transaction,
-		});
 		const file = await File.create({
 			userId,
 			fileStorageId: fileStorage.id,
 			name,
 			public: payload.public,
-		}, { transaction, });
-		if (created && config.storage === Storage.FOLDER)
-			await saveFile(payload.file.payload, fileStorage.id);
-		if (config.debug)
-			console.info('Upload file', fileResponse(file, fileStorage));
-		await transaction.commit();
+		});
 		return outputOk(fileResponse(file, fileStorage));
 	} catch (err) {
-		await transaction.rollback();
 		return handlerError('Create file error', err);
 	}
 }
@@ -232,8 +188,6 @@ export async function create(
 export async function edit(
 	r: Request
 ): Promise<IOutputOk<IFileResponse> | Boom> {
-	const transaction = await config.db.transaction();
-	console.log(r.payload)
 	try {
 		const payload = r.payload as IFileEditPayload;
 		const { fileId, } = r.params as { fileId: string };
@@ -241,9 +195,9 @@ export async function edit(
 			include: [
 				{
 					model: FileStorage,
+					required: true,
 				}
 			],
-			transaction,
 		});
 		if (!file)
 			throw new Exception(
@@ -252,46 +206,22 @@ export async function edit(
 				{ fileId, }
 			);
 		editAccess(r, file);
-		let fileStorageId = file.fileStorageId;
+		let fileStorage = file.fileStorage;
 		if (
 			payload?.file &&
       payload?.file.filename &&
       payload.file.payload.length
 		) {
-			const { mime, ext, } = await getExt(
-				payload.file.filename,
-				payload.file.payload
-			);
-			const hash = getHash(payload.file.payload);
-			console.log(hash)
-			const [fileStorage] = await FileStorage.findOrCreate({
-				where: {
-					hash,
-				},
-				defaults: {
-					ext,
-					mime,
-					storage: config.storage,
-					hash,
-					data:
-            config.storage === Storage.DB ? payload.file.payload : null,
-				},
-				transaction,
-			});
-			fileStorageId = fileStorage.id;
+			fileStorage = await r.server.app.storage.saveFile(payload.file);
 		}
 
 		await file.update({
-			fileId: fileStorageId,
+			fileStorageId: fileStorage.id,
 			name: payload.name,
 			public: payload.public,
-		}, { transaction, });
-		if (config.debug)
-			console.info('Edit file', fileResponse(file, file.fileStorage));
-		await transaction.commit();
-		return outputOk(fileResponse(file, file.fileStorage));
+		});
+		return outputOk(fileResponse(file, fileStorage));
 	} catch (err) {
-		await transaction.rollback();
 		return handlerError('Edit file error', err);
 	}
 }

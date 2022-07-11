@@ -1,6 +1,6 @@
 import Joi from 'joi';
-import { File, } from '../models/File';
-import { FileStorage, } from '../models';
+import { File, } from '../db/models/File';
+import { FileStorage, } from '../db/models';
 import { guidSchema, } from './common';
 
 export const fileCreatePayloadSchema = Joi.object({

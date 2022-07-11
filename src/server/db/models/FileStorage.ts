@@ -1,10 +1,6 @@
 import { Column, DataType, Model, Table, Scopes, } from 'sequelize-typescript';
-import { getUUID, } from '../utils/index';
-
-export enum Storage {
-  FOLDER = 'folder',
-  DB = 'db',
-}
+import { StorageType, } from '../../enum';
+import { getUUID, } from '../../utils/index';
 
 @Scopes(() => ({
 	defaultScope: {
@@ -42,9 +38,9 @@ export class FileStorage extends Model {
 
   @Column({
   	type: DataType.STRING,
-  	defaultValue: Storage.DB,
+  	defaultValue: StorageType.DB,
   })
-  	storage!: Storage;
+  	storage!: StorageType;
 
   @Column({
   	type: DataType.STRING(),

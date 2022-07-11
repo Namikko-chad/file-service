@@ -1,7 +1,6 @@
 import { config as dotenv, } from 'dotenv';
 import * as path from 'path';
 import { Sequelize, } from 'sequelize-typescript';
-import { Storage, } from '../models';
 
 dotenv();
 
@@ -56,7 +55,6 @@ function configLoad() {
 				? Number(process.env.SERVER_SHUTDOWN_TIMEOUT)
 				: 15000,
 		},
-		storage: Storage.DB,
 		test: process.env.NODE_ENV === 'test' ? true : false,
 	};
 }

@@ -25,6 +25,7 @@ export default <ServerRoute[]>[
 				params: tokenTypeSchema,
 				payload: Joi.object({
 					userId: guidSchema.required(),
+					fileId: guidSchema.optional(),
 				}),
 			},
 			response: {

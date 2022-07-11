@@ -10,6 +10,8 @@ import routes from './server/routes';
 import { config, } from './server/config/config';
 import loadSwaggerConfig from './server/config/swagger';
 import pinoConfig from './server/config/pino';
+import { Database, loadDatabaseConfig, } from './server/db';
+import { StoragePlugin, } from './server/storages';
 import {
 	handleValidationError,
 	responseHandler,
@@ -17,7 +19,6 @@ import {
 	Token,
 	tokenValidate,
 } from './server/utils';
-import { initDatabase, } from './server/models';
 
 declare module '@hapi/hapi' {
   interface UserCredentials {
@@ -72,6 +73,13 @@ export async function init(): Promise<Hapi.Server> {
 			signals: ['SIGINT'],
 		},
 	});
+	await server.register({
+		plugin: Database,
+		options: loadDatabaseConfig(),
+	});
+	await server.register({
+		plugin: StoragePlugin,
+	});
 	// JWT Auth
 	server.auth.strategy(Strategies.Header, 'bearer-access-token', {
 		validate: tokenValidate,
@@ -83,8 +91,6 @@ export async function init(): Promise<Hapi.Server> {
 	server.auth.default(Strategies.Header);
 	// Load routes
 	server.route(routes);
-
-	config.db = await initDatabase({});
 
 	// Error handler
 	server.ext('onPreResponse', responseHandler);
