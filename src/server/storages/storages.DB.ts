@@ -4,7 +4,6 @@ import { Exception, } from '../utils/Exception';
 import { AbstractStorage, } from './abstract';
 import { FileFormData, Storage, } from './interface';
 
-
 export class DBStorage extends AbstractStorage implements Storage {
 	type = StorageType.DB;
 

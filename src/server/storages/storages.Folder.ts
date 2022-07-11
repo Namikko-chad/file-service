@@ -8,7 +8,7 @@ import { AbstractStorage, } from './abstract';
 import { FileFormData, Storage, } from './interface';
 
 export class FolderStorage extends AbstractStorage implements Storage {
-	type = StorageType.FOLDER
+	type = StorageType.FOLDER;
 
 	async saveFile(file: FileFormData): Promise<FileStorage> {
 		/* eslint-disable security/detect-non-literal-fs-filename */
@@ -46,7 +46,7 @@ export class FolderStorage extends AbstractStorage implements Storage {
 		file.data = Buffer.from(filePath);
 		return file;
 	}
-	
+
 	async deleteFile(fileId: string): Promise<boolean> {
 		const file = await FileStorage.findByPk(fileId);
 		if (!file)

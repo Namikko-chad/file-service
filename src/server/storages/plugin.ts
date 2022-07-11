@@ -3,9 +3,9 @@ import { Storage as IStorage, StorageOptions, } from './interface';
 import { Storage, } from './Storage';
 
 declare module '@hapi/hapi' {
-	export interface ServerApplicationState {
-		storage: IStorage;
-	}
+  export interface ServerApplicationState {
+    storage: IStorage;
+  }
 }
 
 export const StoragePlugin: Plugin<StorageOptions> = {

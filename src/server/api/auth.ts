@@ -20,8 +20,8 @@ export function tokenGenerate(r: Request): IOutputOk<{ token: string }> | Boom {
 		const tokenType = r.params.tokenType as Token;
 		const token = sign(
 			{ userId, fileId, timestamp: Date.now(), },
-			config.auth.jwt[tokenType].secret as string,
-			{ expiresIn: config.auth.jwt[tokenType].lifetime, }
+      config.auth.jwt[tokenType].secret as string,
+      { expiresIn: config.auth.jwt[tokenType].lifetime, }
 		);
 
 		return outputOk({ token, });

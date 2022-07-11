@@ -12,8 +12,8 @@ import {
 } from "../src/server/utils";
 import pinoConfig from "../src/server/config/pino";
 import { config } from "../src/server/config/config";
-import { Database, loadDatabaseConfig, } from '../src/server/db';
-import { StoragePlugin, } from '../src/server/storages';
+import { Database, loadDatabaseConfig } from "../src/server/db";
+import { StoragePlugin } from "../src/server/storages";
 
 type IQuery = Record<string, string>;
 type IPayload = Record<string, unknown> | FormData;
@@ -48,7 +48,7 @@ export class Test {
     });
     await server.register({
       plugin: StoragePlugin,
-    })
+    });
     if (process.env["DEBUG"] === "true") {
       await server.register({
         plugin: HapiPino,
@@ -97,7 +97,7 @@ export class Test {
         : undefined,
     };
     if (payload instanceof FormData)
-    // @ts-ignore
+      // @ts-ignore
       options.headers = Object.assign(options.headers, payload.getHeaders());
     return this.server.inject(options);
   }

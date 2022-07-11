@@ -1,2 +1,2 @@
 export * from './interface';
-export * from './plugin'
+export * from './plugin';

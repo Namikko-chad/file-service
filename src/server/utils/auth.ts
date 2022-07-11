@@ -37,7 +37,7 @@ export function tokenValidate(
 	token: string
 ): TokenValidateSuccess | Boom {
 	r;
-	function tryDecode (token: string): [IJwtData, Token] {
+	function tryDecode(token: string): [IJwtData, Token] {
 		let data: IJwtData;
 		let tokenType: Token;
 		Object.values(Token)
@@ -68,13 +68,21 @@ export function tokenValidate(
 		// @ts-ignore
 		if (!data || !tokenType)
 			throw error(Errors.TokenInvalid, ErrorsMessages[Errors.TokenInvalid], {});
-		return [data, tokenType]
+		return [data, tokenType];
 	}
-	const [data, tokenType] = tryDecode(token)
+	const [data, tokenType] = tryDecode(token);
 	switch (tokenType) {
 	case Token.File:
-		if (!r.route.settings.auth?.strategies.includes(tokenType === Token.File ? Strategies.Query : Strategies.Header))
-			throw error(Errors.TokenInvalid, ErrorsMessages[Errors.TokenInvalid], {});
+		if (
+			!r.route.settings.auth?.strategies.includes(
+				tokenType === Token.File ? Strategies.Query : Strategies.Header
+			)
+		)
+			throw error(
+				Errors.TokenInvalid,
+				ErrorsMessages[Errors.TokenInvalid],
+				{}
+			);
 		break;
 	}
 	return {

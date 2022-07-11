@@ -7,10 +7,10 @@ export class Storage {
 	static init(options?: StorageOptions): IStorage {
 		switch (options?.type) {
 		case StorageType.FOLDER:
-			return new FolderStorage;
+			return new FolderStorage();
 		case StorageType.DB:
 		default:
-			return new DBStorage;
+			return new DBStorage();
 		}
 	}
 }

@@ -7,7 +7,10 @@ import { Errors, } from '../enum/errors';
 import { splitFilename, } from '../utils/file';
 
 export abstract class AbstractStorage {
-	async getExt(name: string, file: Buffer): Promise<{ ext: string; mime: string }> {
+	async getExt(
+		name: string,
+		file: Buffer
+	): Promise<{ ext: string; mime: string }> {
 		let ext = '';
 		let mime = '';
 		if (Buffer.isBuffer(file)) {
@@ -23,17 +26,17 @@ export abstract class AbstractStorage {
 			ext = splitName.ext;
 			mime = mimeType.lookup(name) as string;
 		}
-	
+
 		if (!ext || !mime)
 			throw new Exception(Errors.InvalidPayload, 'Unsupported file type');
-	
+
 		if (!config.files.allowedExtensionsRegExp.exec(ext)) {
 			throw new Exception(
 				Errors.Forbidden,
 				'This media file extension forbidden'
 			);
 		}
-	
+
 		return { ext, mime, };
 	}
 

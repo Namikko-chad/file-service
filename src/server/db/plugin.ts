@@ -4,9 +4,9 @@ import { initDatabase, } from './handler';
 import { DatabaseOptions, } from './interface';
 
 declare module '@hapi/hapi' {
-	export interface ServerApplicationState {
-		db: Sequelize;
-	}
+  export interface ServerApplicationState {
+    db: Sequelize;
+  }
 }
 
 export const Database: Plugin<DatabaseOptions> = {

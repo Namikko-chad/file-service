@@ -2,14 +2,14 @@ import { Sequelize, SequelizeOptions, } from 'sequelize-typescript';
 import { DatabaseOptions, } from './interface';
 import { File, FileStorage, } from './models';
 
-export async function initDatabase(config: DatabaseOptions, sync = false): Promise<Sequelize> {
+export async function initDatabase(
+	config: DatabaseOptions,
+	sync = false
+): Promise<Sequelize> {
 	let forceSync = false;
 	if (!config.link && !config.host) throw new Error('Database not configured');
 	const options: SequelizeOptions = {
-		models: [
-			File,
-			FileStorage
-		],
+		models: [File, FileStorage],
 		logging: config.logging,
 		pool: {
 			acquire: 9000000,
@@ -19,7 +19,7 @@ export async function initDatabase(config: DatabaseOptions, sync = false): Promi
 	let uri = config.link
 		? config.link
 		: // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		  `${config.dialect}://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}`;
+		`${config.dialect}://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}`;
 	if (config.test && config.test_link) {
 		uri = 'sqlite::file';
 		options.storage = 'db.sqlite';
