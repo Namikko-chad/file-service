@@ -2,10 +2,12 @@ package routes
 
 import (
 	"file-service/app/models"
+	"file-service/app/storages"
 	"file-service/app/types"
 	"file-service/app/utils"
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -13,15 +15,15 @@ import (
 )
 
 func FileRoutes(superRoute *gin.RouterGroup) {
-	superRoute.GET("files", utils.AuthorizeJWT(ListFiles))
-	superRoute.POST("files", CreateFiles)
-	superRoute.GET("files/:fileId", RetrieveFiles)
-	// superRoute.PUT("files/:fileId", UpdateFiles)
+	superRoute.GET("files", ListFiles)
+	superRoute.POST("files", CreateFile)
+	superRoute.GET("files/:fileId", RetrieveFile)
+	superRoute.PUT("files/:fileId", UpdateFile)
 	// superRoute.DELETE("files/:fileId", DeleteFiles)
-	superRoute.GET("files/:fileId/info", RetrieveFilesInfo)
+	superRoute.GET("files/:fileId/info", RetrieveFileInfo)
 }
 
-func FileResponse(file models.File) types.IFileResponse {
+func FileResponse(file *models.File) types.IFileResponse {
 	return types.IFileResponse{
 		ID:     file.ID,
 		UserID: file.UserID,
@@ -61,7 +63,7 @@ func ListFiles(c *gin.Context) {
 	request.Count(&count)
 	ResArray := make([]interface{}, len(files))
 	for i, file := range files {
-		ResArray[i] = FileResponse(file)
+		ResArray[i] = FileResponse(&file)
 	}
 	c.JSON(http.StatusOK, types.IOutputPagination{
 		Ok: true,
@@ -72,7 +74,7 @@ func ListFiles(c *gin.Context) {
 	})
 }
 
-func CreateFiles(c *gin.Context) {
+func CreateFile(c *gin.Context) {
 	var payload types.IFileUpload
 	if err := c.ShouldBind(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, utils.GetError(400000, "Validation error", err.Error()))
@@ -93,20 +95,79 @@ func CreateFiles(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
 		return
 	}
-	file, err := utils.FileUtils.Save(utils.FileCreate{
-		Data: fileData,
-		UserId: uuid.New(),
+	fileStorage, err := storages.StorageType.SaveFile(storages.DB, storages.FileFormData{
 		Filename: uploadedFile.Filename,
-		Public: payload.Public,
+		Headers:  uploadedFile.Header,
+		Payload:  fileData,
 	})
-	
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
+		return
+	}
+	file := models.File{
+		ID:            uuid.New(),
+		FileStorageID: fileStorage.ID,
+		UserID:        uuid.New(),
+		Name:          filepath.Base(uploadedFile.Filename)[:len(uploadedFile.Filename)-len(filepath.Ext(uploadedFile.Filename))],
+		Public:        payload.Public || false,
+	}
+	models.DB.Create(&file)
+	if err := models.DB.Preload("FileStorage").Where("id = ?", file.ID).First(&file).Error; err != nil {
+		c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
+	}
 	c.JSON(http.StatusOK, types.IOutputOk{
 		Ok:     true,
-		Result: FileResponse(file),
+		Result: FileResponse(&file),
 	})
 }
 
-func RetrieveFiles(c *gin.Context) {
+func UpdateFile(c *gin.Context) {
+	var payload types.IFileEdit
+	if err := c.ShouldBind(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, utils.GetError(400000, "Validation error", err.Error()))
+		return
+	}
+	var file models.File
+	if err := models.DB.Where("id = ?", c.Param("fileId")).First(&file).Error; err != nil {
+		c.JSON(http.StatusNotFound, utils.GetError(404000, "File not found", c.Param("fileId")))
+		return
+	}
+	uploadedFile, err := c.FormFile("file")
+	if err == nil {
+		openedFile, err := uploadedFile.Open()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
+			return
+		}
+		fileData, err := ioutil.ReadAll(openedFile)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
+			return
+		}
+		fileStorage, err := storages.StorageType.SaveFile(storages.DB, storages.FileFormData{
+			Filename: uploadedFile.Filename,
+			Headers:  uploadedFile.Header,
+			Payload:  fileData,
+		})
+		if err != nil {
+			c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
+			return
+		}
+		file.FileStorageID = fileStorage.ID
+	}
+	file.Public = payload.Public
+	file.Name = payload.Name
+	models.DB.Save(&file)
+	if err := models.DB.Preload("FileStorage").Where("id = ?", file.ID).First(&file).Error; err != nil {
+		c.JSON(http.StatusBadRequest, utils.GetError(400000, "File not uploaded", err.Error()))
+	}
+	c.JSON(http.StatusOK, types.IOutputOk{
+		Ok:     true,
+		Result: FileResponse(&file),
+	})
+}
+
+func RetrieveFile(c *gin.Context) {
 	var file models.File
 	if err := models.DB.Where("id = ?", c.Param("fileId")).Preload("FileStorage").First(&file).Error; err != nil {
 		c.JSON(http.StatusNotFound, utils.GetError(404000, "File not found", c.Param("fileId")))
@@ -120,21 +181,7 @@ func RetrieveFiles(c *gin.Context) {
 	c.Data(http.StatusOK, file.FileStorage.MIME, file.FileStorage.Data)
 }
 
-func UpdateFiles(c *gin.Context) {
-	var params types.IListParam
-	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, utils.GetError(400000, "Validation error", err.Error()))
-		return
-	}
-	var file models.File
-	if err := models.DB.Where("id = ?", c.Param("fileId")).Preload("FileStorage").First(&file).Error; err != nil {
-		c.JSON(http.StatusNotFound, utils.GetError(404000, "File not found", c.Param("fileId")))
-		return
-	}
-
-}
-
-func RetrieveFilesInfo(c *gin.Context) {
+func RetrieveFileInfo(c *gin.Context) {
 	var file models.File
 	if err := models.DB.Where("id = ?", c.Param("fileId")).Preload("FileStorage").First(&file).Error; err != nil {
 		c.JSON(http.StatusNotFound, utils.GetError(404000, "File not found", c.Param("fileId")))
@@ -142,6 +189,6 @@ func RetrieveFilesInfo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, types.IOutputOk{
 		Ok:     true,
-		Result: FileResponse(file),
+		Result: FileResponse(&file),
 	})
 }

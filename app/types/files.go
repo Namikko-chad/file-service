@@ -17,3 +17,8 @@ type IFileResponse struct {
 type IFileUpload struct {
 	Public bool `form:"public"`
 }
+
+type IFileEdit struct {
+	Name string `json:"name"`
+	IFileUpload
+}
