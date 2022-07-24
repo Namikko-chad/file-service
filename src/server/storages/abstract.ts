@@ -2,11 +2,15 @@ import * as fileType from 'file-type';
 import * as mimeType from 'mime-types';
 import crypto from 'crypto';
 import { config, } from '../config/config';
-import { Exception, } from '../utils/Exception';
-import { Errors, } from '../enum/errors';
-import { splitFilename, } from '../utils/file';
+import { Errors, } from '../enum';
+import { splitFilename, Exception, } from '../utils';
+import { StorageParam, } from './interface';
+import { StorageType, } from './enum';
 
 export abstract class AbstractStorage {
+	abstract params: StorageParam;
+	abstract type: StorageType;
+
 	async getExt(
 		name: string,
 		file: Buffer

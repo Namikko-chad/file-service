@@ -3,12 +3,14 @@ import { config, } from '../config/config';
 import { Exception, handlerError, } from '../utils';
 import { Errors, ErrorsMessages, } from '../enum';
 
-export function checkDevelop(): boolean | Boom {
+export function checkEnv(): boolean | Boom {
 	try {
-		if (!config.development)
+		switch (config.env) {
+		case 'production':
 			throw new Exception(Errors.Forbidden, ErrorsMessages[Errors.Forbidden]);
+		}
+		return true;
 	} catch (error) {
-		return handlerError('Only for development area', error);
+		return handlerError('Only for development environment', error);
 	}
-	return true;
 }

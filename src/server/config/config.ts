@@ -39,12 +39,13 @@ function configLoad() {
 		development: process.env.NODE_ENV === 'development' ? true : false,
 		db: <Sequelize>{},
 		dbLink: process.env.DATABASE_LINK as string,
+		env: process.env.NODE_ENV as 'development' | 'stage' | 'test' | 'production',
 		files: {
 			allowedExtensionsRegExp:
-        /(jpg|jpeg|png|gif|html|webp|pdf|doc|docx|rtf|xls|xlsx|sig|svg)$/,
+        /(jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso)$/,
 			allowedExtensions: process.env.FILETYPE
 				? process.env.FILETYPE
-				: 'jpg|jpeg|png|gif|html|webp|pdf|doc|docx|rtf|xls|xlsx|sig|svg',
+				: 'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso',
 			maxRequestSize: 1024 * 1024 * 30,
 			filesDir: path.join(__dirname, '..', '..', '..', 'assets/'),
 		},

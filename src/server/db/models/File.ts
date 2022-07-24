@@ -1,19 +1,17 @@
-import {
-	Column,
-	DataType,
-	Model,
-	Table,
-	Scopes,
-	ForeignKey,
-	BelongsTo,
-} from 'sequelize-typescript';
+import { Column, DataType, Model, Table, Scopes, HasMany, } from 'sequelize-typescript';
+import { StorageType, } from '../../storages';
 import { getUUID, } from '../../utils/index';
-import { FileStorage, } from './FileStorage';
+import { FileUser, } from './FileUsers';
 
 @Scopes(() => ({
 	defaultScope: {
 		attributes: {
-			exclude: ['createdAt', 'updatedAt'],
+			exclude: ['data', 'createdAt', 'updatedAt'],
+		},
+	},
+	withData: {
+		attributes: {
+			include: ['data'],
 		},
 	},
 }))
@@ -28,30 +26,34 @@ export class File extends Model {
 	override id!: string;
 
   @Column({
-  	type: DataType.UUID,
+  	type: DataType.STRING(10),
   	allowNull: false,
   })
-  	userId!: string;
-
-  @ForeignKey(() => FileStorage)
-  @Column({
-  	type: DataType.UUID,
-  	allowNull: false,
-  })
-  	fileStorageId!: string;
+  	ext!: string;
 
   @Column({
   	type: DataType.STRING,
   	allowNull: false,
   })
-  	name!: string;
+  	mime!: string;
 
   @Column({
-  	type: DataType.BOOLEAN,
-  	defaultValue: false,
+  	type: DataType.STRING,
+  	defaultValue: StorageType.DB,
   })
-  	public!: boolean;
+  	storage!: StorageType;
 
-  @BelongsTo(() => FileStorage)
-  	fileStorage!: FileStorage;
+  @Column({
+  	type: DataType.STRING(),
+  	allowNull: false,
+  })
+  	hash!: string;
+
+  @Column({
+  	type: DataType.BLOB,
+  })
+  	data?: Buffer;
+
+	@HasMany(() => FileUser)
+		fileUsers?: FileUser[]
 }

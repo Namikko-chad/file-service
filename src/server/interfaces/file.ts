@@ -26,8 +26,9 @@ export interface IFileEditPayload {
   name?: string;
 }
 
-export type IFileResponse = IFilename &
-  IFileGuid & {
+export type IFileResponse = 
+  IFileGuid &
+  IFilename & {
     mime: string;
     public: boolean;
     userId: string;

@@ -36,7 +36,6 @@ export function tokenValidate(
 	r: Request,
 	token: string
 ): TokenValidateSuccess | Boom {
-	r;
 	function tryDecode(token: string): [IJwtData, Token] {
 		let data: IJwtData;
 		let tokenType: Token;

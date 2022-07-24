@@ -10,7 +10,7 @@ export default <HapiSwagger.RegisterOptions>{
 		title: 'API Documentation',
 		version: '1.0',
 		description:
-      'API Documentation\n\nYou can use https://mdenushev.github.io/nes-cli/ to test ws connections',
+      'API Documentation',
 	},
 	securityDefinitions: {
 		Bearer: {

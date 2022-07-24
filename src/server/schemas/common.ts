@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import { Token, } from '../utils';
 
-export const idSchema = Joi.number().example(10).label('id');
 export const okSchema = Joi.boolean().example(true).label('Ok');
 export const guidSchema = Joi.string()
 	.uuid()
@@ -29,15 +28,15 @@ export const pastShortDateSchema = shortDateSchema.custom(
 
 export const tokenTypeSchema = Joi.object({
 	tokenType: Joi.string()
-		.default(Token.User)
 		.valid(...Object.values(Token))
+		.default(Token.User)
 		.example(Token.User),
 }).label('Token Type');
 
 export const listSchema = Joi.object({
 	limit: Joi.number().min(0).example(0).default(10),
 	offset: Joi.number().min(0).example(0).default(0),
-	search: Joi.string().max(256).example('example').trim(),
+	search: Joi.string().max(255).example('example').trim(),
 	order: Joi.object({}).pattern(
 		Joi.string(),
 		Joi.string().valid('ASC', 'DESC')

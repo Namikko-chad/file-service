@@ -1,6 +1,6 @@
 import { Sequelize, SequelizeOptions, } from 'sequelize-typescript';
 import { DatabaseOptions, } from './interface';
-import { File, FileStorage, } from './models';
+import { File, FileUser, } from './models';
 
 export async function initDatabase(
 	config: DatabaseOptions,
@@ -9,7 +9,7 @@ export async function initDatabase(
 	let forceSync = false;
 	if (!config.link && !config.host) throw new Error('Database not configured');
 	const options: SequelizeOptions = {
-		models: [File, FileStorage],
+		models: [File, FileUser],
 		logging: config.logging,
 		pool: {
 			acquire: 9000000,
@@ -21,10 +21,9 @@ export async function initDatabase(
 		: // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		`${config.dialect}://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}`;
 	if (config.test && config.test_link) {
-		uri = 'sqlite::file';
-		options.storage = 'db.sqlite';
+		uri = 'sqlite::memory';
 		options.dialect = 'sqlite';
-		options.models = [File, FileStorage];
+		options.models = [File, FileUser];
 		forceSync = true;
 	}
 	const sequelize = new Sequelize(uri, options);

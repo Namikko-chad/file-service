@@ -1,18 +1,17 @@
 import { IFileResponse, } from '../interfaces/file';
-import { File, } from '../db/models/File';
-import { FileStorage, } from '../db/models/FileStorage';
+import { File, FileUser, } from '../db';
 
 export function fileResponse(
-	file: File,
-	fileStorage: FileStorage
+	fileUser: FileUser,
+	file: File
 ): IFileResponse {
 	return {
-		id: file.id,
-		name: file.name,
-		ext: fileStorage.ext,
-		mime: fileStorage.mime,
-		public: file.public,
-		userId: file.userId,
-		hash: fileStorage.hash,
+		id: fileUser.id,
+		name: fileUser.name,
+		ext: file.ext,
+		mime: file.mime,
+		public: fileUser.public,
+		userId: fileUser.userId,
+		hash: file.hash,
 	};
 }

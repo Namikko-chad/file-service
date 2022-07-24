@@ -18,10 +18,10 @@ import {
 	Token,
 } from '../utils';
 import { Errors, ErrorsMessages, } from '../enum';
-import { File, FileStorage, } from '../db';
+import { File, FileUser, } from '../db';
 import { fileResponse, } from '../helper/fileResponse';
 
-function editAccess(r: Request, file: File): void {
+function editAccess(r: Request, file: FileUser): void {
 	const user = r.auth.credentials.user;
 	if (file.userId !== user?.id && r.auth.artifacts.tokenType !== Token.Admin)
 		throw new Exception(
@@ -30,7 +30,7 @@ function editAccess(r: Request, file: File): void {
 		);
 }
 
-function viewAccess(r: Request, file: File): void {
+function viewAccess(r: Request, file: FileUser): void {
 	if (!file.public) {
 		if (!r.auth.isAuthenticated)
 			throw new Exception(
@@ -67,13 +67,13 @@ export async function list(
 				ErrorsMessages[Errors.UserNotFound]
 			);
 		const { id: userId, } = user;
-		const { rows, count, } = await File.findAndCountAll({
+		const { rows, count, } = await FileUser.findAndCountAll({
 			where: {
 				userId,
 			},
 			include: [
 				{
-					model: FileStorage,
+					model: File,
 					required: true,
 				}
 			],
@@ -81,7 +81,7 @@ export async function list(
 
 		return outputPagination(
 			count,
-			rows.map((row) => fileResponse(row, row.fileStorage))
+			rows.map((row) => fileResponse(row, row.file))
 		);
 	} catch (err) {
 		return handlerError('Failed get file list', err);
@@ -94,27 +94,27 @@ export async function retrieve(
 ): Promise<ResponseObject | Boom> {
 	try {
 		const { fileId, } = r.params as { fileId: string };
-		const file = await File.findByPk(fileId);
-		if (!file)
+		const fileUser = await FileUser.findByPk(fileId);
+		if (!fileUser)
 			throw new Exception(
 				Errors.FileNotFound,
 				ErrorsMessages[Errors.FileNotFound],
 				{ fileId, }
 			);
 
-		viewAccess(r, file);
+		viewAccess(r, fileUser);
 
-		const fileStorage = await r.server.app.storage.loadFile(file.fileStorageId);
+		const file = await r.server.app.storage.loadFile(fileUser.fileId);
 
 		const response: ResponseObject = h
-			.response(fileStorage.data)
-			.type(fileStorage.mime)
+			.response(file.data)
+			.type(file.mime)
 			.header('Connection', 'keep-alive')
 			.header('Cache-Control', 'no-cache')
 			.header(
 				'Content-Disposition',
 				'attachment; filename*=UTF-8\'\'' +
-          encodeURIComponent(file.name + '.' + fileStorage.ext)
+          encodeURIComponent(fileUser.name + '.' + file.ext)
 			);
 		return response;
 	} catch (err) {
@@ -127,24 +127,24 @@ export async function info(
 ): Promise<IOutputOk<IFileResponse> | Boom> {
 	try {
 		const { fileId, } = r.params as { fileId: string };
-		const file = await File.findByPk(fileId, {
+		const fileUser = await FileUser.findByPk(fileId, {
 			include: [
 				{
-					model: FileStorage,
+					model: File,
 					required: true,
 				}
 			],
 		});
-		if (!file)
+		if (!fileUser)
 			throw new Exception(
 				Errors.FileNotFound,
 				ErrorsMessages[Errors.FileNotFound],
 				{ fileId, }
 			);
 
-		viewAccess(r, file);
+		viewAccess(r, fileUser);
 
-		return outputOk(fileResponse(file, file.fileStorage));
+		return outputOk(fileResponse(fileUser, fileUser.file));
 	} catch (err) {
 		return handlerError('Failed retrieve file info', err);
 	}
@@ -171,15 +171,16 @@ export async function create(
 				ErrorsMessages[Errors.UserNotFound]
 			);
 		const { id: userId, } = user;
-		const fileStorage = await r.server.app.storage.saveFile(payload.file);
+		const file = await r.server.app.storage.saveFile(payload.file);
 		const { name, } = splitFilename(payload.file.filename);
-		const file = await File.create({
+		const fileUser = await FileUser.create({
 			userId,
-			fileStorageId: fileStorage.id,
+			fileId: file.id,
 			name,
 			public: payload.public,
 		});
-		return outputOk(fileResponse(file, fileStorage));
+
+		return outputOk(fileResponse(fileUser, file));
 	} catch (err) {
 		return handlerError('Create file error', err);
 	}
@@ -191,36 +192,36 @@ export async function edit(
 	try {
 		const payload = r.payload as IFileEditPayload;
 		const { fileId, } = r.params as { fileId: string };
-		const file = await File.findByPk(fileId, {
+		const fileUser = await FileUser.findByPk(fileId, {
 			include: [
 				{
-					model: FileStorage,
+					model: File,
 					required: true,
 				}
 			],
 		});
-		if (!file)
+		if (!fileUser)
 			throw new Exception(
 				Errors.FileNotFound,
 				ErrorsMessages[Errors.FileNotFound],
 				{ fileId, }
 			);
-		editAccess(r, file);
-		let fileStorage = file.fileStorage;
+		editAccess(r, fileUser);
+		let file = fileUser.file;
 		if (
 			payload?.file &&
       payload?.file.filename &&
       payload.file.payload.length
 		) {
-			fileStorage = await r.server.app.storage.saveFile(payload.file);
+			file = await r.server.app.storage.saveFile(payload.file);
 		}
 
-		await file.update({
-			fileStorageId: fileStorage.id,
+		await fileUser.update({
+			fileId: file.id,
 			name: payload.name,
 			public: payload.public,
 		});
-		return outputOk(fileResponse(file, fileStorage));
+		return outputOk(fileResponse(fileUser, file));
 	} catch (err) {
 		return handlerError('Edit file error', err);
 	}
@@ -229,17 +230,17 @@ export async function edit(
 export async function destroy(r: Request): Promise<IOutputEmpty | Boom> {
 	try {
 		const { fileId, } = r.params as { fileId: string };
-		const file = await File.findByPk(fileId);
+		const fileUser = await FileUser.findByPk(fileId);
 
-		if (!file)
+		if (!fileUser)
 			throw new Exception(
 				Errors.FileNotFound,
 				ErrorsMessages[Errors.FileNotFound],
 				{ fileId, }
 			);
 
-		editAccess(r, file);
-		await file.destroy();
+		editAccess(r, fileUser);
+		await fileUser.destroy();
 
 		return outputEmpty();
 	} catch (err) {

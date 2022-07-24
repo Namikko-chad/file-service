@@ -8,7 +8,7 @@ import {
 	outputEmptySchema,
 } from '../schemas';
 import * as api from '../api/auth';
-import { checkDevelop, } from '../helper/checkAccess';
+import { checkEnv, } from '../helper/checkEnv';
 
 export default <ServerRoute[]>[
 	{
@@ -17,8 +17,8 @@ export default <ServerRoute[]>[
 		handler: api.tokenGenerate,
 		options: {
 			auth: false,
+			pre: [checkEnv],
 			id: 'auth.token.generate',
-			pre: [checkDevelop],
 			description: 'Generate token for authorization',
 			tags: ['api', 'auth', 'token'],
 			validate: {
@@ -35,6 +35,24 @@ export default <ServerRoute[]>[
 	},
 	{
 		method: 'GET',
+		path: '/auth/token/info/{tokenType}',
+		handler: api.tokenInfo,
+		options: {
+			auth: false,
+			pre: [checkEnv],
+			id: 'auth.token.info',
+			description: 'Use this endpoint to decode token',
+			tags: ['api', 'auth', 'token'],
+			validate: {
+				params: tokenTypeSchema,
+			},
+			response: {
+				schema: outputOkSchema(Joi.object()),
+			},
+		},
+	},
+	{
+		method: 'GET',
 		path: '/auth/token/validate/{tokenType}',
 		handler: api.tokenValidate,
 		options: {
@@ -46,24 +64,6 @@ export default <ServerRoute[]>[
 			},
 			response: {
 				schema: outputEmptySchema(),
-			},
-		},
-	},
-	{
-		method: 'GET',
-		path: '/auth/token/info/{tokenType}',
-		handler: api.tokenInfo,
-		options: {
-			auth: false,
-			id: 'auth.token.info',
-			pre: [checkDevelop],
-			description: 'Use this endpoint to decode token',
-			tags: ['api', 'auth', 'token'],
-			validate: {
-				params: tokenTypeSchema,
-			},
-			response: {
-				schema: outputOkSchema(Joi.object()),
 			},
 		},
 	}

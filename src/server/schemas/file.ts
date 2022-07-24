@@ -1,6 +1,5 @@
 import Joi from 'joi';
-import { File, } from '../db/models/File';
-import { FileStorage, } from '../db/models';
+import { IFileResponse, } from '../interfaces';
 import { guidSchema, } from './common';
 
 export const fileCreatePayloadSchema = Joi.object({
@@ -14,7 +13,7 @@ export const fileEditPayloadSchema = Joi.object({
 	name: Joi.string().example('photo.png'),
 }).label('Input file upload');
 
-export const fileSchemaResponse = Joi.object<File & FileStorage>({
+export const fileSchemaResponse = Joi.object<IFileResponse>({
 	id: guidSchema,
 	name: Joi.string().example('photo.png'),
 	ext: Joi.string().example('png'),

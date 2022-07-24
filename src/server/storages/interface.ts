@@ -1,12 +1,14 @@
-import { FileStorage, } from '../db/models';
-import { StorageType, } from '../enum';
+import { File, } from '../db';
+import { StorageType, } from './enum';
 
 export interface Storage {
-  type: StorageType;
+  saveFile(file: FileFormData): Promise<File>;
+  loadFile(file: File): Promise<Buffer>;
+  deleteFile(file: File): Promise<void>;
+}
 
-  saveFile(file: FileFormData): Promise<FileStorage>;
-  loadFile(fileId: string): Promise<FileStorage>;
-  deleteFile(fileId: string): Promise<boolean>;
+export interface StorageParam {
+  fileSizeLimit: number;
 }
 
 export type StorageOptions = {
