@@ -16,6 +16,22 @@ definitions:
       userId:
         type: string
     type: object
+  types.IOutputError:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+      ok:
+        type: boolean
+    type: object
+  types.IOutputOk:
+    properties:
+      ok:
+        type: boolean
+      result: {}
+    type: object
   types.IOutputPagination:
     properties:
       ok:
@@ -36,8 +52,6 @@ info:
 paths:
   /files:
     get:
-      consumes:
-      - multipart/form-data
       description: List of files
       parameters:
       - description: limit result in response
@@ -71,6 +85,35 @@ paths:
                         type: array
                     type: object
               type: object
+      summary: List of files
+      tags:
+      - files
+    post:
+      consumes:
+      - multipart/form-data
+      description: create file
+      parameters:
+      - description: Public file
+        in: body
+        name: public
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.IOutputOk'
+            - properties:
+                result:
+                  $ref: '#/definitions/types.IFileResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.IOutputError'
       summary: Create file
       tags:
       - files

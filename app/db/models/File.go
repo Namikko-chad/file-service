@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type FileStorage struct {
+type File struct {
 	ID      uuid.UUID `gorm:"primaryKey;type:varchar(255)"`
 	EXT     string    `gorm:"type:varchar(10)"`
 	MIME    string    `gorm:"type:varchar(255)"`

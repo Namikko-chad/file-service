@@ -14,6 +14,7 @@ type AuthConfig struct {
 
 type DataBaseConfig struct {
 	Link string
+	Type string
 }
 
 type ServerConfig struct {
@@ -44,6 +45,7 @@ func New() *TConfig {
 		},
 		DataBase: DataBaseConfig{
 			Link: getEnv("DATABASE_LINK", ""),
+			Type: getEnv("DATABASE_TYPE", "sqlite"),
 		},
 		Server: ServerConfig{
 			Host: getEnv("SERVER_HOST", "127.0.0.1"),

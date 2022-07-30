@@ -1,7 +1,7 @@
 package storages
 
 import (
-	"file-service/app/models"
+	"file-service/app/db/models"
 )
 
 type StorageType string

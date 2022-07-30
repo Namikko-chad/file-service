@@ -19,11 +19,11 @@ type IOutputEmpty struct {
 	Ok bool `json:"ok"`
 }
 
-type IOutputError[data map[string]struct{} | string] struct {
-	Ok   bool   `json:"ok"`
-	Data data   `json:"data"`
-	Msg  string `json:"msg"`
-	Code uint32 `json:"code"`
+type IOutputError struct {
+	Ok   bool        `json:"ok"`
+	Data interface{} `json:"data"`
+	Msg  string      `json:"msg"`
+	Code uint32      `json:"code"`
 }
 
 type IListParam struct {

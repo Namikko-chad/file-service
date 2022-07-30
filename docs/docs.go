@@ -19,16 +19,13 @@ const docTemplate = `{
         "/files": {
             "get": {
                 "description": "List of files",
-                "consumes": [
-                    "multipart/form-data"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "files"
                 ],
-                "summary": "Create file",
+                "summary": "List of files",
                 "parameters": [
                     {
                         "type": "integer",
@@ -84,6 +81,55 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "create file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "Create file",
+                "parameters": [
+                    {
+                        "description": "Public file",
+                        "name": "public",
+                        "in": "body",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/types.IOutputOk"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/types.IFileResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/types.IOutputError"
+                        }
+                    }
+                }
             }
         }
     },
@@ -112,6 +158,30 @@ const docTemplate = `{
                 "userId": {
                     "type": "string"
                 }
+            }
+        },
+        "types.IOutputError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                },
+                "ok": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "types.IOutputOk": {
+            "type": "object",
+            "properties": {
+                "ok": {
+                    "type": "boolean"
+                },
+                "result": {}
             }
         },
         "types.IOutputPagination": {
