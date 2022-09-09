@@ -154,10 +154,12 @@ export async function create(
 	r: Request
 ): Promise<IOutputOk<IFileResponse> | Boom> {
 	try {
+		await r.server.app.storage.streamer(r);
 		const payload = r.payload as IFileCreatePayload;
 		if (
 			!payload?.file ||
       !payload?.file.filename ||
+      !payload.file.payload ||
       !payload.file.payload.length
 		)
 			throw new Exception(
@@ -177,7 +179,6 @@ export async function create(
 			userId,
 			fileId: file.id,
 			name,
-			public: payload.public,
 		});
 
 		return outputOk(fileResponse(fileUser, file));
@@ -207,21 +208,11 @@ export async function edit(
 				{ fileId, }
 			);
 		editAccess(r, fileUser);
-		let file = fileUser.file;
-		if (
-			payload?.file &&
-      payload?.file.filename &&
-      payload.file.payload.length
-		) {
-			file = await r.server.app.storage.saveFile(payload.file);
-		}
-
 		await fileUser.update({
-			fileId: file.id,
 			name: payload.name,
 			public: payload.public,
 		});
-		return outputOk(fileResponse(fileUser, file));
+		return outputOk(fileResponse(fileUser, fileUser.file));
 	} catch (err) {
 		return handlerError('Edit file error', err);
 	}

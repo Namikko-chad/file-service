@@ -4,7 +4,6 @@ import * as api from '../api/file';
 import { config, } from '../config/config';
 import {
 	tokenSchema,
-	fileCreatePayloadSchema,
 	fileEditPayloadSchema,
 	fileSchemaResponse,
 	guidSchema,
@@ -37,22 +36,17 @@ export default <ServerRoute[]>[
 			description: 'This method allows to upload file',
 			notes: `Maximum size for the whole request is 
 				${
-          config.files.maxRequestSize / 1024 / 1024
+          config.files.maxSize / 1024 / 1024
         } Mb. \n Allowed extensions are: ${config.files.allowedExtensions
         	.split('|')
         	.toString()}`,
 			tags: ['api', 'file'],
 			payload: {
-				maxBytes: config.files.maxRequestSize,
-				output: 'data',
+				maxBytes: config.files.maxSize*5000,
+				output: 'stream',
 				allow: 'multipart/form-data',
-				multipart: {
-					output: 'annotated',
-				},
-				parse: true,
-			},
-			validate: {
-				payload: fileCreatePayloadSchema,
+				multipart: false,
+				parse: false,
 			},
 			response: {
 				schema: outputOkSchema(fileSchemaResponse).label('Output file upload'),
@@ -103,23 +97,8 @@ export default <ServerRoute[]>[
 		handler: api.edit,
 		options: {
 			id: 'files.edit',
-			description: 'This method allows to upload new version file',
-			notes: `Maximum size for the whole request is 
-				${
-          config.files.maxRequestSize / 1024 / 1024
-        } Mb. \n Allowed extensions are: ${config.files.allowedExtensions
-        	.split('|')
-        	.toString()}`,
+			description: 'This method allows to edit file info',
 			tags: ['api', 'file'],
-			payload: {
-				maxBytes: config.files.maxRequestSize,
-				output: 'data',
-				allow: 'multipart/form-data',
-				multipart: {
-					output: 'annotated',
-				},
-				parse: true,
-			},
 			validate: {
 				params: Joi.object({
 					fileId: guidSchema.required().label('File id'),

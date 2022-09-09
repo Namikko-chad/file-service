@@ -4,7 +4,7 @@ definitions:
   steps:
     - step: &build
         name: Build
-        image: node:14.17
+        image: node:16.14.2
         caches:
           - node
         script:

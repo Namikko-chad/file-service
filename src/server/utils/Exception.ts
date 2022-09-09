@@ -1,6 +1,8 @@
+import { Errors, } from '../enum';
+
 export class Exception extends Error {
 	isException: boolean;
-	code: number;
+	code: Errors;
 	msg: string;
 	data?: Readonly<Record<string, unknown>>;
 
@@ -8,7 +10,7 @@ export class Exception extends Error {
 		code: number,
 		msg: string,
 		data?: Readonly<Record<string, unknown>>
-	) {
+	) { 
 		super(msg);
 		this.isException = true;
 		this.code = code;

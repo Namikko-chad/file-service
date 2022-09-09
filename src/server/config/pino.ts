@@ -34,7 +34,7 @@ export default (prettify?: boolean) => ({
       };
     },
   },
-  logPayload: true,
+  logPayload: false,
   logEvents: ["response", "request"],
   logQueryParams: true,
   redact: {

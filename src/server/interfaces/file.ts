@@ -1,3 +1,5 @@
+import { FileFormData, } from '../storages';
+
 export interface IFileGuid {
   id: string;
 }
@@ -8,12 +10,7 @@ export interface IFilename {
 }
 
 export interface IFileCreatePayload {
-  file?: {
-    filename: string;
-    headers: object;
-    payload: Buffer;
-  };
-  public?: boolean;
+  file?: FileFormData;
 }
 
 export interface IFileEditPayload {
