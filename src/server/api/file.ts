@@ -186,20 +186,11 @@ export async function create(
 	}
 }
 
-export async function edit(
-	r: Request
-): Promise<IOutputOk<IFileResponse> | Boom> {
+export async function edit(r: Request): Promise<IOutputEmpty | Boom> {
 	try {
 		const payload = r.payload as IFileEditPayload;
 		const { fileId, } = r.params as { fileId: string };
-		const fileUser = await FileUser.findByPk(fileId, {
-			include: [
-				{
-					model: File,
-					required: true,
-				}
-			],
-		});
+		const fileUser = await FileUser.findByPk(fileId);
 		if (!fileUser)
 			throw new Exception(
 				Errors.FileNotFound,
@@ -207,21 +198,12 @@ export async function edit(
 				{ fileId, }
 			);
 		editAccess(r, fileUser);
-		let file = fileUser.file;
-		if (
-			payload?.file &&
-      payload?.file.filename &&
-      payload.file.payload.length
-		) {
-			file = await r.server.app.storage.saveFile(payload.file);
-		}
 
 		await fileUser.update({
-			fileId: file.id,
-			name: payload.name,
-			public: payload.public,
+			name: payload.name ? splitFilename(payload.name).name : fileUser.name,
+			public: payload.public ?? fileUser.public,
 		});
-		return outputOk(fileResponse(fileUser, file));
+		return outputEmpty();
 	} catch (err) {
 		return handlerError('Edit file error', err);
 	}

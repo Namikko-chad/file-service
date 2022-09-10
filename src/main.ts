@@ -94,7 +94,7 @@ export async function init(): Promise<Hapi.Server> {
 
 	// Error handler
 	server.ext('onPreResponse', responseHandler);
-
+	
 	// Запускаем сервер
 	try {
 		await server.start();

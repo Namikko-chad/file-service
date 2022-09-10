@@ -35,12 +35,8 @@ export default <ServerRoute[]>[
 		options: {
 			id: 'files.create',
 			description: 'This method allows to upload file',
-			notes: `Maximum size for the whole request is 
-				${
-          config.files.maxRequestSize / 1024 / 1024
-        } Mb. \n Allowed extensions are: ${config.files.allowedExtensions
-        	.split('|')
-        	.toString()}`,
+			notes: `Maximum size for the whole request is ${config.files.maxRequestSize / 1024 / 1024} Mb.
+			Allowed extensions are: ${config.files.allowedExtensions.split('|').toString()}`,
 			tags: ['api', 'file'],
 			payload: {
 				maxBytes: config.files.maxRequestSize,
@@ -79,47 +75,13 @@ export default <ServerRoute[]>[
 		},
 	},
 	{
-		method: 'GET',
-		path: '/files/{fileId}/info',
-		handler: api.info,
-		options: {
-			auth: { strategies: [Strategies.Header, Strategies.Query], mode: 'try', },
-			id: 'files.info',
-			description: 'Use this endpoint to get information about file',
-			tags: ['api', 'file'],
-			validate: {
-				params: Joi.object({
-					fileId: guidSchema.required().label('File id'),
-				}),
-			},
-			response: {
-				schema: outputOkSchema(fileSchemaResponse).label('Output file upload'),
-			},
-		},
-	},
-	{
 		method: 'PUT',
 		path: '/files/{fileId}',
 		handler: api.edit,
 		options: {
 			id: 'files.edit',
-			description: 'This method allows to upload new version file',
-			notes: `Maximum size for the whole request is 
-				${
-          config.files.maxRequestSize / 1024 / 1024
-        } Mb. \n Allowed extensions are: ${config.files.allowedExtensions
-        	.split('|')
-        	.toString()}`,
+			description: 'This method allows to upload new filename or public status',
 			tags: ['api', 'file'],
-			payload: {
-				maxBytes: config.files.maxRequestSize,
-				output: 'data',
-				allow: 'multipart/form-data',
-				multipart: {
-					output: 'annotated',
-				},
-				parse: true,
-			},
 			validate: {
 				params: Joi.object({
 					fileId: guidSchema.required().label('File id'),
@@ -146,6 +108,25 @@ export default <ServerRoute[]>[
 			},
 			response: {
 				schema: outputEmptySchema(),
+			},
+		},
+	},
+	{
+		method: 'GET',
+		path: '/files/{fileId}/info',
+		handler: api.info,
+		options: {
+			auth: { strategies: [Strategies.Header, Strategies.Query], mode: 'try', },
+			id: 'files.info',
+			description: 'Use this endpoint to get information about file',
+			tags: ['api', 'file'],
+			validate: {
+				params: Joi.object({
+					fileId: guidSchema.required().label('File id'),
+				}),
+			},
+			response: {
+				schema: outputOkSchema(fileSchemaResponse).label('Output file upload'),
 			},
 		},
 	}

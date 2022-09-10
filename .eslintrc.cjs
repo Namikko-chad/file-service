@@ -31,7 +31,7 @@ const tsRules = {
 
 module.exports = {
   root: true,
-  ignorePatterns: ["node_modules/", "build/", "*.d.ts"],
+  ignorePatterns: ["node_modules/", "build/", "docs/", "*.d.ts"],
   parserOptions: {
     ecmaVersion: 2021,
     project: ["./tsconfig.json"],
@@ -63,7 +63,7 @@ module.exports = {
       rules: tsRules,
     },
     {
-      files: ["*.spec.ts", "*.test.ts", "*.try.ts"],
+      files: ["test/*.spec.ts", "test/*.test.ts", "test/*.try.ts"],
       extends: [
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",

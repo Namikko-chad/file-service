@@ -10,6 +10,7 @@ export function fileResponse(
 		name: fileUser.name,
 		ext: file.ext,
 		mime: file.mime,
+		size: file.size,
 		public: fileUser.public,
 		userId: fileUser.userId,
 		hash: file.hash,
