@@ -3,15 +3,13 @@
 - To start the server use:
 
 ```sh
-$ npm install
-$ npm start
+$ pnpm install
+$ pnpm start
 ```
-
-Best practice Framework
 
 ### REST DOCUMENTATION
 
-All documentation is avaliable via:
+All documentation is available via:
 `/api/documentation`
 If you have any errors, check `host` in `swagger.json`.
 
@@ -39,7 +37,7 @@ Default error response:
 
 ### DEFAULT PAGINATION
 
-`GET - /api/projects?offset=10&limit=10`
+`GET - /api/files?offset=10&limit=10`
 
 Default response with server pagination:
 
@@ -48,7 +46,7 @@ Default response with server pagination:
   "ok": true,
   "result": {
     "count": 10,
-    "data": []
+    "rows": []
   }
 }
 ```

@@ -19,6 +19,7 @@ export class DBStorage extends AbstractStorage {
 			defaults: {
 				ext,
 				mime,
+				size: uploadedFile.payload.length,
 				storage: this.type,
 				hash,
 				data: uploadedFile.payload,

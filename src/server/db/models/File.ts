@@ -37,6 +37,12 @@ export class File extends Model {
   })
   	mime!: string;
 
+	@Column({
+		type: DataType.BIGINT,
+		allowNull: false,
+	})
+		size!: number;
+
   @Column({
   	type: DataType.STRING,
   	defaultValue: StorageType.DB,

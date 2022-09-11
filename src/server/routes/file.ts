@@ -34,12 +34,8 @@ export default <ServerRoute[]>[
 		options: {
 			id: 'files.create',
 			description: 'This method allows to upload file',
-			notes: `Maximum size for the whole request is 
-				${
-          config.files.maxSize / 1024 / 1024
-        } Mb. \n Allowed extensions are: ${config.files.allowedExtensions
-        	.split('|')
-        	.toString()}`,
+			notes: `Maximum size for the whole request is ${config.files.maxSize / 1024 / 1024} Mb.
+			Allowed extensions are: ${config.files.allowedExtensions.split('|').toString()}`,
 			tags: ['api', 'file'],
 			payload: {
 				maxBytes: config.files.maxSize*5000,
@@ -69,25 +65,6 @@ export default <ServerRoute[]>[
 				query: Joi.object({
 					access_token: tokenSchema.optional(),
 				}),
-			},
-		},
-	},
-	{
-		method: 'GET',
-		path: '/files/{fileId}/info',
-		handler: api.info,
-		options: {
-			auth: { strategies: [Strategies.Header, Strategies.Query], mode: 'try', },
-			id: 'files.info',
-			description: 'Use this endpoint to get information about file',
-			tags: ['api', 'file'],
-			validate: {
-				params: Joi.object({
-					fileId: guidSchema.required().label('File id'),
-				}),
-			},
-			response: {
-				schema: outputOkSchema(fileSchemaResponse).label('Output file upload'),
 			},
 		},
 	},
@@ -125,6 +102,25 @@ export default <ServerRoute[]>[
 			},
 			response: {
 				schema: outputEmptySchema(),
+			},
+		},
+	},
+	{
+		method: 'GET',
+		path: '/files/{fileId}/info',
+		handler: api.info,
+		options: {
+			auth: { strategies: [Strategies.Header, Strategies.Query], mode: 'try', },
+			id: 'files.info',
+			description: 'Use this endpoint to get information about file',
+			tags: ['api', 'file'],
+			validate: {
+				params: Joi.object({
+					fileId: guidSchema.required().label('File id'),
+				}),
+			},
+			response: {
+				schema: outputOkSchema(fileSchemaResponse).label('Output file upload'),
 			},
 		},
 	}

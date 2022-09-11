@@ -1,6 +1,5 @@
 import { initDatabase, loadDatabaseConfig, } from './server/db';
 
-
 async function init() {
 	await initDatabase(
 		{

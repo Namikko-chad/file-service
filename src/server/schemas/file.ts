@@ -9,7 +9,7 @@ export const fileCreatePayloadSchema = Joi.object({
 export const fileEditPayloadSchema = Joi.object({
 	public: Joi.bool().default(false).example(false),
 	name: Joi.string().example('photo.png'),
-}).label('Input file upload');
+}).label('Input file edit');
 
 export const fileSchemaResponse = Joi.object<IFileResponse>({
 	id: guidSchema,

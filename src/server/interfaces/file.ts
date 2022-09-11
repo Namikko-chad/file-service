@@ -14,11 +14,6 @@ export interface IFileCreatePayload {
 }
 
 export interface IFileEditPayload {
-  file?: {
-    filename: string;
-    headers: object;
-    payload: Buffer;
-  };
   public?: boolean;
   name?: string;
 }
@@ -27,6 +22,7 @@ export type IFileResponse =
   IFileGuid &
   IFilename & {
     mime: string;
+    size: number;
     public: boolean;
     userId: string;
     hash: string;

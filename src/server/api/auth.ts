@@ -17,7 +17,7 @@ export function tokenGenerate(r: Request): IOutputOk<{ token: string }> | Boom {
 	/* eslint-disable security/detect-object-injection */
 	try {
 		const { userId, fileId, } = r.payload as { userId: string; fileId?: string };
-		const tokenType = r.params.tokenType as Token;
+		const tokenType = r.params['tokenType'] as Token;
 		const token = sign(
 			{ userId, fileId, timestamp: Date.now(), },
       config.auth.jwt[tokenType].secret as string,
@@ -35,14 +35,14 @@ export function tokenInfo(
 ): IOutputOk<Record<string, unknown>> | Boom {
 	/* eslint-disable security/detect-object-injection */
 	try {
-		const tokenType = r.params.tokenType as Token;
-		if (!r.headers.authorization)
+		const tokenType = r.params['tokenType'] as Token;
+		if (!r.headers['authorization'])
 			throw new Exception(
 				Errors.InvalidPayload,
 				ErrorsMessages[Errors.InvalidPayload]
 			);
 		const data = decodeJwt(
-			r.headers.authorization.slice(7),
+			r.headers['authorization'].slice(7),
       config.auth.jwt[tokenType].secret as string
 		);
 
