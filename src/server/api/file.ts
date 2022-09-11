@@ -177,7 +177,6 @@ export async function create(
 			userId,
 			fileId: file.id,
 			name,
-			public: payload.public,
 		});
 
 		return outputOk(fileResponse(fileUser, file));

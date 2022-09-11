@@ -13,7 +13,6 @@ export interface IFileCreatePayload {
     headers: object;
     payload: Buffer;
   };
-  public?: boolean;
 }
 
 export interface IFileEditPayload {

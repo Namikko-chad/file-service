@@ -16,5 +16,6 @@ export const fileSchemaResponse = Joi.object<IFileResponse>({
 	name: Joi.string().example('photo.png'),
 	ext: Joi.string().example('png'),
 	mime: Joi.string().example('image/png'),
+	size: Joi.number().example(92022),
 	public: Joi.bool().example(false),
 }).label('File upload response');
