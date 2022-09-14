@@ -15,11 +15,15 @@ export enum Errors {
   LengthRequired = 411000,
   // Payload Too Large
   PayloadTooLarge = 413000,
+  // Conflict (409)
+  Conflict = 409000,
+  StorageLimit = 409001,
   // Internal Server Error (500)
   InternalServerError = 500000,
 }
 
 export const ErrorsMessages: Record<Errors, string> = {
+	[Errors.Conflict]: 'Conflict',
 	[Errors.FileIsPrivate]: 'File: Private',
 	[Errors.FileNotFound]: 'File: Not found',
 	[Errors.Forbidden]: 'Forbidden',
@@ -28,6 +32,7 @@ export const ErrorsMessages: Record<Errors, string> = {
 	[Errors.LengthRequired]: 'Length required',
 	[Errors.NotFound]: 'Not found',
 	[Errors.PayloadTooLarge]: 'Payload too large',
+	[Errors.StorageLimit]: 'Storage limit',
 	[Errors.TokenExpired]: 'Token expired',
 	[Errors.TokenInvalid]: 'Invalid token',
 	[Errors.UserNotFound]: 'User: Not found',

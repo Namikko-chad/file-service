@@ -20,6 +20,7 @@ import {
 import { Errors, ErrorsMessages, } from '../enum';
 import { File, FileUser, } from '../db';
 import { fileResponse, } from '../helper/fileResponse';
+import { config, } from '../config/config';
 
 function editAccess(r: Request, file: FileUser): void {
 	const user = r.auth.credentials.user;
@@ -173,12 +174,31 @@ export async function create(
 				ErrorsMessages[Errors.UserNotFound]
 			);
 		const { id: userId, } = user;
+		const files = await FileUser.findAll({ 
+			where: {
+				userId,
+			},
+			attributes: ['fileId'],
+		});
+		const usedCapacity = await r.server.app.storage.sizeFile(files.map( file => file.fileId ));
+		if (usedCapacity + payload.file.payload.length > config.files.capacityPerUser)
+			throw new Exception(
+				Errors.StorageLimit,
+				ErrorsMessages[Errors.StorageLimit]
+			);
 		const file = await r.server.app.storage.saveFile(payload.file);
 		const { name, } = splitFilename(payload.file.filename);
-		const fileUser = await FileUser.create({
-			userId,
-			fileId: file.id,
-			name,
+		const [fileUser] = await FileUser.findOrCreate({
+			where: {
+				userId,
+				fileId: file.id,
+				name,
+			},
+			defaults: {
+				userId,
+				fileId: file.id,
+				name,
+			},
 		});
 
 		return outputOk(fileResponse(fileUser, file));

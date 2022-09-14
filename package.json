@@ -1,6 +1,6 @@
 {
   "name": "file-service",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "description": "File service",
   "main": "main.js",
   "keywords": [],
@@ -83,9 +83,9 @@
     "lint": "eslint --fix .",
     "test": "jest",
     "sync": "node ./build/sync.js",
-    "release:major": "npm version major && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && git push origin && git push origin --tags",
-    "release:minor": "npm version minor && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && git push origin && git push origin --tags",
-    "release:patch": "npm version patch && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && git push origin && git push origin --tags",
+    "release:major": "npm version major && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
+    "release:minor": "npm version minor && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
+    "release:patch": "npm version patch && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
     "prepare": "husky install"
   },
   "lint-staged": {
