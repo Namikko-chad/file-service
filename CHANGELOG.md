@@ -1,3 +1,10 @@
+### [3.1.1](https://github.com/Namikko-chan/file-service/compare/v3.1.0...v3.1.1) (2022-09-14)
+
+
+### Bug Fixes
+
+* **package:** release command ([602667c](https://github.com/Namikko-chan/file-service/commit/602667cc61f71c2f83f8e9e4931732c18be6e13f))
+
 ## [3.1.0](https://github.com/Namikko-chan/file-service/compare/v2.3.0...v3.1.0) (2022-09-14)
 
 
