@@ -28,6 +28,15 @@ export class Storage {
 		return file;
 	}
 
+	async sizeFile(fileIds?: string[]): Promise<number> {
+		const size = await File.sum('size', {
+			where: {
+				id: fileIds,
+			},
+		})
+		return size;
+	}
+
 	async saveFile(file: FileFormData): Promise<File> {
 		// @ts-ignore
 		return this.storages.get(this.defaultStorage).saveFile(file)

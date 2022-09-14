@@ -134,7 +134,7 @@ describe("File", () => {
     });
   });
 
-  describe.skip("Public file", () => {
+  describe("Public file", () => {
     let res: ServerInjectResponse;
     let publicFileId: string;
     let privateFileId: string;
@@ -145,8 +145,9 @@ describe("File", () => {
       publicForm.append("file", file, { filename: "selfie.jpeg" });
       res = await test.$post("/api/files", undefined, publicForm);
       publicFileId = (res.result as IOutputOk<IFileResponse>).result.id;
+      res = await test.$put(`/api/files/${publicFileId}`, undefined, { public: true, });
       const privateForm = new FormData();
-      privateForm.append("file", file, { filename: "selfie.jpeg" });
+      privateForm.append("file", file, { filename: "selfie2.jpeg" });
       res = await test.$post("/api/files", undefined, privateForm);
       privateFileId = (res.result as IOutputOk<IFileResponse>).result.id;
       void test.logout();
