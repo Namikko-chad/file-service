@@ -1,3 +1,10 @@
+## [3.3.0](https://github.com/Namikko-chan/file-service/compare/v3.2.0...v3.3.0) (2022-09-19)
+
+
+### Features
+
+* **scheduler:** new task for delete old logs ([b73bb4e](https://github.com/Namikko-chan/file-service/commit/b73bb4e4eedb3274ed3a98ff93b61483dbbbd0db))
+
 ## [3.2.0](https://github.com/Namikko-chan/file-service/compare/v3.1.1...v3.2.0) (2022-09-19)
 
 
