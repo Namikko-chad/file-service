@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/Namikko-chan/file-service/compare/v3.1.1...v3.2.0) (2022-09-19)
+
+
+### Features
+
+* **scheduler:** added plugin ([545ba75](https://github.com/Namikko-chan/file-service/commit/545ba75fed93b02a02a5621e34bd284cc2e916b3))
+
 ### [3.1.1](https://github.com/Namikko-chan/file-service/compare/v3.1.0...v3.1.1) (2022-09-14)
 
 
