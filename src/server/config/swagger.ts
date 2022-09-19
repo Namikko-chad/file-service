@@ -1,7 +1,7 @@
 import * as HapiSwagger from 'hapi-swagger';
 import { config, } from './config';
 
-export default <HapiSwagger.RegisterOptions>{
+export const swaggerConfig = <HapiSwagger.RegisterOptions>{
 	pathPrefixSize: 2,
 	basePath: '/api/',
 	host: `${config.server.host}:${config.server.port}`,
@@ -9,8 +9,7 @@ export default <HapiSwagger.RegisterOptions>{
 	info: {
 		title: 'API Documentation',
 		version: '1.0',
-		description:
-      'API Documentation',
+		description: 'API Documentation',
 	},
 	securityDefinitions: {
 		Bearer: {

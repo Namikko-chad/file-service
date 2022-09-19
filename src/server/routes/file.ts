@@ -35,11 +35,15 @@ export default <ServerRoute[]>[
 		options: {
 			id: 'files.create',
 			description: 'This method allows to upload file',
-			notes: `Maximum size for the whole request is ${config.files.maxRequestSize / 1024 / 1024} Mb.
-			Allowed extensions are: ${config.files.allowedExtensions.split('|').toString()}`,
+			notes: `Maximum size for the whole request is ${
+				config.files.maxSize / 1024 / 1024
+			} Mb.
+			Allowed extensions are: ${config.files.allowedExtensions
+				.split('|')
+				.toString()}`,
 			tags: ['api', 'file'],
 			payload: {
-				maxBytes: config.files.maxRequestSize,
+				maxBytes: config.files.maxSize,
 				output: 'data',
 				allow: 'multipart/form-data',
 				multipart: {

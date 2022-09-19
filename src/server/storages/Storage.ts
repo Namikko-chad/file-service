@@ -33,25 +33,25 @@ export class Storage {
 			where: {
 				id: fileIds,
 			},
-		})
+		});
 		return size;
 	}
 
 	async saveFile(file: FileFormData): Promise<File> {
 		// @ts-ignore
-		return this.storages.get(this.defaultStorage).saveFile(file)
+		return this.storages.get(this.defaultStorage).saveFile(file);
 	}
 
 	async loadFile(fileId: string): Promise<File> {
 		const file = await this.loadFileInfo(fileId);
 		// @ts-ignore
 		file.data = await this.storages.get(file.storage).loadFile(file);
-		return file
+		return file;
 	}
 
 	async deleteFile(fileId: string): Promise<void> {
 		const file = await this.loadFileInfo(fileId);
 		// @ts-ignore
-		return this.storages.get(file.storage).deleteFile(file)
+		return this.storages.get(file.storage).deleteFile(file);
 	}
 }
