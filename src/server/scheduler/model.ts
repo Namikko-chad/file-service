@@ -7,7 +7,7 @@ import { SchedulerStatus, } from './enum';
 	schema: 'logs',
 	timestamps: false,
 })
-export class Scheduler extends Model {
+export class SchedulerTask extends Model {
   @Column({
   	primaryKey: true,
   	type: DataType.UUID,
@@ -32,7 +32,7 @@ export class Scheduler extends Model {
   	type: DataType.DATE,
   	allowNull: true,
   })
-  	endedAt!: string;
+  	finishedAt!: string;
 
   @Column({
   	type: DataType.ENUM(...Object.values(SchedulerStatus)),

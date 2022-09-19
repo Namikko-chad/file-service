@@ -14,7 +14,6 @@ export abstract class AbstractTask {
   }
 
   abstract handler: (
-    server: Server,
     transaction?: Transaction
   ) => Promise<void>;
 }

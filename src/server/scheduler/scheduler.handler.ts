@@ -2,7 +2,7 @@ import { Server, } from '@hapi/hapi';
 import cron from 'node-cron';
 import { AbstractTask, } from './abstract-task';
 import { TaskList, } from './scheduler.plugin';
-import { Scheduler, } from './model';
+import { SchedulerTask, } from './model';
 import { SchedulerStatus, } from './enum';
 
 export class SchedulerHandler {
@@ -44,21 +44,21 @@ export class SchedulerHandler {
 		const logPrefix = '[Scheduler:runTask]';
 		const taskName = task.constructor.name;
 		console.log(logPrefix, `${taskName} running at ${new Date().toString()}`);
-		const { id, } = await Scheduler.create({
+		const { id, } = await SchedulerTask.create({
 			name: taskName,
 		});
 		const transaction = await this.server.app.db.transaction();
 		try {
-			await task.handler(this.server, transaction);
+			await task.handler(transaction);
 			await transaction.commit();
 			console.log(
 				logPrefix,
 				`${taskName} completed at ${new Date().toString()}`
 			);
-			await Scheduler.update(
+			await SchedulerTask.update(
 				{
 					status: SchedulerStatus.Completed,
-					endedAt: new Date(),
+					finishedAt: new Date(),
 				},
 				{
 					where: {
@@ -73,10 +73,10 @@ export class SchedulerHandler {
 				`${taskName} failed at ${new Date().toString()}`,
 				error
 			);
-			await Scheduler.update(
+			await SchedulerTask.update(
 				{
 					status: SchedulerStatus.Failed,
-					endedAt: new Date(),
+					finishedAt: new Date(),
 					error: (error as Error).toString(),
 				},
 				{

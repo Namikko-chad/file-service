@@ -1,4 +1,3 @@
-import { Server, } from '@hapi/hapi';
 import { Transaction, literal, Op, } from 'sequelize';
 import { File, FileUser, } from '../db';
 import { AbstractTask, } from './abstract-task';
@@ -7,7 +6,6 @@ export class DeleteUnboundFileTask extends AbstractTask {
 	interval = '0 0 * * *';
 
 	handler = async (
-		server: Server,
 		transaction?: Transaction
 	): Promise<void> => {
 		const unboundFiles = await File.findAll({
@@ -25,7 +23,7 @@ export class DeleteUnboundFileTask extends AbstractTask {
 			transaction,
 		});
 		await Promise.all(
-			unboundFiles.map((file) => server.app.storage.deleteFile(file.id))
+			unboundFiles.map((file) => this.server.app.storage.deleteFile(file.id))
 		);
 	};
 }
