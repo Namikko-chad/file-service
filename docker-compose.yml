@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: namikko/fileservice
+    container_name: fileservice
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - SERVER_HOST=$SERVER_HOST
+      - SERVER_PORT=$SERVER_PORT
+      - SERVER_SHUTDOWN_TIMEOUT=$SERVER_SHUTDOWN_TIMEOUT
+      - CORS_ORIGINS=$CORS_ORIGINS
+      - CORS_METHODS=$CORS_METHODS
+      - DOMAIN_NAME=$DOMAIN_NAME
+      - DATABASE_LINK=$DATABASE_LINK
+    ports:
+      - "3050:3050"
+    depends_on:
+      - "postgres"
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "fs"
+      POSTGRES_PASSWORD: "fs"
+      POSTGRES_DB: "fs"

@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+src
+test
+.husky
+.eslint*
+commitlint.config.js
+create_docker.sh
+docker-compose.yml
+Dockerfile
+jest.config.cjs
+tsconfig.json
+typedoc.json
