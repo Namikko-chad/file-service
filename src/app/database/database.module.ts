@@ -1,9 +1,9 @@
 import { Global, Module, } from '@nestjs/common';
 import { TypeOrmModule, } from '@nestjs/typeorm';
 
-import File from './entity/file.entity';
-
 import { loadDatabaseConfig, } from './config';
+
+import { entities, } from './entities';
 
 const config = loadDatabaseConfig();
 
@@ -12,12 +12,8 @@ const config = loadDatabaseConfig();
 	imports: [
 		TypeOrmModule.forRoot({
 			type: 'postgres',
-			host: config.host,
-			port: config.port,
-			username: config.username,
-			password: config.password,
-			database: config.database,
-			entities: [File],
+			url: config.link,
+			entities,
 			synchronize: false,
 		})
 	],

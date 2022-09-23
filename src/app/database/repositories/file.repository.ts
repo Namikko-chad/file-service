@@ -1,12 +1,12 @@
-import { FindOneOptions, Repository, } from 'typeorm';
+import { FindOptionsWhere, Repository, } from 'typeorm';
 
 import File from '../entity/file.entity';
 
 export default class FileRepository extends Repository<File> {
-	async findByEmail(
-		options?: FindOneOptions<File>
+	async findByPk(
+		options?: FindOptionsWhere<File>
 	): Promise<File> {
-		const data = await this.findOne(options);
+		const data = await this.findOneBy(options);
 
 		return data;
 	}

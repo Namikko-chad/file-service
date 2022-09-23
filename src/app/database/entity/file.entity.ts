@@ -1,11 +1,14 @@
-import { StorageType, } from 'app/storages';
 import {
 	Entity,
 	PrimaryGeneratedColumn,
 	Column,
+	OneToMany,
+	UpdateDateColumn,
+	CreateDateColumn,
 } from 'typeorm';
 
 import { v4 as uuidv4, } from 'uuid';
+import FileUser from './file-user.entity';
 
 @Entity({
 	name: 'Files',
@@ -19,20 +22,40 @@ export default class File {
   })
   	ext!: string;
 
-  @Column()
+  @Column({
+  	length: 255,
+  })
   	mime!: string;
 
-  @Column()
+  @Column({
+  	type: 'bigint',
+  })
   	size!: number;
 
   @Column({
   	default: 'db',
+  	length: 255,
   })
-  	storage!: StorageType;
+  	storage!: string;
 
-	@Column()
+	@Column({
+		length: 255,
+	})
 		hash!: string;
 
-	@Column()
+	@Column({
+		type: 'bytea',
+		nullable: true,
+		select: false,
+	})
 		data?: Buffer;
+
+	@CreateDateColumn()
+		createdAt!: Date;
+
+	@UpdateDateColumn()
+		updatedAt!: Date;
+
+	@OneToMany(() => FileUser, (fileUser) => fileUser.userId)
+		fileUsers?: FileUser[]
 }

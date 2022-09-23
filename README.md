@@ -7,6 +7,9 @@ The repository provides examples of the main toolkit used to write a basic servi
 1. NodeJS v16.15.0
 2. Postgres 12
 
+### Pre use required
+`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
+
 ### Project structure
 
 ```

@@ -80,7 +80,7 @@
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "clean": "shx rm -rf build",
+    "clean": "shx rm -rf dist",
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -93,6 +93,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "sync": "node ./dist/sync.js",
     "typeorm:migration:run": "typeorm migration:run",
     "typeorm:migration:revert": "typeorm migration:revert",
     "release:major": "npm version major && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
