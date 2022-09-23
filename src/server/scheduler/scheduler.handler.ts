@@ -13,23 +13,20 @@ export class SchedulerHandler {
 	init(): this {
 		const logPrefix = '[Scheduler:init]';
 		console.log(logPrefix, 'Scheduling task');
-		Object.values(TaskList).map((taskName) => {
-			if (this.tasks.has(taskName)) {
-				const task = this.tasks.get(taskName);
-				if (!task) throw new ReferenceError('Unknown task');
-				console.log(
-					logPrefix,
-					`Add ${taskName} task with interval ${task.getInterval}`
-				);
-				// eslint-disable-next-line @typescript-eslint/no-misused-promises
-				cron.schedule(task.getInterval, async () => {
-					try {
-						await this.runTask(task);
-					} catch (err) {
-						console.error(logPrefix, err);
-					}
-				});
-			} else console.error(logPrefix, `${taskName} not configured`);
+		this.tasks.forEach( (task) => {
+			if (!task) throw new ReferenceError('Unknown task');
+			console.log(
+				logPrefix,
+				`Add ${task.constructor.name} task with interval ${task.getInterval}`
+			);
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			cron.schedule(task.getInterval, async () => {
+				try {
+					await this.runTask(task);
+				} catch (err) {
+					console.error(logPrefix, err);
+				}
+			});
 		});
 		return this;
 	}

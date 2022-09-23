@@ -21,7 +21,7 @@ export default <ServerRoute[]>[
 		handler: api.list,
 		options: {
 			id: 'files.list',
-			description: 'Use this endpoint to get file',
+			description: 'Use this endpoint to list file',
 			tags: ['api', 'file'],
 			validate: {
 				query: listSchema,
