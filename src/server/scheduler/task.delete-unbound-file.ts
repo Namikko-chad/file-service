@@ -5,9 +5,7 @@ import { AbstractTask, } from './abstract-task';
 export class DeleteUnboundFileTask extends AbstractTask {
 	interval = '0 0 * * *';
 
-	handler = async (
-		transaction?: Transaction
-	): Promise<void> => {
+	handler = async (transaction?: Transaction): Promise<void> => {
 		const unboundFiles = await File.findAll({
 			attributes: ['id'],
 			include: [

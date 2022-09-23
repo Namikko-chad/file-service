@@ -13,7 +13,5 @@ export abstract class AbstractTask {
   	return this.interval;
   }
 
-  abstract handler: (
-    transaction?: Transaction
-  ) => Promise<void>;
+  abstract handler: (transaction?: Transaction) => Promise<void>;
 }
