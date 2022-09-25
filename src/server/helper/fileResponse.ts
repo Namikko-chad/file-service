@@ -1,10 +1,7 @@
 import { IFileResponse, } from '../interfaces/file';
 import { File, FileUser, } from '../db';
 
-export function fileResponse(
-	fileUser: FileUser,
-	file: File
-): IFileResponse {
+export function fileResponse(fileUser: FileUser, file: File): IFileResponse {
 	return {
 		id: fileUser.id,
 		name: fileUser.name,

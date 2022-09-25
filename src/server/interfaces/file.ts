@@ -18,8 +18,7 @@ export interface IFileEditPayload {
   name?: string;
 }
 
-export type IFileResponse = 
-  IFileGuid &
+export type IFileResponse = IFileGuid &
   IFilename & {
     mime: string;
     size: number;

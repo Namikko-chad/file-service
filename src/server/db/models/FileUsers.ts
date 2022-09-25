@@ -8,7 +8,7 @@ import {
 	BelongsTo,
 } from 'sequelize-typescript';
 import { getUUID, } from '../../utils/index';
-import { File, } from './File'
+import { File, } from './File';
 
 @Scopes(() => ({
 	defaultScope: {

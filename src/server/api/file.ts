@@ -174,14 +174,19 @@ export async function create(
 				ErrorsMessages[Errors.UserNotFound]
 			);
 		const { id: userId, } = user;
-		const files = await FileUser.findAll({ 
+		const files = await FileUser.findAll({
 			where: {
 				userId,
 			},
 			attributes: ['fileId'],
 		});
-		const usedCapacity = await r.server.app.storage.sizeFile(files.map( file => file.fileId ));
-		if (usedCapacity + payload.file.payload.length > config.files.capacityPerUser)
+		const usedCapacity = await r.server.app.storage.sizeFile(
+			files.map((file) => file.fileId)
+		);
+		if (
+			usedCapacity + payload.file.payload.length >
+      config.files.capacityPerUser
+		)
 			throw new Exception(
 				Errors.StorageLimit,
 				ErrorsMessages[Errors.StorageLimit]

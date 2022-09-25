@@ -14,7 +14,10 @@ export class FolderStorage extends AbstractStorage {
 
 	async saveFile(uploadedFile: FileFormData): Promise<File> {
 		/* eslint-disable security/detect-non-literal-fs-filename */
-		const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
+		const { mime, ext, } = await this.getExt(
+			uploadedFile.filename,
+			uploadedFile.payload
+		);
 		const hash = this.getHash(uploadedFile.payload);
 		const [file] = await File.findOrCreate({
 			where: {

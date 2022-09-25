@@ -6,11 +6,7 @@ import {
 	IOutputPagination,
 	IListParam,
 } from '../interfaces';
-import {
-	outputEmpty,
-	handlerError,
-	outputPagination,
-} from '../utils';
+import { outputEmpty, handlerError, outputPagination, } from '../utils';
 import { File, FileUser, } from '../db';
 import { fileResponse, } from '../helper/fileResponse';
 import { listParam, } from 'server/helper/listParam';
@@ -21,7 +17,7 @@ export async function list(
 	try {
 		const query = r.payload as IListParam & { userId: string };
 		const params = listParam(query);
-		Object.assign(params.where, { userId: query.userId, })
+		Object.assign(params.where, { userId: query.userId, });
 		const { rows, count, } = await FileUser.findAndCountAll({
 			...params,
 			include: [
@@ -41,9 +37,7 @@ export async function list(
 	}
 }
 
-export async function flushStorage(
-	r: Request
-): Promise<IOutputEmpty | Boom> {
+export async function flushStorage(r: Request): Promise<IOutputEmpty | Boom> {
 	try {
 		const oldFiles = await File.findAll({
 			include: [
@@ -56,8 +50,8 @@ export async function flushStorage(
 			],
 		});
 		await Promise.all(
-			oldFiles.map( file => r.server.app.storage.deleteFile(file.id) )
-		)
+			oldFiles.map((file) => r.server.app.storage.deleteFile(file.id))
+		);
 		return outputEmpty();
 	} catch (err) {
 		return handlerError('Failed flush storage', err);

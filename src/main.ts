@@ -7,10 +7,9 @@ import * as HapiPulse from 'hapi-pulse';
 import * as HapiSwagger from 'hapi-swagger';
 import Qs from 'qs';
 import routes from './server/routes';
-import { config, } from './server/config/config';
-import loadSwaggerConfig from './server/config/swagger';
-import pinoConfig from './server/config/pino';
+import { config, swaggerConfig, pinoConfig, } from './server/config';
 import { Database, loadDatabaseConfig, } from './server/db';
+import { SchedulerPlugin, } from './server/scheduler';
 import { StoragePlugin, } from './server/storages';
 import {
 	handleValidationError,
@@ -63,7 +62,7 @@ export async function init(): Promise<Hapi.Server> {
 	});
 	await server.register({
 		plugin: HapiSwagger,
-		options: loadSwaggerConfig,
+		options: swaggerConfig,
 	});
 	await server.register({
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -80,6 +79,9 @@ export async function init(): Promise<Hapi.Server> {
 	await server.register({
 		plugin: StoragePlugin,
 	});
+	await server.register({
+		plugin: SchedulerPlugin,
+	});
 	// JWT Auth
 	server.auth.strategy(Strategies.Header, 'bearer-access-token', {
 		validate: tokenValidate,
@@ -94,7 +96,7 @@ export async function init(): Promise<Hapi.Server> {
 
 	// Error handler
 	server.ext('onPreResponse', responseHandler);
-	
+
 	// Запускаем сервер
 	try {
 		await server.start();

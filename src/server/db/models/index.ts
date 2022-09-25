@@ -1,2 +1,2 @@
 export * from './FileUsers';
-export * from './File'
+export * from './File';

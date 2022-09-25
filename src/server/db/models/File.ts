@@ -1,4 +1,11 @@
-import { Column, DataType, Model, Table, Scopes, HasMany, } from 'sequelize-typescript';
+import {
+	Column,
+	DataType,
+	Model,
+	Table,
+	Scopes,
+	HasMany,
+} from 'sequelize-typescript';
 import { StorageType, } from '../../storages';
 import { getUUID, } from '../../utils/index';
 import { FileUser, } from './FileUsers';
@@ -37,11 +44,11 @@ export class File extends Model {
   })
   	mime!: string;
 
-	@Column({
-		type: DataType.BIGINT,
-		allowNull: false,
-	})
-		size!: number;
+  @Column({
+  	type: DataType.BIGINT,
+  	allowNull: false,
+  })
+  	size!: number;
 
   @Column({
   	type: DataType.STRING,
@@ -60,6 +67,6 @@ export class File extends Model {
   })
   	data?: Buffer;
 
-	@HasMany(() => FileUser)
-		fileUsers?: FileUser[]
+  @HasMany(() => FileUser)
+  	fileUsers?: FileUser[];
 }

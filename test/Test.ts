@@ -10,8 +10,7 @@ import {
   Strategies,
   tokenValidate,
 } from "../src/server/utils";
-import pinoConfig from "../src/server/config/pino";
-import { config } from "../src/server/config/config";
+import { config, pinoConfig } from "../src/server/config";
 import { Database, loadDatabaseConfig } from "../src/server/db";
 import { StoragePlugin } from "../src/server/storages";
 

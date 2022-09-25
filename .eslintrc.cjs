@@ -31,7 +31,7 @@ const tsRules = {
 
 module.exports = {
   root: true,
-  ignorePatterns: ["node_modules/", "build/", "docs/", "*.d.ts"],
+  ignorePatterns: ["node_modules/", "build/", "docs/", "*.d.ts", "CHANGELOG.md"],
   parserOptions: {
     ecmaVersion: 2021,
     project: ["./tsconfig.json"],

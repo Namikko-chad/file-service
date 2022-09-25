@@ -13,9 +13,13 @@ describe("File", () => {
   let test: Test;
   let form: FormData;
   const file = fs.readFileSync(path.resolve("test/file/selfie.jpeg"));
-  const userToken = sign({ userId: getUUID() }, String(process.env['UA_SECRET']), {
-    expiresIn: Number(process.env['UA_LIFETIME']),
-  });
+  const userToken = sign(
+    { userId: getUUID() },
+    String(process.env["UA_SECRET"]),
+    {
+      expiresIn: Number(process.env["UA_LIFETIME"]),
+    }
+  );
 
   beforeAll(async () => {
     test = await new Test().start(routes);
@@ -85,7 +89,9 @@ describe("File", () => {
     });
 
     it("should edit file", async () => {
-      res = await test.$put(`/api/files/${fileId}`, undefined, { public: true, });
+      res = await test.$put(`/api/files/${fileId}`, undefined, {
+        public: true,
+      });
       expect(res.statusCode).toBe(200);
     });
 
@@ -100,13 +106,13 @@ describe("File", () => {
     let fileId: string;
     const secondUserToken = sign(
       { userId: getUUID() },
-      String(process.env['UA_SECRET']),
-      { expiresIn: Number(process.env['UA_LIFETIME']) }
+      String(process.env["UA_SECRET"]),
+      { expiresIn: Number(process.env["UA_LIFETIME"]) }
     );
     const adminToken = sign(
       { userId: getUUID() },
-      String(process.env['AA_SECRET']),
-      { expiresIn: Number(process.env['AA_LIFETIME']) }
+      String(process.env["AA_SECRET"]),
+      { expiresIn: Number(process.env["AA_LIFETIME"]) }
     );
 
     beforeAll(async () => {
@@ -123,7 +129,9 @@ describe("File", () => {
 
     it("should edit file under admin access", async () => {
       void test.authenticate(adminToken);
-      res = await test.$put(`/api/files/${fileId}`, undefined, { name: "new name.sig" });
+      res = await test.$put(`/api/files/${fileId}`, undefined, {
+        name: "new name.sig",
+      });
       expect(res.statusCode).toBe(200);
     });
 
@@ -145,7 +153,9 @@ describe("File", () => {
       publicForm.append("file", file, { filename: "selfie.jpeg" });
       res = await test.$post("/api/files", undefined, publicForm);
       publicFileId = (res.result as IOutputOk<IFileResponse>).result.id;
-      res = await test.$put(`/api/files/${publicFileId}`, undefined, { public: true, });
+      res = await test.$put(`/api/files/${publicFileId}`, undefined, {
+        public: true,
+      });
       const privateForm = new FormData();
       privateForm.append("file", file, { filename: "selfie2.jpeg" });
       res = await test.$post("/api/files", undefined, privateForm);

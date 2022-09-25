@@ -1,6 +1,6 @@
 {
   "name": "file-service",
-  "version": "3.1.1",
+  "version": "3.3.0",
   "description": "File service",
   "main": "main.js",
   "keywords": [],
@@ -26,6 +26,8 @@
     "jsonwebtoken": "^8.5.1",
     "mime-types": "^2.1.34",
     "multiparty": "^4.2.3",
+    "node-cron": "^3.0.2",
+    "openapi-types": "^12.0.2",
     "pg": "^8.7.1",
     "qs": "^6.9.6",
     "reflect-metadata": "^0.1.13",
@@ -47,6 +49,7 @@
     "@types/mime-types": "^2.1.1",
     "@types/multiparty": "^0.0.33",
     "@types/node": "^16.10.1",
+    "@types/node-cron": "^3.0.4",
     "@types/qs": "^6.9.7",
     "@types/sequelize": "^4.28.10",
     "@types/uuid": "^8.3.1",
@@ -86,7 +89,7 @@
     "release:major": "npm version major && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
     "release:minor": "npm version minor && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
     "release:patch": "npm version patch && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
-    "prepare": "husky install"
+    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install"
   },
   "lint-staged": {
     "*.ts": "eslint --fix",
