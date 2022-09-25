@@ -1,7 +1,8 @@
 FROM node:16
 ENV NODE_ENV=production
 WORKDIR /app
-COPY ./ ./
+COPY "./build" "./build"
+COPY ["./package.json", "./pnpm-lock.yaml", "./app.json", "./"]
 EXPOSE 3050
 
 RUN npm -g install pm2
