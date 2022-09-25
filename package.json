@@ -89,7 +89,7 @@
     "release:major": "npm version major && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
     "release:minor": "npm version minor && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
     "release:patch": "npm version patch && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
-    "prepare": "husky install"
+    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install"
   },
   "lint-staged": {
     "*.ts": "eslint --fix",
