@@ -51,6 +51,11 @@ export default <ServerRoute[]>[
 				},
 				parse: true,
 			},
+			plugins: {
+				'hapi-swagger': {
+					payloadType: 'form',
+				},
+			},
 			validate: {
 				payload: fileCreatePayloadSchema,
 			},
