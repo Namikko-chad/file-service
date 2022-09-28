@@ -6,14 +6,14 @@ import { SchedulerTask, } from './model';
 import { SchedulerStatus, } from './enum';
 
 export class SchedulerHandler {
-	private tasks = new Map<TaskList, AbstractTask>();
+	private tasks = new Map<TaskList | string, AbstractTask>();
 
 	constructor(private server: Server) {}
 
-	init(): this {
+	public init(): this {
 		const logPrefix = '[Scheduler:init]';
 		console.log(logPrefix, 'Scheduling task');
-		this.tasks.forEach((task) => {
+		this.tasks.forEach( (task) => {
 			if (!task) throw new ReferenceError('Unknown task');
 			console.log(
 				logPrefix,
@@ -31,7 +31,7 @@ export class SchedulerHandler {
 		return this;
 	}
 
-	public registerTask(task: TaskList, worker: AbstractTask): void {
+	public registerTask(task: TaskList | string, worker: AbstractTask): void {
 		const logPrefix = '[Scheduler:registerTask]';
 		console.log(logPrefix, task);
 		this.tasks.set(task, worker);

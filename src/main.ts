@@ -99,6 +99,7 @@ export async function init(): Promise<Hapi.Server> {
 
 	// Запускаем сервер
 	try {
+		server.app.scheduler.init();
 		await server.start();
 		server.log('info', `Server running at: ${server.info.uri}`);
 		server.log('info', 'Node.js version ' + process.versions.node);
@@ -109,9 +110,4 @@ export async function init(): Promise<Hapi.Server> {
 	return server;
 }
 
-try {
-	// eslint-disable-next-line @typescript-eslint/no-floating-promises
-	if (!config.test) init();
-} catch (err) {
-	console.error(err);
-}
+init().catch( error => console.log(error) );

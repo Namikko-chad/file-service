@@ -1,8 +1,14 @@
 import { Plugin, Server, } from '@hapi/hapi';
-import { SchedulerTask, } from './model';
 import { SchedulerHandler, } from './scheduler.handler';
+import { SchedulerTask, } from './model';
 import { DeleteUnboundFileTask, } from './task.delete-unbound-file';
 import { DeleteOldLogsTask, } from './task.delete-old-logs';
+
+declare module '@hapi/hapi' {
+	export interface ServerApplicationState {
+		scheduler: SchedulerHandler;
+	}
+}
 
 export enum TaskList {
   DeleteUnboundFile = 'delete-unbound-file',
@@ -11,21 +17,20 @@ export enum TaskList {
 
 export const SchedulerPlugin: Plugin<unknown> = {
 	name: 'schedulerPlugin',
-	async register(server: Server): Promise<void> {
+	async register (server: Server): Promise<void> {
 		server.app.db.addModels([SchedulerTask]);
 		await server.app.db.showAllSchemas({});
 		await server.app.db.createSchema('logs', {});
 		await server.app.db.sync();
-		const scheduler = new SchedulerHandler(server);
-		scheduler.registerTask(
+		server.app.scheduler = new SchedulerHandler(server);
+		server.app.scheduler.registerTask(
 			TaskList.DeleteUnboundFile,
 			new DeleteUnboundFileTask(server)
 		);
-		scheduler.registerTask(
+		server.app.scheduler.registerTask(
 			TaskList.DeleteOldLogs,
 			new DeleteOldLogsTask(server)
 		);
-		scheduler.init();
 	},
 	dependencies: ['database'],
 };
