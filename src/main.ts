@@ -33,7 +33,7 @@ async function bootstrap() {
 	});
 
 	SwaggerModule.setup(
-		`${config.server.route_prefix}${config.swagger.prefix}`,
+		`${config.server.route_prefix}/${config.swagger.prefix}`,
 		app,
 		document
 	);

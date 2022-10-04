@@ -48,7 +48,7 @@ export default {
 	test: process.env['NODE_ENV'] === 'test',
 	server: {
 		base_url: process.env['BASE_URL'],
-		route_prefix: process.env['ROUTE_PREFIX'],
+		route_prefix: process.env['ROUTE_PREFIX'] || 'api',
 		port: process.env['SERVER_PORT']
 			? Number(process.env['SERVER_PORT'])
 			: 3050,
@@ -58,6 +58,6 @@ export default {
 		},
 	},
 	swagger: {
-		prefix: process.env['SWAGGER_PREFIX'],
+		prefix: process.env['SWAGGER_PREFIX'] || 'documentation',
 	},
 };

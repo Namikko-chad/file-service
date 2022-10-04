@@ -1,4 +1,6 @@
-import File from './entity/file.entity';
-import FileUser from './entity/file-user.entity';
+import {
+	File,
+	FileUser,
+} from './entity';
 
 export const entities = [File, FileUser]
