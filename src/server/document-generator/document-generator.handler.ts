@@ -1,30 +1,18 @@
 import { AbstractGenerator, } from './abstract.generator';
 import { AbstractTemplate, } from './abstract.template';
-import {
-	DocumentData,
-	DocumentInput,
-	DocumentMeta,
-} from './document-generator.interfaces';
+import { DocumentData, DocumentInput, DocumentMeta, } from './document-generator.interfaces';
 
 export class DocumentGenerator {
 	private generators = new Map<string, AbstractGenerator>();
 	private templates = new Map<string, AbstractTemplate>();
 
-	public registerGenerator(
-		documentType: string,
-		worker: AbstractGenerator
-	): void {
-		if (this.generators.has(documentType))
-			throw new ReferenceError('Generator already exist');
+	public registerGenerator(documentType: string, worker: AbstractGenerator): void {
+		if (this.generators.has(documentType)) throw new ReferenceError('Generator already exist');
 		this.generators.set(documentType, worker);
 	}
 
-	public registerTemplate(
-		templatesType: string,
-		template: AbstractTemplate
-	): void {
-		if (this.generators.has(templatesType))
-			throw new ReferenceError('Template already exist');
+	public registerTemplate(templatesType: string, template: AbstractTemplate): void {
+		if (this.generators.has(templatesType)) throw new ReferenceError('Template already exist');
 		this.templates.set(templatesType, template);
 	}
 

@@ -8,8 +8,8 @@ import { TestProvider, } from './provider.Test';
 // import { TwilioProvider, } from './provider.Twilio';
 
 declare module '@hapi/hapi' {
-  // eslint-disable-next-line
-  export interface Server extends ConfirmationProviderServerAddon {}
+	// eslint-disable-next-line
+	export interface Server extends ConfirmationProviderServerAddon {}
 }
 
 export const ConfirmationProviderPlugin: Plugin<unknown> = {
@@ -24,19 +24,9 @@ export const ConfirmationProviderPlugin: Plugin<unknown> = {
 		// 	ConfirmationProviderList.NEWTEL,
 		// 	await new NewTelProvider(server).init()
 		// );
-		confirmation.registerProvider(
-			ConfirmationProviderList.EMAIL,
-			new EmailProvider(server)
-		);
-		confirmation.registerProvider(
-			ConfirmationProviderList.TEST,
-			new TestProvider(server)
-		);
-		server.decorate(
-			'server',
-			'confirmationProviderSend',
-			confirmation.send.bind(confirmation)
-		);
+		confirmation.registerProvider(ConfirmationProviderList.EMAIL, new EmailProvider(server));
+		confirmation.registerProvider(ConfirmationProviderList.TEST, new TestProvider(server));
+		server.decorate('server', 'confirmationProviderSend', confirmation.send.bind(confirmation));
 	},
 	dependencies: ['email-generator', 'email-sender', 'confirmation-service'],
 };

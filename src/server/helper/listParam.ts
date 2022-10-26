@@ -6,10 +6,10 @@ export function listParam(
 	fields?: string[],
 	intFields?: string[]
 ): {
-  order: Order;
-  limit: number;
-  offset: number;
-  where: WhereOptions;
+	order: Order;
+	limit: number;
+	offset: number;
+	where: WhereOptions;
 } {
 	const { offset, limit, search, from, to, } = query;
 	const order: Order = [];

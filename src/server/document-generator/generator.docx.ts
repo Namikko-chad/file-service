@@ -4,8 +4,7 @@ import { AbstractGenerator, } from './abstract.generator';
 import { DocumentMeta, } from './document-generator.interfaces';
 
 export class docxGenerator extends AbstractGenerator {
-	mime =
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+	mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 	ext = 'docx';
 
 	async generateContent(

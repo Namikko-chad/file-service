@@ -10,14 +10,14 @@ import { ConfirmationProviderDefaults, } from './confirmation-provider.defaults'
 import { ConfirmationStatus, } from './confirmation-service.enum';
 
 export enum ConfirmationErrors {
-  NotFound = 404441,
-  NotSent = 400442,
-  NotConfirmed = 403443,
-  Used = 403444,
-  Expired = 401445,
-  Deactivated = 403446,
-  Incorrect = 400447,
-  TooManyRequest = 429448,
+	NotFound = 404441,
+	NotSent = 400442,
+	NotConfirmed = 403443,
+	Used = 403444,
+	Expired = 401445,
+	Deactivated = 403446,
+	Incorrect = 400447,
+	TooManyRequest = 429448,
 }
 
 export const ConfirmationErrorsMessages = {
@@ -35,17 +35,14 @@ export class ConfirmationServiceHandler {
 	constructor(protected readonly server: Server) {}
 
 	/**
-   * Method for create confirmation object
-   * @param _to destination where will send code
-   * @param _provider who will send code
-   * @returns ConfirmationData
-   */
+	 * Method for create confirmation object
+	 * @param _to destination where will send code
+	 * @param _provider who will send code
+	 * @returns ConfirmationData
+	 */
 	create(_to: string, _provider?: ConfirmationProviderList): ConfirmationData {
 		const logPrefix = '[ConfirmationService:create]';
-		console.log(
-			logPrefix,
-			`Create code to ${_to} through ${_provider || 'default provider'}`
-		);
+		console.log(logPrefix, `Create code to ${_to} through ${_provider || 'default provider'}`);
 		const provider = _provider || ConfirmationProviderList.EMAIL;
 		const data: ConfirmationData = {
 			id: getUUID(),
@@ -61,26 +58,18 @@ export class ConfirmationServiceHandler {
 	}
 
 	/**
-   * Method for send code
-   * @param _data ConfirmationData from create method
-   * @returns ConfirmationData
-   */
+	 * Method for send code
+	 * @param _data ConfirmationData from create method
+	 * @returns ConfirmationData
+	 */
 	async send(_data: ConfirmationData): Promise<ConfirmationData> {
 		const logPrefix = `[ConfirmationService:send:${_data.id}]`;
-		console.log(
-			logPrefix,
-			`Send code to ${_data.to} through ${_data.provider}`
-		);
+		console.log(logPrefix, `Send code to ${_data.to} through ${_data.provider}`);
 		_data.error = null;
-		if (
-			_data.status === ConfirmationStatus.Sent &&
-      !this.checkLifetime(_data)
-		) {
+		if (_data.status === ConfirmationStatus.Sent && !this.checkLifetime(_data)) {
 			return _data;
 		}
-		const rdmCode = generate(
-			ConfirmationProviderDefaults[`${_data.provider}`].generator
-		);
+		const rdmCode = generate(ConfirmationProviderDefaults[`${_data.provider}`].generator);
 		// await this.server.mqSend<ConfirmationProviderMqRequest>('confirmation', {
 		// 	type: 'send',
 		// 	provider: _data.provider,
@@ -99,11 +88,11 @@ export class ConfirmationServiceHandler {
 	}
 
 	/**
-   * Method for user code verification
-   * @param _data ConfirmationData from create method
-   * @param _code string from client
-   * @returns ConfirmationData
-   */
+	 * Method for user code verification
+	 * @param _data ConfirmationData from create method
+	 * @param _code string from client
+	 * @returns ConfirmationData
+	 */
 	verify(_data: ConfirmationData, _code: string): ConfirmationData {
 		/* eslint-disable @typescript-eslint/unbound-method */
 		const logPrefix = `[ConfirmationService:verify:${_data.id}]`;
@@ -111,14 +100,8 @@ export class ConfirmationServiceHandler {
 		_data.error = null;
 		if (!config.development) {
 			if (_data.counter) _data.counter--;
-			const checks: Array<
-        (_data: ConfirmationData, _code: string) => boolean | Promise<boolean>
-      > = [
-      	this.checkAttempts,
-      	this.checkStatus,
-      	this.checkExpires,
-      	this.checkEqual
-      ];
+			const checks: Array<(_data: ConfirmationData, _code: string) => boolean | Promise<boolean>> =
+				[this.checkAttempts, this.checkStatus, this.checkExpires, this.checkEqual];
 			for (const check of checks) {
 				if (!check(_data, _code)) {
 					return _data;

@@ -1,7 +1,7 @@
 export enum ConfirmationProviderList {
-  TOTP = 'totp',
-  EMAIL = 'email',
-  NEWTEL = 'newtel',
-  TWILIO = 'twilio',
-  TEST = 'test',
+	TOTP = 'totp',
+	EMAIL = 'email',
+	NEWTEL = 'newtel',
+	TWILIO = 'twilio',
+	TEST = 'test',
 }

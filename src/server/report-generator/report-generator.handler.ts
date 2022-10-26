@@ -10,10 +10,7 @@ export class ReportHandler {
 
 	constructor(private readonly server: Server) {}
 
-	public registerReport(
-		report: ReportList | string,
-		worker: AbstractReport
-	): void {
+	public registerReport(report: ReportList | string, worker: AbstractReport): void {
 		this.reports.set(report, worker);
 	}
 
@@ -25,8 +22,11 @@ export class ReportHandler {
 			name: report.reportName,
 			template: xlsxEmptyTemplate.name,
 		};
-		const { content, name, mime, } =
-      await this.server.app.documentGenerator.create('xlsx', meta, data);
+		const { content, name, mime, } = await this.server.app.documentGenerator.create(
+			'xlsx',
+			meta,
+			data
+		);
 		const file = await this.server.app.storage.saveFile({
 			filename: name,
 			headers: {

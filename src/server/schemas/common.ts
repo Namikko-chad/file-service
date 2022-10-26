@@ -17,14 +17,11 @@ export const shortDateSchema = Joi.string()
 		return new Date(value).toDateString();
 	});
 
-export const pastShortDateSchema = shortDateSchema.custom(
-	(value: string, helper) => {
-		if (new Date(value) > new Date()) return helper.error('Invalid date');
-		if (new Date(value).getFullYear() < 1900)
-			return helper.error('Invalid date');
-		return value;
-	}
-);
+export const pastShortDateSchema = shortDateSchema.custom((value: string, helper) => {
+	if (new Date(value) > new Date()) return helper.error('Invalid date');
+	if (new Date(value).getFullYear() < 1900) return helper.error('Invalid date');
+	return value;
+});
 
 export const tokenTypeSchema = Joi.object({
 	tokenType: Joi.string()
@@ -37,15 +34,11 @@ export const listSchema = Joi.object({
 	limit: Joi.number().min(0).example(0).default(10),
 	offset: Joi.number().min(0).example(0).default(0),
 	search: Joi.string().max(255).example('example').trim(),
-	order: Joi.object({}).pattern(
-		Joi.string(),
-		Joi.string().valid('ASC', 'DESC')
-	),
+	order: Joi.object({}).pattern(Joi.string(), Joi.string().valid('ASC', 'DESC')),
 	from: pastShortDateSchema,
 	to: shortDateSchema,
 }).custom((value: { from: string; to: string }, helper) => {
-	if (new Date(value.from) > new Date(value.to))
-		return helper.error('Invalid date');
+	if (new Date(value.from) > new Date(value.to)) return helper.error('Invalid date');
 	return value;
 });
 

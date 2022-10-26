@@ -20,11 +20,7 @@ export class Storage {
 	private async loadFileInfo(fileId: string): Promise<File> {
 		const file = await File.findByPk(fileId);
 		if (!file)
-			throw new Exception(
-				Errors.FileNotFound,
-				ErrorsMessages[Errors.FileNotFound],
-				{ fileId, }
-			);
+			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 		return file;
 	}
 

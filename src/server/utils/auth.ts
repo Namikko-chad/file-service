@@ -6,20 +6,20 @@ import { Errors, ErrorsMessages, } from '../enum/errors';
 import { error, } from './index';
 
 export enum Token {
-  File = 'file',
-  User = 'user',
-  Admin = 'admin',
+	File = 'file',
+	User = 'user',
+	Admin = 'admin',
 }
 
 export enum Strategies {
-  Header = 'header',
-  Query = 'query',
+	Header = 'header',
+	Query = 'query',
 }
 
 export interface IJwtData {
-  userId: string;
-  fileId?: string;
-  timestamp: number;
+	userId: string;
+	fileId?: string;
+	timestamp: number;
 }
 
 export function decodeJwt(token: string, secret: string): IJwtData {
@@ -27,15 +27,12 @@ export function decodeJwt(token: string, secret: string): IJwtData {
 }
 
 interface TokenValidateSuccess {
-  isValid: boolean;
-  credentials: AuthCredentials;
-  artifacts: AuthArtifacts;
+	isValid: boolean;
+	credentials: AuthCredentials;
+	artifacts: AuthArtifacts;
 }
 
-export function tokenValidate(
-	r: Request,
-	token: string
-): TokenValidateSuccess | Boom {
+export function tokenValidate(r: Request, token: string): TokenValidateSuccess | Boom {
 	function tryDecode(token: string): [IJwtData, Token] {
 		let data: IJwtData;
 		let tokenType: Token;
@@ -55,11 +52,7 @@ export function tokenValidate(
 				} catch (err) {
 					const e = err as Error;
 					if (e.name === 'TokenExpiredError')
-						throw error(
-							Errors.TokenExpired,
-							ErrorsMessages[Errors.TokenExpired],
-							{}
-						);
+						throw error(Errors.TokenExpired, ErrorsMessages[Errors.TokenExpired], {});
 				}
 				return false;
 			});
@@ -77,11 +70,7 @@ export function tokenValidate(
 				tokenType === Token.File ? Strategies.Query : Strategies.Header
 			)
 		)
-			throw error(
-				Errors.TokenInvalid,
-				ErrorsMessages[Errors.TokenInvalid],
-				{}
-			);
+			throw error(Errors.TokenInvalid, ErrorsMessages[Errors.TokenInvalid], {});
 		break;
 	}
 	return {

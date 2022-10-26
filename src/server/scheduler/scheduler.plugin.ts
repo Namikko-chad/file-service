@@ -5,14 +5,14 @@ import { DeleteUnboundFileTask, } from './task.delete-unbound-file';
 import { DeleteOldLogsTask, } from './task.delete-old-logs';
 
 declare module '@hapi/hapi' {
-  export interface ServerApplicationState {
-    scheduler: SchedulerHandler;
-  }
+	export interface ServerApplicationState {
+		scheduler: SchedulerHandler;
+	}
 }
 
 export enum TaskList {
-  DeleteUnboundFile = 'delete-unbound-file',
-  DeleteOldLogs = 'delete-old-logs',
+	DeleteUnboundFile = 'delete-unbound-file',
+	DeleteOldLogs = 'delete-old-logs',
 }
 
 export const SchedulerPlugin: Plugin<unknown> = {
@@ -27,10 +27,7 @@ export const SchedulerPlugin: Plugin<unknown> = {
 			TaskList.DeleteUnboundFile,
 			new DeleteUnboundFileTask(server)
 		);
-		server.app.scheduler.registerTask(
-			TaskList.DeleteOldLogs,
-			new DeleteOldLogsTask(server)
-		);
+		server.app.scheduler.registerTask(TaskList.DeleteOldLogs, new DeleteOldLogsTask(server));
 	},
 	dependencies: ['database'],
 };

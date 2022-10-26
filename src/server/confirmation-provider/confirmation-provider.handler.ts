@@ -5,10 +5,7 @@ import { ConfirmationSendData, } from './confirmation-provider.interfaces';
 export class ConfirmationProviderHandler {
 	private providers = new Map<ConfirmationProviderList, AbstractProvider>();
 
-	async send(
-		_provider: ConfirmationProviderList,
-		_data: ConfirmationSendData
-	): Promise<boolean> {
+	async send(_provider: ConfirmationProviderList, _data: ConfirmationSendData): Promise<boolean> {
 		if (!this.providers.has(_provider)) {
 			console.error(_provider);
 			throw new ReferenceError('Provider not registered');
@@ -20,10 +17,7 @@ export class ConfirmationProviderHandler {
 		return true;
 	}
 
-	public registerProvider(
-		provider: ConfirmationProviderList,
-		worker: AbstractProvider
-	): void {
+	public registerProvider(provider: ConfirmationProviderList, worker: AbstractProvider): void {
 		this.providers.set(provider, worker);
 	}
 }

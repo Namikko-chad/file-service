@@ -20,16 +20,16 @@ import {
 } from './server/utils';
 
 declare module '@hapi/hapi' {
-  interface UserCredentials {
-    id: string;
-  }
-  interface AuthCredentials {
-    fileId: string | undefined;
-  }
-  interface AuthArtifacts {
-    token: string;
-    tokenType: Token;
-  }
+	interface UserCredentials {
+		id: string;
+	}
+	interface AuthCredentials {
+		fileId: string | undefined;
+	}
+	interface AuthArtifacts {
+		token: string;
+		tokenType: Token;
+	}
 }
 
 export async function init(): Promise<Hapi.Server> {

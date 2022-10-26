@@ -1,19 +1,12 @@
 import { Request, } from '@hapi/hapi';
 import { Boom, } from '@hapi/boom';
-import {
-	IOutputEmpty,
-	IFileResponse,
-	IOutputPagination,
-	IListParam,
-} from '../interfaces';
+import { IOutputEmpty, IFileResponse, IOutputPagination, IListParam, } from '../interfaces';
 import { outputEmpty, handlerError, outputPagination, } from '../utils';
 import { File, FileUser, } from '../db';
 import { fileResponse, } from '../helper/fileResponse';
 import { listParam, } from 'server/helper/listParam';
 
-export async function list(
-	r: Request
-): Promise<IOutputPagination<IFileResponse[]> | Boom> {
+export async function list(r: Request): Promise<IOutputPagination<IFileResponse[]> | Boom> {
 	try {
 		const query = r.payload as IListParam & { userId: string };
 		const params = listParam(query);
@@ -49,9 +42,7 @@ export async function flushStorage(r: Request): Promise<IOutputEmpty | Boom> {
 				}
 			],
 		});
-		await Promise.all(
-			oldFiles.map((file) => r.server.app.storage.deleteFile(file.id))
-		);
+		await Promise.all(oldFiles.map((file) => r.server.app.storage.deleteFile(file.id)));
 		return outputEmpty();
 	} catch (err) {
 		return handlerError('Failed flush storage', err);

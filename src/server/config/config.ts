@@ -26,9 +26,7 @@ function configLoad() {
 			origin: process.env['CORS_ORIGIN']
 				? (JSON.parse(process.env['CORS_ORIGIN']) as string[])
 				: ['*'],
-			maxAge: process.env['CORS_MAX_AGE']
-				? Number(process.env['CORS_MAX_AGE'])
-				: 600,
+			maxAge: process.env['CORS_MAX_AGE'] ? Number(process.env['CORS_MAX_AGE']) : 600,
 			headers: process.env['CORS_HEADERS']
 				? (JSON.parse(process.env['CORS_HEADERS']) as string[])
 				: ['Accept', 'Content-Type', 'Authorization'],
@@ -41,19 +39,13 @@ function configLoad() {
 		development: process.env['NODE_ENV'] === 'development',
 		db: <Sequelize>{},
 		dbLink: process.env['DATABASE_LINK'] as string,
-		env: process.env['NODE_ENV'] as
-      | 'development'
-      | 'stage'
-      | 'test'
-      | 'production',
+		env: process.env['NODE_ENV'] as 'development' | 'stage' | 'test' | 'production',
 		files: {
 			allowedExtensions:
-        process.env['FILETYPE'] ??
-        'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso',
+				process.env['FILETYPE'] ?? 'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso',
 			allowedExtensionsRegExp: RegExp(
 				`(${
-					process.env['FILETYPE'] ??
-          'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso'
+					process.env['FILETYPE'] ?? 'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso'
 				})$`
 			),
 			bufferSize: 1024 * 1024 * 1,
@@ -63,9 +55,7 @@ function configLoad() {
 			maxSize: 1024 * 1024 * 30 * 30000,
 		},
 		server: {
-			port: process.env['SERVER_PORT']
-				? Number(process.env['SERVER_PORT'])
-				: 3000,
+			port: process.env['SERVER_PORT'] ? Number(process.env['SERVER_PORT']) : 3000,
 			host: process.env['SERVER_HOST'] ?? 'localhost',
 			shutdownTimeout: process.env['SERVER_SHUTDOWN_TIMEOUT']
 				? Number(process.env['SERVER_SHUTDOWN_TIMEOUT'])

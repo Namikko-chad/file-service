@@ -2,8 +2,8 @@ import { ConfirmationProviderList, } from '../confirmation-provider/confirmation
 import { ConfirmationProviderDefaultsInterface, } from './confirmation-service.interfaces';
 
 export const ConfirmationProviderDefaults: Record<
-  ConfirmationProviderList,
-  ConfirmationProviderDefaultsInterface
+	ConfirmationProviderList,
+	ConfirmationProviderDefaultsInterface
 > = {
 	[ConfirmationProviderList.EMAIL]: {
 		count: 5,

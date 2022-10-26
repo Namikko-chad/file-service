@@ -25,48 +25,30 @@ import { config, } from '../config/config';
 function editAccess(r: Request, file: FileUser): void {
 	const user = r.auth.credentials.user;
 	if (file.userId !== user?.id && r.auth.artifacts.tokenType !== Token.Admin)
-		throw new Exception(
-			Errors.FileIsPrivate,
-			ErrorsMessages[Errors.FileIsPrivate]
-		);
+		throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
 }
 
 function viewAccess(r: Request, file: FileUser): void {
 	if (!file.public) {
 		if (!r.auth.isAuthenticated)
-			throw new Exception(
-				Errors.FileIsPrivate,
-				ErrorsMessages[Errors.FileIsPrivate]
-			);
+			throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
 		const user = r.auth.credentials.user;
 		switch (r.auth.artifacts.tokenType) {
 		case Token.User:
 			if (file.userId !== user?.id)
-				throw new Exception(
-					Errors.FileIsPrivate,
-					ErrorsMessages[Errors.FileIsPrivate]
-				);
+				throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
 			break;
 		case Token.File:
 			if (file.id !== r.auth.credentials.fileId)
-				throw new Exception(
-					Errors.FileIsPrivate,
-					ErrorsMessages[Errors.FileIsPrivate]
-				);
+				throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
 		}
 	}
 }
 
-export async function list(
-	r: Request
-): Promise<IOutputPagination<IFileResponse[]> | Boom> {
+export async function list(r: Request): Promise<IOutputPagination<IFileResponse[]> | Boom> {
 	try {
 		const user = r.auth.credentials.user;
-		if (!user)
-			throw new Exception(
-				Errors.UserNotFound,
-				ErrorsMessages[Errors.UserNotFound]
-			);
+		if (!user) throw new Exception(Errors.UserNotFound, ErrorsMessages[Errors.UserNotFound]);
 		const { id: userId, } = user;
 		const { rows, count, } = await FileUser.findAndCountAll({
 			where: {
@@ -89,19 +71,12 @@ export async function list(
 	}
 }
 
-export async function retrieve(
-	r: Request,
-	h: ResponseToolkit
-): Promise<ResponseObject | Boom> {
+export async function retrieve(r: Request, h: ResponseToolkit): Promise<ResponseObject | Boom> {
 	try {
 		const { fileId, } = r.params as { fileId: string };
 		const fileUser = await FileUser.findByPk(fileId);
 		if (!fileUser)
-			throw new Exception(
-				Errors.FileNotFound,
-				ErrorsMessages[Errors.FileNotFound],
-				{ fileId, }
-			);
+			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 
 		viewAccess(r, fileUser);
 
@@ -114,8 +89,7 @@ export async function retrieve(
 			.header('Cache-Control', 'no-cache')
 			.header(
 				'Content-Disposition',
-				'attachment; filename*=UTF-8\'\'' +
-          encodeURIComponent(fileUser.name + '.' + file.ext)
+				'attachment; filename*=UTF-8\'\'' + encodeURIComponent(fileUser.name + '.' + file.ext)
 			);
 		return response;
 	} catch (err) {
@@ -123,9 +97,7 @@ export async function retrieve(
 	}
 }
 
-export async function info(
-	r: Request
-): Promise<IOutputOk<IFileResponse> | Boom> {
+export async function info(r: Request): Promise<IOutputOk<IFileResponse> | Boom> {
 	try {
 		const { fileId, } = r.params as { fileId: string };
 		const fileUser = await FileUser.findByPk(fileId, {
@@ -137,11 +109,7 @@ export async function info(
 			],
 		});
 		if (!fileUser)
-			throw new Exception(
-				Errors.FileNotFound,
-				ErrorsMessages[Errors.FileNotFound],
-				{ fileId, }
-			);
+			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 
 		viewAccess(r, fileUser);
 
@@ -151,26 +119,13 @@ export async function info(
 	}
 }
 
-export async function create(
-	r: Request
-): Promise<IOutputOk<IFileResponse> | Boom> {
+export async function create(r: Request): Promise<IOutputOk<IFileResponse> | Boom> {
 	try {
 		const payload = r.payload as IFileCreatePayload;
-		if (
-			!payload?.file ||
-      !payload?.file.filename ||
-      !payload.file.payload.length
-		)
-			throw new Exception(
-				Errors.InvalidPayload,
-				ErrorsMessages[Errors.InvalidPayload]
-			);
+		if (!payload?.file || !payload?.file.filename || !payload.file.payload.length)
+			throw new Exception(Errors.InvalidPayload, ErrorsMessages[Errors.InvalidPayload]);
 		const user = r.auth.credentials.user;
-		if (!user)
-			throw new Exception(
-				Errors.UserNotFound,
-				ErrorsMessages[Errors.UserNotFound]
-			);
+		if (!user) throw new Exception(Errors.UserNotFound, ErrorsMessages[Errors.UserNotFound]);
 		const { id: userId, } = user;
 		const files = await FileUser.findAll({
 			where: {
@@ -178,17 +133,9 @@ export async function create(
 			},
 			attributes: ['fileId'],
 		});
-		const usedCapacity = await r.server.app.storage.sizeFile(
-			files.map((file) => file.fileId)
-		);
-		if (
-			usedCapacity + payload.file.payload.length >
-      config.files.capacityPerUser
-		)
-			throw new Exception(
-				Errors.StorageLimit,
-				ErrorsMessages[Errors.StorageLimit]
-			);
+		const usedCapacity = await r.server.app.storage.sizeFile(files.map((file) => file.fileId));
+		if (usedCapacity + payload.file.payload.length > config.files.capacityPerUser)
+			throw new Exception(Errors.StorageLimit, ErrorsMessages[Errors.StorageLimit]);
 		const file = await r.server.app.storage.saveFile(payload.file);
 		const { name, } = splitFilename(payload.file.filename);
 		const [fileUser] = await FileUser.findOrCreate({
@@ -216,11 +163,7 @@ export async function edit(r: Request): Promise<IOutputEmpty | Boom> {
 		const { fileId, } = r.params as { fileId: string };
 		const fileUser = await FileUser.findByPk(fileId);
 		if (!fileUser)
-			throw new Exception(
-				Errors.FileNotFound,
-				ErrorsMessages[Errors.FileNotFound],
-				{ fileId, }
-			);
+			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 		editAccess(r, fileUser);
 
 		await fileUser.update({
@@ -239,11 +182,7 @@ export async function destroy(r: Request): Promise<IOutputEmpty | Boom> {
 		const fileUser = await FileUser.findByPk(fileId);
 
 		if (!fileUser)
-			throw new Exception(
-				Errors.FileNotFound,
-				ErrorsMessages[Errors.FileNotFound],
-				{ fileId, }
-			);
+			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 
 		editAccess(r, fileUser);
 		await fileUser.destroy();
