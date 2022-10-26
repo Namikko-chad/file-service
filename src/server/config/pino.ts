@@ -51,6 +51,6 @@ export function pinoConfig(prettify?: boolean) {
 			],
 			censor: '***',
 		},
-		timestamp: () => `,"time":"${new Date(Date.now()).toLocaleString()}"`,
+		timestamp: () => `,"time":"${new Date(Date.now()).toString()}"`,
 	};
 }

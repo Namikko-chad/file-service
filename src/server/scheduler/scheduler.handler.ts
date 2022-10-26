@@ -13,7 +13,7 @@ export class SchedulerHandler {
 	public init(): this {
 		const logPrefix = '[Scheduler:init]';
 		console.log(logPrefix, 'Scheduling task');
-		this.tasks.forEach( (task) => {
+		this.tasks.forEach((task) => {
 			if (!task) throw new ReferenceError('Unknown task');
 			console.log(
 				logPrefix,

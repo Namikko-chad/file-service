@@ -1,68 +1,86 @@
-// import { beforeEach, describe, expect, it, beforeAll, afterAll, } from '@jest/globals';
-// import { Server, } from '@hapi/hapi';
-// import PizZip from 'pizzip';
-// import { DocumentGenerator, } from '../src/document-generator/document-generator.handler';
-// import { DOCX_MIME_TYPE, } from '../src/document-generator/document-meta';
+import { beforeAll, describe, expect, it } from "@jest/globals";
+import { DocumentGenerator } from "../src/server/document-generator/document-generator.handler";
+import { docxGenerator } from "../src/server/document-generator/generator.docx";
+import { xlsxGenerator } from "../src/server/document-generator/generator.xlsx";
+import { htmlGenerator } from "../src/server/document-generator/generator.html";
 
-// describe('DocumentGenerator', () => {
-// 	let docGen: DocumentGenerator;
-// 	let server: Server;
+import {
+  AbstractTemplate,
+  xlsxEmptyTemplate,
+} from "../src/server/document-generator";
 
-// 	beforeAll(async () => {
-// 		server = new Server();
+export class htmlTemplate extends AbstractTemplate {
+  name = "test-html";
 
-// 		await server.start();
-// 	});
+  public override async loadTemplate(): Promise<Buffer> {
+    return Buffer.from("<html>{{code}}</html>");
+  }
+}
 
-// 	afterAll(async () => {
-// 		await server.stop();
-// 	});
+export class docxTemplate extends AbstractTemplate {
+  name = "template.docx";
+}
 
-// 	beforeEach(() => {
-// 		docGen = new DocumentGenerator(server, {
-// 			templatesDir: './packages/queue-service/test/templates',
-// 		});
-// 	});
+describe("DocumentGenerator", () => {
+  const documentGenerator = new DocumentGenerator();
 
-// 	describe('generateDocument', () => {
-// 		it('generates document', async () => {
-// 			const docData = await docGen.generateDocument(
-// 				{
-// 					name: 'Test template',
-// 					meta: {
-// 						template: 'test-template.dotx',
-// 					},
-// 				},
-// 				{
-// 					testValue: 'SOME TEXT',
-// 				}
-// 			);
+  beforeAll(() => {
+    documentGenerator.registerGenerator("docx", new docxGenerator({}));
+    documentGenerator.registerGenerator("xlsx", new xlsxGenerator({}));
+    documentGenerator.registerGenerator("html", new htmlGenerator({}));
+    documentGenerator.registerTemplate(
+      "test-docx",
+      new docxTemplate({
+        templatesDir: "./test/file/",
+      })
+    );
+    documentGenerator.registerTemplate("test-html", new htmlTemplate({}));
+    documentGenerator.registerTemplate("test-xlsx", new xlsxEmptyTemplate({}));
+  });
 
-// 			expect(docData.name).toBe('Test template.docx');
-// 			expect(docData.type).toBe(DOCX_MIME_TYPE);
+  it("should generate html document", async () => {
+    const docData = await documentGenerator.create(
+      "html",
+      {
+        name: "test",
+        template: "test-html",
+      },
+      {
+        code: 123456,
+      }
+    );
+    expect(docData.name).toBe("test.html");
+    expect(docData.mime).toBe(new htmlGenerator({}).mime);
+    expect(docData.content.toString()).toContain("123456");
+  });
 
-// 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// 			// @ts-ignore
-// 			const xml = new PizZip(docData.content).file('word/document.xml').asBinary();
+  it("should generate docx document", async () => {
+    const docData = await documentGenerator.create(
+      "docx",
+      {
+        name: "test",
+        template: "test-docx",
+      },
+      {
+        firstName: 123456,
+      }
+    );
+    expect(docData.name).toBe("test.docx");
+    expect(docData.mime).toBe(new docxGenerator({}).mime);
+    expect(docData.content.toString()).toContain("123456");
+  });
 
-// 			expect(xml).toContain('SOME TEXT');
-// 		});
-
-// 		it('respects explicit document meta', async () => {
-// 			const docData = await docGen.generateDocument(
-// 				{
-// 					name: 'Test template',
-// 					meta: {
-// 						name: 'Test document',
-// 						template: 'test-template.dotx',
-// 					},
-// 				},
-// 				{
-// 					testValue: 'SOME TEXT',
-// 				}
-// 			);
-
-// 			expect(docData.name).toBe('Test document');
-// 		});
-// 	});
-// });
+  it("should generate xlsx document", async () => {
+    const docData = await documentGenerator.create(
+      "xlsx",
+      {
+        name: "test",
+        template: "test-xlsx",
+      },
+      [["123456"]]
+    );
+    expect(docData.name).toBe("test.xlsx");
+    expect(docData.mime).toBe(new xlsxGenerator({}).mime);
+    expect(docData.content.toString()).toContain("123456");
+  });
+});

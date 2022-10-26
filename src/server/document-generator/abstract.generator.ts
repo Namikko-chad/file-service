@@ -1,19 +1,21 @@
 import { DocumentInput, DocumentMeta, } from './document-generator.interfaces';
-import { DocumentGeneratorOptions } from './document-generator.options';
+import { DocumentGeneratorOptions, } from './document-generator.options';
 
 export abstract class AbstractGenerator {
   abstract readonly mime: string;
   abstract readonly ext: string;
 
-  constructor (_options: DocumentGeneratorOptions) {}
+  constructor(private options: DocumentGeneratorOptions) {
+  	this.options;
+  }
 
   abstract generateContent(
     template: Buffer,
-		meta: DocumentMeta,
-		data: DocumentInput
-	): Promise<Buffer>
+    meta: DocumentMeta,
+    data: DocumentInput
+  ): Promise<Buffer> | Buffer;
 
   public generateName(meta: DocumentMeta): string {
-    return `${meta.name}.${this.ext}`;
+  	return `${meta.name}.${this.ext}`;
   }
 }

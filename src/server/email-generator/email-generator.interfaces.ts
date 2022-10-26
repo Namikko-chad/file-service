@@ -9,12 +9,12 @@ export type Templates = {
 
 export const Templates: Templates = {
 	[EmailType.Confirmation]: {
-		subject: 'Crypton Outstaff Email confirmation',
+		subject: 'Confirmation',
 		path: 'confirmation',
 	},
-	[EmailType.InviteInAdmin]: {
-		subject: 'Invitation to outstaff',
-		path: 'invation-in-admin',
+	[EmailType.Test]: {
+		subject: 'Test',
+		path: 'test',
 	},
 };
 
@@ -25,13 +25,9 @@ export interface EmailStub {
 
 export interface FieldsEmailRequest {
 	readonly [EmailType.Confirmation]: EmailRequestWithCode;
-	readonly [EmailType.InviteInAdmin]: InviteInAdmin;
+	readonly [EmailType.Test]: EmailRequestWithCode;
 }
 
 interface EmailRequestWithCode {
 	readonly code: string;
-}
-
-interface InviteInAdmin {
-	readonly url: string;
 }

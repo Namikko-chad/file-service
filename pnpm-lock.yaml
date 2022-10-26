@@ -10,6 +10,7 @@ specifiers:
   '@hapi/inert': ^6.0.1
   '@hapi/vision': ^6.1.0
   '@jest/globals': ^27.3.1
+  '@types/bcrypt': ^5.0.0
   '@types/eslint-plugin-prettier': ^3.1.0
   '@types/hapi-auth-bearer-token': ^6.1.3
   '@types/hapi-pino': ^8.0.4
@@ -29,6 +30,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.7.0
   '@typescript-eslint/parser': ^5.7.0
   '@typescript-eslint/typescript-estree': ^5.7.0
+  bcrypt: ^5.0.1
   conventional-changelog-cli: ^2.2.2
   docxtemplater: ^3.31.5
   dotenv: ^10.0.0
@@ -39,6 +41,7 @@ specifiers:
   eslint-plugin-security: ^1.4.0
   file-type: ^16.5.3
   form-data: ^4.0.0
+  generate-password: ^1.6.1
   handlebars: ^4.7.7
   hapi-auth-bearer-token: ^8.0.0
   hapi-pino: ^8.5.0
@@ -79,9 +82,11 @@ dependencies:
   '@hapi/hapi': 20.2.2
   '@hapi/inert': 6.0.5
   '@hapi/vision': 6.1.0
+  bcrypt: 5.1.0
   docxtemplater: 3.31.5
   dotenv: 10.0.0
   file-type: 16.5.4
+  generate-password: 1.7.0
   handlebars: 4.7.7
   hapi-auth-bearer-token: 8.0.0_65yvaxemryyqosjnk7ovmcgyyu
   hapi-pino: 8.5.0
@@ -107,6 +112,7 @@ devDependencies:
   '@commitlint/cli': 14.1.0
   '@commitlint/config-conventional': 14.1.0
   '@jest/globals': 27.5.1
+  '@types/bcrypt': 5.0.0
   '@types/eslint-plugin-prettier': 3.1.0
   '@types/hapi-auth-bearer-token': 6.1.3
   '@types/hapi-pino': 8.0.5
@@ -1227,6 +1233,24 @@ packages:
     resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
     dev: false
 
+  /@mapbox/node-pre-gyp/1.0.10:
+    resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
+    hasBin: true
+    dependencies:
+      detect-libc: 2.0.1
+      https-proxy-agent: 5.0.1
+      make-dir: 3.1.0
+      node-fetch: 2.6.7
+      nopt: 5.0.0
+      npmlog: 5.0.1
+      rimraf: 3.0.2
+      semver: 7.3.7
+      tar: 6.1.11
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: false
+
   /@mapbox/node-pre-gyp/1.0.9:
     resolution: {integrity: sha512-aDF3S3rK9Q2gey/WAttUlISduDItz5BU3306M9Eyv6/oS40aMprnopshtlKTykxRNIBEZuRMaZAnbrQ4QtKGyw==}
     hasBin: true
@@ -1360,6 +1384,12 @@ packages:
     resolution: {integrity: sha512-kVzjari1s2YVi77D3w1yuvohV2idweYXMCDzqBiVNN63TcDWrIlTVOYpqVrvbbyOE/IyzBoTKF0fdnLPEORFxA==}
     dependencies:
       '@babel/types': 7.19.4
+    dev: true
+
+  /@types/bcrypt/5.0.0:
+    resolution: {integrity: sha512-agtcFKaruL8TmcvqbndlqHPSJgsolhf/qPWchFlgnW1gECTN/nKbFcoFnvKAQRFfKbh+BO6A3SWdJu9t+xF3Lw==}
+    dependencies:
+      '@types/node': 16.11.46
     dev: true
 
   /@types/bluebird/3.5.36:
@@ -2027,6 +2057,18 @@ packages:
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  /bcrypt/5.1.0:
+    resolution: {integrity: sha512-RHBS7HI5N5tEnGTmtR/pppX0mmDSBpQ4aCBsj7CEQfYXDcO74A8sIBYcJMuCsis2E81zDxeENYhv66oZwLiA+Q==}
+    engines: {node: '>= 10.0.0'}
+    requiresBuild: true
+    dependencies:
+      '@mapbox/node-pre-gyp': 1.0.10
+      node-addon-api: 5.0.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: false
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -3166,6 +3208,10 @@ packages:
       strip-ansi: 6.0.1
       wide-align: 1.1.5
     optional: true
+
+  /generate-password/1.7.0:
+    resolution: {integrity: sha512-WPCtlfy0jexf7W5IbwxGUgpIDvsZIohbI2DAq2Q6TSlKKis+G4GT9sxvPxrZUGL8kP6WUXMWNqYnxY6DDKAdFA==}
+    dev: false
 
   /gensync/1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
@@ -4747,6 +4793,10 @@ packages:
 
   /node-addon-api/4.3.0:
     resolution: {integrity: sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==}
+
+  /node-addon-api/5.0.0:
+    resolution: {integrity: sha512-CvkDw2OEnme7ybCykJpVcKH+uAOLV2qLqiyla128dN9TkEWfrYmxG6C2boDe5KcNQqZF3orkqzGgOMvZ/JNekA==}
+    dev: false
 
   /node-cron/3.0.2:
     resolution: {integrity: sha512-iP8l0yGlNpE0e6q1o185yOApANRe47UPbLf4YxfbiNHt/RU5eBcGB/e0oudruheSf+LQeDMezqC5BVAb5wwRcQ==}

@@ -1,18 +1,21 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { DocumentTemplate } from './document-generator.interfaces';
-import { DocumentGeneratorOptions } from './document-generator.options';
+import { DocumentTemplate, } from './document-generator.interfaces';
+import { DocumentGeneratorOptions, } from './document-generator.options';
 
 export abstract class AbstractTemplate implements DocumentTemplate {
 	private readonly templatesDir: string;
-	abstract name: string;
+  abstract name: string;
 
-  constructor ({ templatesDir = 'templates/document', }: DocumentGeneratorOptions) {
-		this.templatesDir = path.resolve(templatesDir);
+  constructor({
+  	templatesDir = 'templates/document',
+  }: DocumentGeneratorOptions) {
+  	this.templatesDir = path.resolve(templatesDir);
   }
 
-	public async loadTemplate(): Promise<Buffer> {
-		const templatePath = path.resolve(this.templatesDir, this.name);
-		return await fs.readFile(templatePath);
-	}
+  public async loadTemplate(): Promise<Buffer> {
+  	const templatePath = path.resolve(this.templatesDir, this.name);
+  	// eslint-disable-next-line security/detect-non-literal-fs-filename
+  	return await fs.readFile(`${templatePath}`);
+  }
 }

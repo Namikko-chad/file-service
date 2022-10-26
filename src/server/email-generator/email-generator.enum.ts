@@ -1,4 +1,4 @@
 export enum EmailType {
 	Confirmation = 'confirmation',
-	InviteInAdmin = 'inviteInAdmin',
+	Test = 'test',
 }

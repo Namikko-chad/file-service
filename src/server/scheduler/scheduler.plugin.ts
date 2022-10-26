@@ -5,9 +5,9 @@ import { DeleteUnboundFileTask, } from './task.delete-unbound-file';
 import { DeleteOldLogsTask, } from './task.delete-old-logs';
 
 declare module '@hapi/hapi' {
-	export interface ServerApplicationState {
-		scheduler: SchedulerHandler;
-	}
+  export interface ServerApplicationState {
+    scheduler: SchedulerHandler;
+  }
 }
 
 export enum TaskList {
@@ -17,7 +17,7 @@ export enum TaskList {
 
 export const SchedulerPlugin: Plugin<unknown> = {
 	name: 'schedulerPlugin',
-	async register (server: Server): Promise<void> {
+	async register(server: Server): Promise<void> {
 		server.app.db.addModels([SchedulerTask]);
 		await server.app.db.showAllSchemas({});
 		await server.app.db.createSchema('logs', {});

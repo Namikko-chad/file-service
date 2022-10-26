@@ -2,7 +2,11 @@ import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import path from 'path';
 import { EmailType, } from './email-generator.enum';
-import { EmailStub, FieldsEmailRequest, Templates, } from './email-generator.interfaces';
+import {
+	EmailStub,
+	FieldsEmailRequest,
+	Templates,
+} from './email-generator.interfaces';
 
 export class EmailGeneratorHandler {
 	private readonly templates: Templates;

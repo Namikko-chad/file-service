@@ -3,9 +3,9 @@ import { ReportHandler, } from './report-generator.handler';
 import { UserFilesReport, } from './report.UserFiles';
 
 declare module '@hapi/hapi' {
-	export interface ServerApplicationState {
-		reports: ReportHandler;
-	}
+  export interface ServerApplicationState {
+    reports: ReportHandler;
+  }
 }
 
 export enum ReportList {
@@ -14,9 +14,12 @@ export enum ReportList {
 
 export const ReportPlugin: Plugin<unknown> = {
 	name: 'report-generator',
-	async register(server: Server): Promise<void> {
+	register(server: Server): void {
 		server.app.reports = new ReportHandler(server);
-		server.app.reports.registerReport(ReportList.UserFiles, new UserFilesReport(server));
+		server.app.reports.registerReport(
+			ReportList.UserFiles,
+			new UserFilesReport(server)
+		);
 	},
 	dependencies: ['database', 'document-generator'],
 };
