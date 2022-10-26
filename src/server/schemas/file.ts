@@ -3,10 +3,8 @@ import { IFileResponse, } from '../interfaces';
 import { guidSchema, } from './common';
 
 export const fileCreatePayloadSchema = Joi.object({
-	file: Joi.any()
-		.meta({ swaggerType: 'file', })
-		.description('file'),
-})
+	file: Joi.any().meta({ swaggerType: 'file', }).description('file'),
+});
 
 export const fileEditPayloadSchema = Joi.object({
 	public: Joi.bool().default(false).example(false),
