@@ -1,3 +1,4 @@
 export * from './config';
 export * from './entity';
-export * from './repositories';
+export * from './entities';
+export * from './repositories/index';

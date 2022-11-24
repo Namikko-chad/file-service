@@ -10,9 +10,9 @@ async function init() {
 		url: config.link,
 		entities,
 		synchronize: true,
-	})
+	});
 	await dataSource.initialize();
 	console.log('Database sync complete');
 }
 
-init().catch( (error) => console.log(error) );
+init().catch((error) => console.log(error));

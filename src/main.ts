@@ -32,11 +32,7 @@ async function bootstrap() {
 		ignoreGlobalPrefix: true,
 	});
 
-	SwaggerModule.setup(
-		`${config.server.route_prefix}/${config.swagger.prefix}`,
-		app,
-		document
-	);
+	SwaggerModule.setup(`${config.server.route_prefix}/${config.swagger.prefix}`, app, document);
 
 	app.enableCors(config.server.cors);
 	app.use(helmet());

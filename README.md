@@ -8,6 +8,7 @@ The repository provides examples of the main toolkit used to write a basic servi
 2. Postgres 12
 
 ### Pre use required
+
 `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
 
 ### Project structure
@@ -59,30 +60,41 @@ src                                 ─ Source code
 
 1. Create .env file from env_template
 2. Install node-modules
+
 ```
 npm install
 ```
+
 3. Create ormconfig.json file from ormconfig.json_template or use
+
 ```
 npx typeorm init
 ```
+
 4. Run migrations.
+
 ```
 npm run-script typeorm:migration:run
 ```
+
 5. Start tests
+
 ```
 npm tests
 ```
+
 6. Start server
+
 ```
 npm start
 ```
+
 7. Checkout swagger (Default: http://localhost:3000/api/api-info)
 
 ### Server responses
 
 Success:
+
 ```
 {
   "ok": true,
@@ -103,6 +115,7 @@ Success:
 ```
 
 Error:
+
 ```
 {
   "ok": false,

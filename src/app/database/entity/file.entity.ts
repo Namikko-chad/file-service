@@ -14,29 +14,29 @@ import FileUser from './file-user.entity';
 	name: 'Files',
 })
 export default class File {
-  @PrimaryGeneratedColumn('uuid')
-  	id: string = uuidv4();
+	@PrimaryGeneratedColumn('uuid')
+		id: string = uuidv4();
 
-  @Column({
-  	length: 10,
-  })
-  	ext!: string;
+	@Column({
+		length: 10,
+	})
+		ext!: string;
 
-  @Column({
-  	length: 255,
-  })
-  	mime!: string;
+	@Column({
+		length: 255,
+	})
+		mime!: string;
 
-  @Column({
-  	type: 'bigint',
-  })
-  	size!: number;
+	@Column({
+		type: 'bigint',
+	})
+		size!: number;
 
-  @Column({
-  	default: 'db',
-  	length: 255,
-  })
-  	storage!: string;
+	@Column({
+		default: 'db',
+		length: 255,
+	})
+		storage!: string;
 
 	@Column({
 		length: 255,
@@ -57,5 +57,5 @@ export default class File {
 		updatedAt!: Date;
 
 	@OneToMany(() => FileUser, (fileUser) => fileUser.userId)
-		fileUsers?: FileUser[]
+		fileUsers?: FileUser[];
 }

@@ -1,10 +1,4 @@
-import {
-	ExceptionFilter,
-	Catch,
-	ArgumentsHost,
-	HttpException,
-	HttpStatus,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, } from '@nestjs/common';
 
 import { HttpAdapterHost, } from '@nestjs/core';
 
@@ -21,12 +15,8 @@ export default class AppExceptionsFilter implements ExceptionFilter {
 
 		const ctx = host.switchToHttp();
 
-		const httpStatus =
-      exception instanceof HttpException
-      	? exception.getStatus()
-      	: HttpStatus.INTERNAL_SERVER_ERROR;
-		const httpResponse =
-      exception instanceof HttpException ? exception.getResponse() : null;
+		const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+		const httpResponse = exception instanceof HttpException ? exception.getResponse() : null;
 
 		const responseBody = {
 			ok: false,

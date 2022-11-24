@@ -9,25 +9,22 @@ jest.mock('../src/app/queues/separate_job/separate.module');
 jest.mock('../src/app/routes/v1/jobs/jobs.module');
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication;
+	let app: INestApplication;
 
-  beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+	beforeAll(async () => {
+		const moduleFixture = await Test.createTestingModule({
+			imports: [AppModule],
+		}).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+		app = moduleFixture.createNestApplication();
+		await app.init();
+	});
 
-  afterAll(async () => {
-    await app.close();
-  });
+	afterAll(async () => {
+		await app.close();
+	});
 
-  it('/v1/template (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/v1/template')
-      .expect(200)
-      .expect('Hello World!');
-  });
+	it('/v1/template (GET)', () => {
+		return request(app.getHttpServer()).get('/v1/template').expect(200).expect('Hello World!');
+	});
 });

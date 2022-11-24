@@ -15,15 +15,15 @@ import File from './file.entity';
 	name: 'FileUsers',
 })
 export default class FileUser {
-  @PrimaryGeneratedColumn('uuid')
-  	id: string = uuidv4();
+	@PrimaryGeneratedColumn('uuid')
+		id: string = uuidv4();
 
 	@Column({
 		type: 'uuid',
 	})
 		userId: string;
 
-	@ManyToOne(()=> File)
+	@ManyToOne(() => File)
 	@JoinColumn()
 		file!: File;
 

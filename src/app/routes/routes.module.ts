@@ -1,7 +1,8 @@
-import { Module, } from '@nestjs/common';
+import { Global, Module, } from '@nestjs/common';
 import FilesModule from './files/files.module';
 
+@Global()
 @Module({
-	imports: [FilesModule],
+	controllers: [FilesModule],
 })
 export default class RoutesModule {}
