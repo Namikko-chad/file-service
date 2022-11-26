@@ -3,13 +3,14 @@ import { File, } from '../db';
 import { Exception, } from '../utils';
 import { Errors, ErrorsMessages, } from '../enum';
 import { StorageType, } from './enum';
-import { FileFormData, Storage as IStorage, StorageOptions, } from './interface';
+import { FileFormData, StorageOptions, } from './interface';
 import { DBStorage, } from './storage.DB';
 import { FolderStorage, } from './storage.Folder';
+import { AbstractStorage, } from './abstract';
 
 export class Storage {
 	defaultStorage: StorageType;
-	storages: Map<StorageType, IStorage> = new Map();
+	storages: Map<StorageType, AbstractStorage> = new Map();
 
 	constructor(options?: StorageOptions) {
 		this.defaultStorage = options?.type ?? StorageType.DB;

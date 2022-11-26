@@ -1,6 +1,6 @@
 import { Plugin, Server, } from '@hapi/hapi';
 import { ReportHandler, } from './report-generator.handler';
-import { UserFilesReport, } from './report.UserFiles';
+import { StorageStatusReport, } from './report.storage-status';
 
 declare module '@hapi/hapi' {
 	export interface ServerApplicationState {
@@ -9,14 +9,14 @@ declare module '@hapi/hapi' {
 }
 
 export enum ReportList {
-	UserFiles = 'user-files',
+	StorageStatus = 'storage-status',
 }
 
-export const ReportPlugin: Plugin<unknown> = {
+export const ReportGeneratorPlugin: Plugin<unknown> = {
 	name: 'report-generator',
 	register(server: Server): void {
 		server.app.reports = new ReportHandler(server);
-		server.app.reports.registerReport(ReportList.UserFiles, new UserFilesReport(server));
+		server.app.reports.registerReport(ReportList.StorageStatus, new StorageStatusReport(server));
 	},
 	dependencies: ['database', 'document-generator'],
 };

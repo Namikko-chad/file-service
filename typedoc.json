@@ -1,6 +1,6 @@
 {
 	"entryPoints": ["./src/main.ts", "./src/sync.ts"],
 	"out": "docs",
-	"name": "File servicer",
+	"name": "File service",
 	"includeVersion": true
 }

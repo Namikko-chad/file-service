@@ -5,7 +5,7 @@ import { DocumentGeneratorOptions, } from './document-generator.options';
 
 export abstract class AbstractTemplate implements DocumentTemplate {
 	private readonly templatesDir: string;
-	abstract name: string;
+	abstract readonly name: string;
 
 	constructor({ templatesDir = 'templates/document', }: DocumentGeneratorOptions) {
 		this.templatesDir = path.resolve(templatesDir);

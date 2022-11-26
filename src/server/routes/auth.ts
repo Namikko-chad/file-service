@@ -38,7 +38,6 @@ export default <ServerRoute[]>[
 		path: '/auth/token/info/{tokenType}',
 		handler: api.tokenInfo,
 		options: {
-			auth: false,
 			pre: [checkEnv],
 			id: 'auth.token.info',
 			description: 'Use this endpoint to decode token',

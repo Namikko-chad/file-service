@@ -4,8 +4,9 @@ import crypto from 'crypto';
 import { config, } from '../config/config';
 import { Errors, } from '../enum';
 import { splitFilename, Exception, } from '../utils';
-import { StorageParam, } from './interface';
+import { FileFormData, StorageParam, } from './interface';
 import { StorageType, } from './enum';
+import { File, } from '../db';
 
 export abstract class AbstractStorage {
 	abstract params: StorageParam;
@@ -42,4 +43,10 @@ export abstract class AbstractStorage {
 		hash_md5.update(data);
 		return hash_md5.digest('hex');
 	}
+
+	abstract saveFile(file: FileFormData): Promise<File>;
+
+	abstract loadFile(file: File): Promise<Buffer>;
+	
+	abstract deleteFile(file: File): Promise<void>;
 }

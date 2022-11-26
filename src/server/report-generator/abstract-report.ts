@@ -1,10 +1,12 @@
 import { Server, } from '@hapi/hapi';
-import { ReportData, } from './report-generator.interfaces';
+import { ReportData, ReportParam, } from './report-generator.interfaces';
 
 export abstract class AbstractReport {
 	abstract reportName: string;
+	abstract readonly template: string;
+	abstract readonly docGenerator: string;
 
 	constructor(protected readonly server: Server) {}
 
-	abstract generator(): Promise<ReportData> | ReportData;
+	abstract generator(param: ReportParam): Promise<ReportData> | ReportData;
 }

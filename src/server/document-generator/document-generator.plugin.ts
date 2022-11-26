@@ -4,6 +4,7 @@ import { DocumentGenerator, } from './document-generator.handler';
 import { docxGenerator, } from './generator.docx';
 import { htmlGenerator, } from './generator.html';
 import { xlsxGenerator, } from './generator.xlsx';
+import { xlsxEmptyTemplate, } from './template.xlsx-empty';
 
 declare module '@hapi/hapi' {
 	export interface ServerApplicationState {
@@ -15,8 +16,9 @@ export const DocumentGeneratorPlugin: Plugin<DocumentGeneratorOptions> = {
 	name: 'document-generator',
 	register(server: Server, options: DocumentGeneratorOptions = {}): void {
 		server.app.documentGenerator = new DocumentGenerator();
-		server.app.documentGenerator.registerGenerator('docx', new docxGenerator(options));
-		server.app.documentGenerator.registerGenerator('xlsx', new xlsxGenerator(options));
-		server.app.documentGenerator.registerGenerator('html', new htmlGenerator(options));
+		[docxGenerator, xlsxGenerator, htmlGenerator].forEach( generator => 
+			server.app.documentGenerator.registerGenerator(generator.name, new generator(options))
+		)
+		server.app.documentGenerator.registerTemplate(xlsxEmptyTemplate.name, new xlsxEmptyTemplate(options));
 	},
 };

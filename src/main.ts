@@ -11,6 +11,8 @@ import { config, swaggerConfig, pinoConfig, } from './server/config';
 import { Database, loadDatabaseConfig, } from './server/db';
 import { SchedulerPlugin, } from './server/scheduler';
 import { StoragePlugin, } from './server/storages';
+import { DocumentGeneratorPlugin, } from './server/document-generator';
+import { ReportGeneratorPlugin, } from './server/report-generator';
 import {
 	handleValidationError,
 	responseHandler,
@@ -81,6 +83,12 @@ export async function init(): Promise<Hapi.Server> {
 	});
 	await server.register({
 		plugin: SchedulerPlugin,
+	});
+	await server.register({
+		plugin: DocumentGeneratorPlugin,
+	});
+	await server.register({
+		plugin: ReportGeneratorPlugin,
 	});
 	// JWT Auth
 	server.auth.strategy(Strategies.Header, 'bearer-access-token', {
