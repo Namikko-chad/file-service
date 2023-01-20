@@ -11,10 +11,7 @@ export class DBStorage extends AbstractStorage {
 
 	async saveFile(uploadedFile: FileFormData): Promise<File> {
 		const hash = this.getHash(uploadedFile.payload);
-		const { mime, ext, } = await this.getExt(
-			uploadedFile.filename,
-			uploadedFile.payload
-		);
+		const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
 		const [file] = await File.findOrCreate({
 			where: {
 				hash,

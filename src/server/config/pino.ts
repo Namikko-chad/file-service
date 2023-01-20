@@ -17,7 +17,7 @@ export function pinoConfig(prettify?: boolean) {
 						messageFormat: '{req.url} - {req.method} - code:{req.statusCode}',
 					},
 				},
-			}
+			  }
 			: false,
 		serializers: {
 			req: function customReqSerializer(req: Hapi.Request) {
@@ -51,6 +51,6 @@ export function pinoConfig(prettify?: boolean) {
 			],
 			censor: '***',
 		},
-		timestamp: () => `,"time":"${new Date(Date.now()).toLocaleString()}"`,
+		timestamp: () => `,"time":"${new Date(Date.now()).toString()}"`,
 	};
 }

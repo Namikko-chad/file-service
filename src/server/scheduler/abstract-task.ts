@@ -4,14 +4,14 @@ import { Transaction, } from 'sequelize';
 export abstract class AbstractTask {
 	protected readonly logPrefix = '[Task:handler]';
 
-  abstract interval: string;
+	abstract interval: string;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(protected server: Server) {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	constructor(protected server: Server) {}
 
-  public get getInterval(): string {
-  	return this.interval;
-  }
+	public get getInterval(): string {
+		return this.interval;
+	}
 
-  abstract handler: (transaction?: Transaction) => Promise<void>;
+	abstract handler: (transaction?: Transaction) => Promise<void>;
 }

@@ -19,39 +19,39 @@ import { File, } from './File';
 }))
 @Table({})
 export class FileUser extends Model {
-  @Column({
-  	type: DataType.UUID,
-  	primaryKey: true,
-  	unique: true,
-  	defaultValue: () => getUUID(),
-  })
+	@Column({
+		type: DataType.UUID,
+		primaryKey: true,
+		unique: true,
+		defaultValue: () => getUUID(),
+	})
 	override id!: string;
 
-  @Column({
-  	type: DataType.UUID,
-  	allowNull: false,
-  })
-  	userId!: string;
+	@Column({
+		type: DataType.UUID,
+		allowNull: false,
+	})
+		userId!: string;
 
-  @ForeignKey(() => File)
-  @Column({
-  	type: DataType.UUID,
-  	allowNull: false,
-  })
-  	fileId!: string;
+	@ForeignKey(() => File)
+	@Column({
+		type: DataType.UUID,
+		allowNull: false,
+	})
+		fileId!: string;
 
-  @Column({
-  	type: DataType.STRING,
-  	allowNull: false,
-  })
-  	name!: string;
+	@Column({
+		type: DataType.STRING,
+		allowNull: false,
+	})
+		name!: string;
 
-  @Column({
-  	type: DataType.BOOLEAN,
-  	defaultValue: false,
-  })
-  	public!: boolean;
+	@Column({
+		type: DataType.BOOLEAN,
+		defaultValue: false,
+	})
+		public!: boolean;
 
-  @BelongsTo(() => File)
-  	file!: File;
+	@BelongsTo(() => File)
+		file!: File;
 }

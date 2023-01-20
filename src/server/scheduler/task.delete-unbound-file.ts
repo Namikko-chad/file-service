@@ -20,8 +20,6 @@ export class DeleteUnboundFileTask extends AbstractTask {
 			},
 			transaction,
 		});
-		await Promise.all(
-			unboundFiles.map((file) => this.server.app.storage.deleteFile(file.id))
-		);
+		await Promise.all(unboundFiles.map((file) => this.server.app.storage.deleteFile(file.id)));
 	};
 }

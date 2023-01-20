@@ -8,9 +8,10 @@ import { config, } from '../config/config';
 import { Exception, getUUID, } from '../utils';
 import { Errors, ErrorsMessages, } from '../enum';
 import { StorageType, } from './enum';
-import { FileFormData, Storage as IStorage, StorageOptions, } from './interface';
+import { FileFormData, StorageOptions, } from './interface';
 import { DBStorage, } from './storage.DB';
 import { FolderStorage, } from './storage.Folder';
+import { AbstractStorage, } from './abstract';
 
 interface FilePayload {
   filename: string;
@@ -25,7 +26,7 @@ interface FilePayload {
 
 export class Storage {
 	defaultStorage: StorageType;
-	storages: Map<StorageType, IStorage> = new Map();
+	storages: Map<StorageType, AbstractStorage> = new Map();
 
 	constructor(options?: StorageOptions) {
 		this.defaultStorage = options?.type ?? StorageType.DB;
@@ -36,11 +37,7 @@ export class Storage {
 	private async loadFileInfo(fileId: string): Promise<File> {
 		const file = await File.findByPk(fileId);
 		if (!file)
-			throw new Exception(
-				Errors.FileNotFound,
-				ErrorsMessages[Errors.FileNotFound],
-				{ fileId, }
-			);
+			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 		return file;
 	}
 

@@ -11,6 +11,8 @@ import { config, swaggerConfig, pinoConfig, } from './server/config';
 import { Database, loadDatabaseConfig, } from './server/db';
 import { SchedulerPlugin, } from './server/scheduler';
 import { StoragePlugin, } from './server/storages';
+import { DocumentGeneratorPlugin, } from './server/document-generator';
+import { ReportGeneratorPlugin, } from './server/report-generator';
 import {
 	handleValidationError,
 	responseHandler,
@@ -20,16 +22,16 @@ import {
 } from './server/utils';
 
 declare module '@hapi/hapi' {
-  interface UserCredentials {
-    id: string;
-  }
-  interface AuthCredentials {
-    fileId: string | undefined;
-  }
-  interface AuthArtifacts {
-    token: string;
-    tokenType: Token;
-  }
+	interface UserCredentials {
+		id: string;
+	}
+	interface AuthCredentials {
+		fileId: string | undefined;
+	}
+	interface AuthArtifacts {
+		token: string;
+		tokenType: Token;
+	}
 }
 
 export async function init(): Promise<Hapi.Server> {
@@ -82,6 +84,12 @@ export async function init(): Promise<Hapi.Server> {
 	await server.register({
 		plugin: SchedulerPlugin,
 	});
+	await server.register({
+		plugin: DocumentGeneratorPlugin,
+	});
+	await server.register({
+		plugin: ReportGeneratorPlugin,
+	});
 	// JWT Auth
 	server.auth.strategy(Strategies.Header, 'bearer-access-token', {
 		validate: tokenValidate,
@@ -99,6 +107,7 @@ export async function init(): Promise<Hapi.Server> {
 
 	// Запускаем сервер
 	try {
+		server.app.scheduler.init();
 		await server.start();
 		server.log('info', `Server running at: ${server.info.uri}`);
 		server.log('info', 'Node.js version ' + process.versions.node);
@@ -109,9 +118,4 @@ export async function init(): Promise<Hapi.Server> {
 	return server;
 }
 
-try {
-	// eslint-disable-next-line @typescript-eslint/no-floating-promises
-	if (!config.test) init();
-} catch (err) {
-	console.error(err);
-}
+init().catch((error) => console.log(error));

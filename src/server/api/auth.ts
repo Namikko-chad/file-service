@@ -3,14 +3,7 @@ import { Boom, } from '@hapi/boom';
 import { sign, } from 'jsonwebtoken';
 import { config, } from '../config/config';
 import { IOutputEmpty, IOutputOk, } from '../interfaces';
-import {
-	decodeJwt,
-	Token,
-	Exception,
-	handlerError,
-	outputEmpty,
-	outputOk,
-} from '../utils';
+import { decodeJwt, Token, Exception, handlerError, outputEmpty, outputOk, } from '../utils';
 import { Errors, ErrorsMessages, } from '../enum';
 
 export function tokenGenerate(r: Request): IOutputOk<{ token: string }> | Boom {
@@ -20,8 +13,8 @@ export function tokenGenerate(r: Request): IOutputOk<{ token: string }> | Boom {
 		const tokenType = r.params['tokenType'] as Token;
 		const token = sign(
 			{ userId, fileId, timestamp: Date.now(), },
-      config.auth.jwt[tokenType].secret as string,
-      { expiresIn: config.auth.jwt[tokenType].lifetime, }
+			config.auth.jwt[tokenType].secret as string,
+			{ expiresIn: config.auth.jwt[tokenType].lifetime, }
 		);
 
 		return outputOk({ token, });
@@ -30,20 +23,15 @@ export function tokenGenerate(r: Request): IOutputOk<{ token: string }> | Boom {
 	}
 }
 
-export function tokenInfo(
-	r: Request
-): IOutputOk<Record<string, unknown>> | Boom {
+export function tokenInfo(r: Request): IOutputOk<Record<string, unknown>> | Boom {
 	/* eslint-disable security/detect-object-injection */
 	try {
 		const tokenType = r.params['tokenType'] as Token;
 		if (!r.headers['authorization'])
-			throw new Exception(
-				Errors.InvalidPayload,
-				ErrorsMessages[Errors.InvalidPayload]
-			);
+			throw new Exception(Errors.InvalidPayload, ErrorsMessages[Errors.InvalidPayload]);
 		const data = decodeJwt(
 			r.headers['authorization'].slice(7),
-      config.auth.jwt[tokenType].secret as string
+			config.auth.jwt[tokenType].secret as string
 		);
 
 		return outputOk({ data, });
