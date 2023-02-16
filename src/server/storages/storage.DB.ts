@@ -1,40 +1,42 @@
 import { File, } from '../db';
 import { AbstractStorage, } from './abstract';
-import { FileFormData, } from './interface';
+import { FilePayload, } from './interface';
 import { StorageType, } from './enum';
 
 export class DBStorage extends AbstractStorage {
 	params = {
-		fileSizeLimit: 1024 * 1024 * 30,
+		fileSizeLimit: 1024 * 1024 * 30, // 30Mb
 	};
 	type = StorageType.DB;
 
-	async saveFile(uploadedFile: FileFormData): Promise<File> {
-		const hash = this.getHash(uploadedFile.payload);
-		const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
-		const [file] = await File.findOrCreate({
-			where: {
-				hash,
-			},
-			defaults: {
-				ext,
-				mime,
-				size: uploadedFile.payload.length,
-				storage: this.type,
-				hash,
-				data: uploadedFile.payload,
-			},
-		});
-		return file;
+	async saveFile(file: File, data: Required<FilePayload>): Promise<void> {
+		switch (true) {
+		case Buffer.isBuffer(data.payload): {
+			await file.update({
+				data: data.payload,
+			})
+		}
+			break;
+		case typeof data.path === 'string': {
+			const loadedData = Buffer.from(data.path as string);
+			await file.update({
+				data: loadedData,
+			})
+		}
+		}
 	}
 
 	async loadFile(file: File): Promise<Buffer> {
-		const fileData = (await File.scope('withData').findByPk(file.id)) as File;
-		return fileData.data as Buffer;
+		await file.reload({
+			attributes: ['data'],
+		})
+		return file.data as Buffer;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	async deleteFile(file: File): Promise<void> {
-		file.data = undefined;
+		await file.update({
+			data: null,
+		})
 	}
 }

@@ -2,6 +2,7 @@ import { Server, } from '@hapi/hapi';
 import { ReportData, ReportParam, } from './report-generator.interfaces';
 
 export abstract class AbstractReport {
+	abstract logPrefix: string;
 	abstract reportName: string;
 	abstract readonly template: string;
 	abstract readonly docGenerator: string;

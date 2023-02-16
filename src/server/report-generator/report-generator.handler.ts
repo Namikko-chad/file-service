@@ -28,11 +28,14 @@ export class ReportHandler {
 			data
 		);
 		const file = await this.server.app.storage.saveFile({
-			filename: name,
+			name: name,
 			headers: {
 				'Content-Type': mime,
 			},
 			payload: content,
+			start: 0,
+			length: 0,
+			multipart: false,
 		});
 		return file;
 	}

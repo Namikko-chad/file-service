@@ -6,7 +6,6 @@ import {
 	IFileResponse,
 	IOutputPagination,
 	IFileEditPayload,
-	IFileCreatePayload,
 } from '../interfaces';
 import {
 	outputOk,
@@ -119,16 +118,10 @@ export async function info(r: Request): Promise<IOutputOk<IFileResponse> | Boom>
 	}
 }
 
-export async function create(r: Request): Promise<IOutputOk<IFileResponse> | Boom> {
+export async function create(r: Request): Promise<IOutputPagination<IFileResponse[]> | IOutputOk<IFileResponse> | Boom> {
 	try {
-		await r.server.app.storage.streamer(r);
-		const payload = r.payload as IFileCreatePayload;
-		if (
-			!payload?.file ||
-      !payload?.file.filename ||
-      !payload.file.payload ||
-      !payload.file.payload.length
-		)
+		const payload = await r.server.app.storage.streamer(r);
+		if (!payload.length)
 			throw new Exception(
 				Errors.InvalidPayload,
 				ErrorsMessages[Errors.InvalidPayload]
@@ -142,25 +135,32 @@ export async function create(r: Request): Promise<IOutputOk<IFileResponse> | Boo
 			},
 			attributes: ['fileId'],
 		});
-		const usedCapacity = await r.server.app.storage.sizeFile(files.map((file) => file.fileId));
-		if (usedCapacity + payload.file.payload.length > config.files.capacityPerUser)
+		let usedCapacity = await r.server.app.storage.sizeFile(files.map((file) => file.fileId));
+		payload.forEach((value) => {
+			usedCapacity = usedCapacity + value.length;
+		})
+		if (usedCapacity > config.files.capacityPerUser)
 			throw new Exception(Errors.StorageLimit, ErrorsMessages[Errors.StorageLimit]);
-		const file = await r.server.app.storage.saveFile(payload.file);
-		const { name, } = splitFilename(payload.file.filename);
-		const [fileUser] = await FileUser.findOrCreate({
-			where: {
-				userId,
-				fileId: file.id,
-				name,
-			},
-			defaults: {
-				userId,
-				fileId: file.id,
-				name,
-			},
-		});
-
-		return outputOk(fileResponse(fileUser, file));
+		const res = await Promise.all(
+			payload.map( async (uploadedFile) => {
+				const file = await r.server.app.storage.saveFile(uploadedFile);
+				const { name, } = splitFilename(uploadedFile.name);
+				const [fileUser] = await FileUser.findOrCreate({
+					where: {
+						userId,
+						fileId: file.id,
+						name,
+					},
+					defaults: {
+						userId,
+						fileId: file.id,
+						name,
+					},
+				});
+				return fileResponse(fileUser, file);
+			})
+		)
+		return res.length === 1 ? outputOk(res.pop() as IFileResponse) : outputPagination(res.length, res);
 	} catch (err) {
 		return handlerError('Create file error', err);
 	}

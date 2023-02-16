@@ -1,6 +1,7 @@
 export enum Errors {
   // Bad Request (400)
   InvalidPayload = 400000,
+  InvalidHeader = 400001,
   // Unauthorized (401)
   TokenExpired = 401001,
   TokenInvalid = 401002,
@@ -29,6 +30,7 @@ export const ErrorsMessages: Record<Errors, string> = {
 	[Errors.Forbidden]: 'Forbidden',
 	[Errors.InternalServerError]: 'Internal server error',
 	[Errors.InvalidPayload]: 'Bad Request',
+	[Errors.InvalidHeader]: 'Bad Request',
 	[Errors.LengthRequired]: 'Length required',
 	[Errors.NotFound]: 'Not found',
 	[Errors.PayloadTooLarge]: 'Payload too large',
