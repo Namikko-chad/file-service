@@ -86,7 +86,7 @@ export class Storage {
 		return file;
 	}
 
-	async sizeFile(fileIds?: string[]): Promise<number> {
+	async fileSize(fileIds?: string[]): Promise<number> {
 		const size = await File.sum('size', {
 			where: {
 				id: fileIds,
@@ -232,6 +232,7 @@ export class Storage {
 			defaults: {
 				ext: uploadedFile.ext,
 				mime: uploadedFile.mime,
+				size: uploadedFile.length,
 				storage: StorageType.DB,
 				hash: uploadedFile.hash,
 			},

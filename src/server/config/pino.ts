@@ -43,11 +43,8 @@ export function pinoConfig(prettify?: boolean) {
 		redact: {
 			// Censoring user's credentials, auth-tokens and file's Buffer representation in payload.
 			paths: [
-				'payload.password',
-				'payload.newPassword',
-				'payload.oldPassword',
 				'req.headers.authorization',
-				'payload.file.payload'
+				'payload'
 			],
 			censor: '***',
 		},

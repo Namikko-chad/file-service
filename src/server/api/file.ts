@@ -121,6 +121,7 @@ export async function info(r: Request): Promise<IOutputOk<IFileResponse> | Boom>
 export async function create(r: Request): Promise<IOutputPagination<IFileResponse[]> | IOutputOk<IFileResponse> | Boom> {
 	try {
 		const payload = await r.server.app.storage.streamer(r);
+		console.log(payload);
 		if (!payload.length)
 			throw new Exception(
 				Errors.InvalidPayload,
@@ -135,7 +136,7 @@ export async function create(r: Request): Promise<IOutputPagination<IFileRespons
 			},
 			attributes: ['fileId'],
 		});
-		let usedCapacity = await r.server.app.storage.sizeFile(files.map((file) => file.fileId));
+		let usedCapacity = await r.server.app.storage.fileSize(files.map((file) => file.fileId));
 		payload.forEach((value) => {
 			usedCapacity = usedCapacity + value.length;
 		})
