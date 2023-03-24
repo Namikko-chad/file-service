@@ -1,8 +1,8 @@
 import { ApiProperty, } from '@nestjs/swagger';
 import { IsInt, IsString, } from 'class-validator';
-import { FindOptionsOrder } from 'typeorm';
+import { FindOptionsOrder, } from 'typeorm';
 
-export class ListDto {
+export default class ListDto {
 	@ApiProperty({
 		required: false,
 		default: 10,
@@ -27,7 +27,7 @@ export class ListDto {
 		required: false,
 	})
 	@IsString()
-		order: FindOptionsOrder<any>;
+		order: FindOptionsOrder<unknown>;
 
 	@ApiProperty({
 		required: false,

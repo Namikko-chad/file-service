@@ -28,14 +28,15 @@ async function bootstrap() {
 	const responseInterceptor = new ResponseInterceptor();
 	app.useGlobalInterceptors(responseInterceptor);
 
-	const document = SwaggerModule.createDocument(app, swagger, {
-		ignoreGlobalPrefix: true,
-	});
-
-	SwaggerModule.setup(`${config.server.route_prefix}/${config.swagger.prefix}`, app, document);
-
 	app.enableCors(config.server.cors);
 	app.use(helmet());
+
+	if (!config.production) {
+		const document = SwaggerModule.createDocument(app, swagger, {
+			ignoreGlobalPrefix: true,
+		});
+		SwaggerModule.setup(`${config.server.route_prefix}/${config.swagger.prefix}`, app, document);
+	}
 
 	await app.startAllMicroservices();
 	await app.listen(config.server.port);

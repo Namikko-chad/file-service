@@ -7,7 +7,6 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 } from 'typeorm';
-
 import { v4 as uuidv4, } from 'uuid';
 import File from './file.entity';
 
@@ -23,9 +22,10 @@ export default class FileUser {
 	})
 		userId: string;
 
-	@ManyToOne(() => File)
-	@JoinColumn()
-		file!: File;
+	@Column({
+		type: 'uuid',
+	})
+		fileId: string;
 
 	@Column({
 		length: 255,
@@ -42,4 +42,8 @@ export default class FileUser {
 
 	@UpdateDateColumn()
 		updatedAt!: Date;
+
+	@ManyToOne(() => File)
+	@JoinColumn()
+		file!: File;
 }
