@@ -25,6 +25,7 @@ export async function initDatabase(config: DatabaseOptions, sync = false): Promi
 	}
 	const sequelize = new Sequelize(uri, options);
 	if (sequelize && (sync || forceSync)) {
+		await sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
 		await sequelize.sync();
 	}
 	return sequelize;
