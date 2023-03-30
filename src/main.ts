@@ -118,4 +118,4 @@ export async function init(): Promise<Hapi.Server> {
 	return server;
 }
 
-init().catch((error) => console.log(error));
+init().catch((error) => console.error(error));

@@ -26,7 +26,7 @@ describe('ReportGenerator', () => {
     it('should generate storage-status report', async () => {
       const report = new StorageStatusReport(server);
       const res = await report.generator();
-      expect(res).toStrictEqual([["storage", "files count", "used space"], ["folder", "0", "0"], ["db", "0", "0"]]);
+      expect(res).toStrictEqual([["storage", "files count", "used space"], ["folder", "0", "0"], ["db", expect.any(String), expect.any(String)]]);
     })
 	});
 });

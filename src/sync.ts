@@ -11,9 +11,4 @@ async function init() {
 	console.log('Database sync complete');
 }
 
-try {
-	// eslint-disable-next-line @typescript-eslint/no-floating-promises
-	init();
-} catch (err) {
-	console.error(err);
-}
+init().catch((error) => console.error(error));

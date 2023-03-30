@@ -13,14 +13,14 @@ export async function initDatabase(config: DatabaseOptions, sync = false): Promi
 			max: 15,
 		},
 	};
-	let uri = config.link
+	const uri = config.link
 		? config.link
 		: // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		  `${config.dialect}://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}`;
 	if (config.test && config.test_link) {
-		uri = 'sqlite::memory';
-		options.dialect = 'sqlite';
-		options.models = [File, FileUser];
+		// uri = 'sqlite::memory';
+		// options.dialect = 'sqlite';
+		// options.models = [File, FileUser];
 		forceSync = true;
 	}
 	const sequelize = new Sequelize(uri, options);

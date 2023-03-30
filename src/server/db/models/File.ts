@@ -1,7 +1,8 @@
-import { Column, DataType, Model, Table, Scopes, HasMany, } from 'sequelize-typescript';
+import { Column, DataType, Table, Scopes, HasMany, } from 'sequelize-typescript';
+import { fn, } from 'sequelize';
 import { StorageType, } from '../../storages';
-import { getUUID, } from '../../utils/index';
 import { FileUser, } from './FileUsers';
+import { AbstractModel, } from './abstract/AbstractModel';
 
 @Scopes(() => ({
 	defaultScope: {
@@ -16,12 +17,12 @@ import { FileUser, } from './FileUsers';
 	},
 }))
 @Table({})
-export class File extends Model {
+export class File extends AbstractModel {
 	@Column({
 		type: DataType.UUID,
 		primaryKey: true,
 		unique: true,
-		defaultValue: () => getUUID(),
+		defaultValue: fn('uuid_generate_v4'),
 	})
 	override id!: string;
 
@@ -59,6 +60,18 @@ export class File extends Model {
 		type: DataType.BLOB,
 	})
 		data?: Buffer;
+
+	@Column({
+		type: DataType.DATE,
+		defaultValue: fn('now'),
+	})
+	override createdAt?: Date;
+
+	@Column({
+		type: DataType.DATE,
+		defaultValue: fn('now'),
+	})
+	override updatedAt?: Date;
 
 	@HasMany(() => FileUser)
 		fileUsers?: FileUser[];

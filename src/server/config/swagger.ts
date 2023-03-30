@@ -7,9 +7,9 @@ export const swaggerConfig = <HapiSwagger.RegisterOptions>{
 	host: `${config.server.host}:${config.server.port}`,
 	grouping: 'tags',
 	info: {
-		title: 'API Documentation',
+		title: 'File-service API Documentation',
 		version: '1.0',
-		description: 'API Documentation',
+		description: 'File-service API Documentation',
 	},
 	securityDefinitions: {
 		Bearer: {

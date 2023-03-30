@@ -1,14 +1,14 @@
 import {
 	Column,
 	DataType,
-	Model,
 	Table,
 	Scopes,
 	ForeignKey,
 	BelongsTo,
 } from 'sequelize-typescript';
-import { getUUID, } from '../../utils/index';
+import { fn, } from 'sequelize';
 import { File, } from './File';
+import { AbstractModel, } from './abstract/AbstractModel';
 
 @Scopes(() => ({
 	defaultScope: {
@@ -18,12 +18,12 @@ import { File, } from './File';
 	},
 }))
 @Table({})
-export class FileUser extends Model {
+export class FileUser extends AbstractModel {
 	@Column({
 		type: DataType.UUID,
 		primaryKey: true,
 		unique: true,
-		defaultValue: () => getUUID(),
+		defaultValue: fn('uuid_generate_v4'),
 	})
 	override id!: string;
 
@@ -51,6 +51,18 @@ export class FileUser extends Model {
 		defaultValue: false,
 	})
 		public!: boolean;
+
+	@Column({
+		type: DataType.DATE,
+		defaultValue: fn('now'),
+	})
+	override createdAt?: Date;
+
+	@Column({
+		type: DataType.DATE,
+		defaultValue: fn('now'),
+	})
+	override updatedAt?: Date;
 
 	@BelongsTo(() => File)
 		file!: File;
