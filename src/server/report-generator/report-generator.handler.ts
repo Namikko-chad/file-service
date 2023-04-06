@@ -14,7 +14,7 @@ export class ReportHandler {
 		this.reports.set(report, worker);
 	}
 
-	public async create(reportType: ReportList | string, reportParam: ReportParam): Promise<File> {
+	public async create(reportType: ReportList | string, reportParam: ReportParam): Promise<[File, Buffer]> {
 		const report = this.reports.get(reportType);
 		if (!report) throw new ReferenceError('Unknown report type');
 		const data = await report.generator(reportParam);
@@ -34,6 +34,6 @@ export class ReportHandler {
 			},
 			payload: content,
 		});
-		return file;
+		return [file, content];
 	}
 }

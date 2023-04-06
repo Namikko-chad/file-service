@@ -12,7 +12,6 @@ import {
 	outputOk,
 	outputEmpty,
 	Exception,
-	splitFilename,
 	handlerError,
 	outputPagination,
 	Token,
@@ -80,10 +79,10 @@ export async function retrieve(r: Request, h: ResponseToolkit): Promise<Response
 
 		viewAccess(r, fileUser);
 
-		const file = await r.server.app.storage.loadFile(fileUser.fileId);
+		const [file, data] = await r.server.app.storage.loadFile(fileUser.fileId);
 
 		const response: ResponseObject = h
-			.response(file.data)
+			.response(data)
 			.type(file.mime)
 			.header('Connection', 'keep-alive')
 			.header('Cache-Control', 'no-cache')
@@ -137,7 +136,7 @@ export async function create(r: Request): Promise<IOutputOk<IFileResponse> | Boo
 		if (usedCapacity + payload.file.payload.length > config.files.capacityPerUser)
 			throw new Exception(Errors.StorageLimit, ErrorsMessages[Errors.StorageLimit]);
 		const file = await r.server.app.storage.saveFile(payload.file);
-		const { name, } = splitFilename(payload.file.filename);
+		const { name, } = r.server.app.storage.splitFilename(payload.file.filename);
 		const [fileUser] = await FileUser.findOrCreate({
 			where: {
 				userId,
@@ -167,7 +166,7 @@ export async function edit(r: Request): Promise<IOutputEmpty | Boom> {
 		editAccess(r, fileUser);
 
 		await fileUser.update({
-			name: payload.name ? splitFilename(payload.name).name : fileUser.name,
+			name: payload.name ? r.server.app.storage.splitFilename(payload.name).name : fileUser.name,
 			public: payload.public ?? fileUser.public,
 		});
 		return outputEmpty();

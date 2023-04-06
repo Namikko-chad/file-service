@@ -52,9 +52,9 @@ export async function flushStorage(r: Request): Promise<IOutputEmpty | Boom> {
 export async function generateReport(r: Request, h: ResponseToolkit): Promise<ResponseObject | Boom> {
 	try {
 		const { reportType, } = r.params as { reportType: string; };
-		const file = await r.server.app.reports.create(reportType, {})
+		const [file, data] = await r.server.app.reports.create(reportType, {})
 		const response: ResponseObject = h
-			.response(file.data)
+			.response(data)
 			.type(file.mime)
 			.header('Connection', 'keep-alive')
 			.header('Cache-Control', 'no-cache')

@@ -1,6 +1,7 @@
+
+import { Column, DataType, Table, Model, Sequelize, } from 'sequelize-typescript';
 import { File, } from '../db';
 import { AbstractStorage, } from './abstract';
-import { FileFormData, } from './interface';
 import { StorageType, } from './enum';
 
 export class DBStorage extends AbstractStorage {
@@ -9,32 +10,45 @@ export class DBStorage extends AbstractStorage {
 	};
 	type = StorageType.DB;
 
-	async saveFile(uploadedFile: FileFormData): Promise<File> {
-		const hash = this.getHash(uploadedFile.payload);
-		const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
-		const [file] = await File.findOrCreate({
-			where: {
-				hash,
-			},
-			defaults: {
-				ext,
-				mime,
-				size: uploadedFile.payload.length,
-				storage: this.type,
-				hash,
-				data: uploadedFile.payload,
-			},
-		});
-		return file;
+	async init(db: Sequelize): Promise<void> {
+		db.addModels([Storage]);
+		await db.sync();
+	}
+
+	async saveFile(file: File, data: Buffer): Promise<void> {
+		await Storage.create({
+			id: file.id,
+			data,
+		})
 	}
 
 	async loadFile(file: File): Promise<Buffer> {
-		const fileData = (await File.scope('withData').findByPk(file.id)) as File;
-		return fileData.data as Buffer;
+		const fileData = await Storage.findByPk(file.id) as Storage;
+		return fileData.data;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	async deleteFile(file: File): Promise<void> {
-		file.data = undefined;
+		await Storage.destroy({
+			where: {
+				id: file.id,
+			},
+		})
 	}
+}
+
+@Table({
+	timestamps: false,
+})
+export class Storage extends Model {
+	@Column({
+		type: DataType.UUID,
+		primaryKey: true,
+		unique: true,
+	})
+	override id!: string;
+
+	@Column({
+		type: DataType.BLOB,
+	})
+		data!: Buffer;
 }

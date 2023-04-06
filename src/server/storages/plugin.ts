@@ -10,7 +10,8 @@ declare module '@hapi/hapi' {
 
 export const StoragePlugin: Plugin<StorageOptions> = {
 	name: 'storage',
-	register: (server: Server, options?: StorageOptions) => {
-		server.app.storage = new Storage(options);
+	register: async (server: Server, options?: StorageOptions) => {
+		server.app.storage = new Storage(server, options);
+		await server.app.storage.init();
 	},
 };
