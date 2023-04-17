@@ -4,10 +4,10 @@ import { Observable, } from 'rxjs';
 import { map, } from 'rxjs/operators';
 
 @Injectable()
-export default class ResponseInterceptor implements NestInterceptor {
-	intercept(_context: ExecutionContext, next: CallHandler): Observable<any> {
+export class ResponseInterceptor implements NestInterceptor {
+	intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
 		return next.handle().pipe(
-			map((value) => {
+			map((value: unknown) => {
 				return {
 					ok: true,
 					result: value,

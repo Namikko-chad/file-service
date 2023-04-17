@@ -1,3 +1,3 @@
-import ListDto from './list.dto';
+import { ListDto, } from './list.dto';
 
 export { ListDto, };

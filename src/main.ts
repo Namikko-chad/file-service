@@ -1,45 +1,40 @@
 import { HttpAdapterHost, NestFactory, } from '@nestjs/core';
-import { SwaggerModule, } from '@nestjs/swagger';
-
+import { ConfigModule, ConfigService, } from '@nestjs/config';
 import helmet from 'helmet';
 
-import AppModule from './app/app.module';
+import { initSwagger, } from 'swagger/swagger';
+import { AppModule, } from 'app/app.module';
+import { AppExceptionsFilter, } from 'app/utils/app.exceptions.filter';
+import { AppValidationPipe, } from 'app/utils/app.validation.pipe';
+import { ResponseInterceptor, } from 'app/utils/app.response.interceptor';
+// import { LoggingInterceptor, } from 'app/utils/app.logging.interceptor';
 
-import AppExceptionsFilter from './app/utils/app.exceptions.filter';
-import AppValidationPipe from './app/utils/app.validation.pipe';
-import ResponseInterceptor from './app/utils/app.response.interceptor';
-
-import config from './app/config/config';
-import swagger from './app/config/swagger.config';
-
-async function bootstrap() {
+async function init() {
+	ConfigModule.forRoot();
+	const config = new ConfigService();
 	const app = await NestFactory.create(AppModule);
 
-	const adapter = app.get(HttpAdapterHost);
-	const exceptionFilter = new AppExceptionsFilter(adapter);
-
-	app.useGlobalFilters(exceptionFilter);
+	app.useGlobalFilters(new AppExceptionsFilter(app.get(HttpAdapterHost)));
 	app.enableShutdownHooks();
-	app.setGlobalPrefix(config.server.route_prefix);
+	app.setGlobalPrefix(config.get<string>('ROUTE_PREFIX') ?? 'api');
 
-	const validatorPipe = new AppValidationPipe();
-	app.useGlobalPipes(validatorPipe);
+	app.useGlobalPipes(new AppValidationPipe());
 
-	const responseInterceptor = new ResponseInterceptor();
-	app.useGlobalInterceptors(responseInterceptor);
+	app.useGlobalInterceptors(new ResponseInterceptor());
+	// app.useGlobalInterceptors(new LoggingInterceptor());
 
-	app.enableCors(config.server.cors);
+	app.enableCors({
+		origin: '*',
+		methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	});
 	app.use(helmet());
 
-	if (!config.production) {
-		const document = SwaggerModule.createDocument(app, swagger, {
-			ignoreGlobalPrefix: true,
-		});
-		SwaggerModule.setup(`${config.server.route_prefix}/${config.swagger.prefix}`, app, document);
+	if (config.getOrThrow<string>('NODE_ENV') !== 'production') {
+		initSwagger(app, config);
 	}
 
 	await app.startAllMicroservices();
-	await app.listen(config.server.port);
+	await app.listen(config.get<number>('SERVER_PORT') ?? 3050);
 }
 
-bootstrap().catch((error) => console.error(error));
+init().catch((error) => console.error(error));

@@ -10,8 +10,8 @@ import { plainToClass, } from 'class-transformer';
 import { validate, } from 'class-validator';
 
 @Injectable()
-export default class AppValidationPipe implements PipeTransform<any> {
-	async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
+export class AppValidationPipe implements PipeTransform<unknown> {
+	async transform(value: unknown, metadata: ArgumentMetadata): Promise<unknown> {
 		const obj = plainToClass(metadata.metatype, value);
 		const errors = await validate(obj);
 

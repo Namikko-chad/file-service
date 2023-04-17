@@ -13,6 +13,7 @@ allFiredEvents
 scTopics
 
 # migrations
+ormconfig.json
 db-config.json
 
 # node-waf configuration

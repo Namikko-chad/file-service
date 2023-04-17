@@ -1,14 +1,14 @@
+import { ConfigModule, ConfigService, } from '@nestjs/config';
 import { DataSource, } from 'typeorm';
 
-import { loadDatabaseConfig, entities, } from './app/database';
-
-const config = loadDatabaseConfig();
+import { databaseConfig, } from './app/database/database.config';
 
 async function init() {
+	ConfigModule.forRoot();
+	const config = new ConfigService();
 	const dataSource = new DataSource({
-		type: 'postgres',
-		url: config.link,
-		entities,
+		...databaseConfig(config),
+		migrations: ['migrations/*.js'],
 		synchronize: true,
 	});
 	await dataSource.initialize();
