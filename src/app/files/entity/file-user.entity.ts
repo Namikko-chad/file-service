@@ -22,7 +22,7 @@ export class FileUser extends AbstractEntity {
 	@Column({
 		default: false,
 	})
-		public!: boolean;
+		public: boolean;
 
 	@ManyToOne(() => File)
 	@JoinColumn({

@@ -1,13 +1,13 @@
 import { Injectable, } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
-import { FileUser, } from '../entity/file-user.entity';
+import { Storage, } from '../entity/storage.entity';
 import { AbstractRepository, } from 'app/database/AbstractRepository';
 
 @Injectable()
-export class FileUserRepository extends AbstractRepository<FileUser> {
+export class StorageRepository extends AbstractRepository<Storage> {
 	constructor(
-		@InjectRepository(FileUser)
-			repository: AbstractRepository<FileUser>
+		@InjectRepository(Storage)
+			repository: AbstractRepository<Storage>
 	) {
 		super(repository.target, repository.manager, repository.queryRunner);
 	}

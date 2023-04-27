@@ -1,7 +1,6 @@
 import {
 	Controller,
 	Get,
-	HttpStatus,
 	Param,
 	Post,
 	Put,
@@ -15,6 +14,7 @@ import {
 	UseInterceptors,
 	Delete,
 	UseGuards,
+	Req,
 } from '@nestjs/common';
 import { FileInterceptor, } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags, } from '@nestjs/swagger';
@@ -27,30 +27,68 @@ import { Express, Response, } from 'express';
 import { FileEditDto, FileInfoDto, } from './dto';
 import { FileService, } from './files.service';
 import { FileUser, } from './entity';
-import { Utils, } from 'app/utils/utils';
 import { Exception, } from 'app/utils/Exception';
-import { AuthTry, } from 'app/auth/auth.decorators';
 import { AdminAccessGuard, } from 'app/auth/guards/admin.guard';
 import { UserAccessGuard, } from 'app/auth/guards/user.guard';
+import { RequestAuth, } from 'app/dto/common.dto';
+import { FileAccessGuard, } from 'app/auth/guards/file.guard';
+import { MultipleAuthorizeGuard, MultipleGuardsReferences, } from 'app/auth/guards/multiple.guard';
+import { AuthTry, } from 'app/auth/auth.decorators';
 
 class QueryDTO {
 	fileId: string;
 }
+
+enum Errors {
+	FileIsPrivate = 403001,
+	UserNotFound = 404001,
+	FileNotFound = 404002,
+}
+
+const ErrorsMessages: Record<Errors, string> = {
+	[Errors.FileIsPrivate]: 'File: Private',
+	[Errors.FileNotFound]: 'File: Not found',
+	[Errors.UserNotFound]: 'User: Not found',
+};
+
 
 @ApiTags('files')
 @Controller('files')
 export class FileController {
 	constructor(private readonly _service: FileService) {}
 
+	private editAccess(req: RequestAuth, file: FileUser): void {
+		const user = req.user;
+		if (file.userId !== user?.id && !(req.artifacts.guard instanceof AdminAccessGuard))
+			throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+	}
+	
+	private viewAccess(req: RequestAuth, file: FileUser): void {
+		if (!file.public) {
+			if (!req.user)
+				throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+			const user = req.user;
+			switch (req.artifacts.guard.constructor) {
+			case UserAccessGuard:
+				if (file.userId !== user?.id)
+					throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+				break;
+			case FileAccessGuard:
+				if (file.id !== req.fileId)
+					throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+			}
+		}
+	}
+
 	@Get()
 	@ApiOperation({
-		summary: 'Use this endpoint to lis`t file',
+		summary: 'Use this endpoint to list file',
 	})
+	@MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
+	@UseGuards(MultipleAuthorizeGuard)
 	@UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
-	async list(
-		@Query() listParam: ListDto<FileUser>
-	): Promise<{ count: number; rows: FileInfoDto[] }> {
-		const [files, count] = await this._service.list(listParam);
+	async list(@Req() req: RequestAuth, @Query() listParam: ListDto<FileUser>): Promise<{ count: number; rows: FileInfoDto[] }> {
+		const [files, count] = await this._service.list(req.user.id, listParam);
 		return { count, rows: files.map((file) => this._service.fileResponse(file)), };
 	}
 
@@ -59,10 +97,11 @@ export class FileController {
 	@ApiOperation({
 		summary: 'Use this endpoint to upload file',
 	})
-	async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileInfoDto> {
-		console.log(file)
-		await Utils.delay(1000);
-		throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented')
+	@MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
+	@UseGuards(MultipleAuthorizeGuard)
+	async uploadFile(@Req() req: RequestAuth, @UploadedFile() file: Express.Multer.File): Promise<FileInfoDto> {
+		const fileUser = await this._service.create(req.user.id, file);
+		return this._service.fileResponse(fileUser)
 	}
 
 	@Get(':fileId')
@@ -70,44 +109,56 @@ export class FileController {
 		summary: 'Use this endpoint to get file',
 	})
 	@AuthTry()
-	async retrieveFile(@Param() params: QueryDTO, @Res({ passthrough: true, }) res: Response): Promise<StreamableFile> {
-		const fileUser = await this._service.retrieve(params.fileId);
+	@MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
+	@UseGuards(MultipleAuthorizeGuard)
+	async retrieveFile(@Req() req: RequestAuth, @Param() params: QueryDTO, @Res({ passthrough: true, }) res: Response): Promise<StreamableFile> {
+		console.log(req.user)
+		const [fileUser, data] = await this._service.retrieve(params.fileId);
+		this.viewAccess(req, fileUser)
 		res.set({
 			'Content-Type': fileUser.file.mime,
 			'Content-Length': fileUser.file.size,
 			'Content-Disposition': 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(fileUser.name + '.' + fileUser.file.ext),
 		});
-		return new StreamableFile(fileUser.file.data)
-	}
-
-	@Put(':fileId')
-	@ApiOperation({
-		summary: 'Use this endpoint to upload new filename or public status',
-	})
-	async fileEdit(@Param() params: QueryDTO, @Body() payload: FileEditDto): Promise<FileInfoDto> {
-		console.log(params, payload)
-		await Utils.delay(1000);
-		throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented')
-	}
-
-	@Delete(':fileId')
-	@ApiOperation({
-		summary: 'Use this endpoint to delete file',
-	})
-	async fileDelete(@Param() params: QueryDTO): Promise<FileInfoDto> {
-		console.log(params)
-		await Utils.delay(1000);
-		throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented')
+		return new StreamableFile(data)
 	}
 
 	@Get(':fileId/info')
 	@ApiOperation({
 		summary: 'Use this endpoint to get information about file',
 	})
-	// @AuthTry()
-	@UseGuards(AdminAccessGuard, UserAccessGuard)
-	async retrieveInfo(@Param() params: QueryDTO): Promise<FileInfoDto> {
+	@AuthTry()
+	@MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
+	@UseGuards(MultipleAuthorizeGuard)
+	async retrieveInfo(@Req() req: RequestAuth, @Param() params: QueryDTO): Promise<FileInfoDto> {
 		const fileUser = await this._service.retrieveInfo(params.fileId);
+		this.viewAccess(req, fileUser)
 		return this._service.fileResponse(fileUser);
+	}
+
+	@Put(':fileId')
+	@ApiOperation({
+		summary: 'Use this endpoint to upload new filename or public status',
+	})
+	@MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
+	@UseGuards(MultipleAuthorizeGuard)
+	// @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
+	async fileEdit(@Req() req: RequestAuth, @Param() params: QueryDTO, @Body() payload: FileEditDto): Promise<FileInfoDto> {
+		let fileUser = await this._service.retrieveInfo(params.fileId);
+		this.editAccess(req, fileUser)
+		fileUser = await this._service.update(params.fileId, payload)
+		return this._service.fileResponse(fileUser);
+	}
+
+	@Delete(':fileId')
+	@ApiOperation({
+		summary: 'Use this endpoint to delete file',
+	})
+	@MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
+	@UseGuards(MultipleAuthorizeGuard)
+	async fileDelete(@Req() req: RequestAuth, @Param() params: QueryDTO): Promise<void> {
+		const fileUser = await this._service.retrieveInfo(params.fileId);
+		this.editAccess(req, fileUser)
+		await this._service.delete(params.fileId);
 	}
 }

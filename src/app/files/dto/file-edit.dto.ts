@@ -1,5 +1,5 @@
 import { ApiProperty, } from '@nestjs/swagger';
-import { IsBoolean, IsString, } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, } from 'class-validator';
 
 export class FileEditDto {
 	@ApiProperty({
@@ -7,6 +7,7 @@ export class FileEditDto {
 		default: false,
 		example: false,
 	})
+	@IsOptional()
 	@IsBoolean()
 		public: boolean;
 
@@ -14,6 +15,7 @@ export class FileEditDto {
 		required: false,
 		example: 'photo.jpg',
 	})
+	@IsOptional()
 	@IsString()
 		name: string;
 }

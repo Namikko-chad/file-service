@@ -94,15 +94,13 @@
     "test": "jest",
     "test:watch": "jest --watch --verbose true",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
     "sync": "node dist/sync",
     "typeorm:migration:run": "typeorm migration:run",
     "typeorm:migration:revert": "typeorm migration:revert",
     "release:major": "npm version major && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
     "release:minor": "npm version minor && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
     "release:patch": "npm version patch && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md && git commit -m 'docs: changelog' && git push origin && git push origin --tags",
-    "prepare": "husky install",
+    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install",
     "compodoc": "npx @compodoc/compodoc -p tsconfig.json -s --port 30080"
   }
 }

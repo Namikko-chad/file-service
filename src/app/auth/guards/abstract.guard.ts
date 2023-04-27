@@ -5,6 +5,7 @@ import { Request, } from 'express';
 import * as jwt from 'jsonwebtoken';
 
 import { IS_PUBLIC_KEY, IS_TRY, } from '../auth.decorators';
+import { RequestAuth, } from 'app/dto/common.dto';
 
 interface IJwtData {
 	userId: string;
@@ -40,16 +41,23 @@ export abstract class AbstractGuard implements CanActivate {
 				throw new Exception(error.name === 'TokenExpiredError' ? 401001 : 401002,
 					error.name === 'TokenExpiredError' ? 'Token expired' : 'Token invalid')
 		}
-		console.log(data)
+		if (data) {
+			const req = context.switchToHttp().getRequest<RequestAuth>()
+			req.user = {
+				id: data.userId,
+			}
+			req.artifacts = {
+				guard: this,
+			}
+			req.fileId = data.fileId;
+		}
 		return true;
-		// throw new UnauthorizedException();
 	}
 
 	handleRequest(err, user) {
 		if (err || !user) {
 			throw err || new UnauthorizedException();
 		}
-
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return user;
 	}

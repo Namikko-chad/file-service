@@ -4,6 +4,9 @@ import { JwtModule, } from '@nestjs/jwt';
 import { AuthConfig, } from './auth.config';
 import { AuthController, } from './auth.controller';
 import { AuthService, } from './auth.service';
+import { AdminAccessGuard, } from './guards/admin.guard';
+import { UserAccessGuard, } from './guards/user.guard';
+import { FileAccessGuard, } from './guards/file.guard';
 
 @Module({
 	imports: [
@@ -15,7 +18,8 @@ import { AuthService, } from './auth.service';
 	providers: [
 		ConfigService,
 		AuthConfig,
-		AuthService 
+		AuthService,
+		AdminAccessGuard, UserAccessGuard, FileAccessGuard
 	],
 	exports: [AuthService],
 })

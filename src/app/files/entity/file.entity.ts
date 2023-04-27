@@ -28,11 +28,4 @@ export class File extends AbstractEntity {
 		length: 255,
 	})
 		hash!: string;
-
-	@Column({
-		type: 'bytea',
-		nullable: true,
-		select: false,
-	})
-		data?: Buffer;
 }

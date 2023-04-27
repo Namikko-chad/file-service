@@ -1,31 +1,26 @@
 import {
+	Body,
 	Controller,
 	Get,
-	HttpStatus,
+	Headers,
 	Param,
 	Post,
+	UseGuards,
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, } from '@nestjs/swagger';
-import { Exception, } from 'app/utils/Exception';
 import { AuthPublic, } from './auth.decorators';
 import { AuthService, } from './auth.service';
-
-enum TokenType {
-	File = 'file',
-	User = 'user',
-	Admin = 'admin',
-}
-
-class ParamsDTO {
-	tokenType!: TokenType
-}
+import { AuthBodyDTO, AuthParamsDTO, } from './auth.dto';
+import { MultipleAuthorizeGuard, MultipleGuardsReferences, } from './guards/multiple.guard';
+import { AdminAccessGuard, } from './guards/admin.guard';
+import { UserAccessGuard, } from './guards/user.guard';
+import { FileAccessGuard, } from './guards/file.guard';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-	// @ts-ignore
 	constructor(private readonly _service: AuthService) {}
 
 	@Post('token/generate/:tokenType')
@@ -34,9 +29,10 @@ export class AuthController {
 	})
 	@AuthPublic()
 	@UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
-	tokenGenerate(@Param() params: ParamsDTO): string {
-		console.log(params)
-		throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented')
+	tokenGenerate(@Param() params: AuthParamsDTO, @Body() payload: AuthBodyDTO): { token: string; } {
+		return {
+			token: this._service.createToken(params.tokenType, payload.userId, payload.fileId),
+		}
 	}
 
 	@Get('token/info/:tokenType')
@@ -44,18 +40,16 @@ export class AuthController {
 		summary: 'Use this endpoint to decode token',
 	})
 	@UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
-	tokenInfo(@Param() params: ParamsDTO): unknown {
-		console.log(params)
-		throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented')
+	tokenInfo(@Param() params: AuthParamsDTO, @Headers() headers: Record<string, string>): unknown {
+		return this._service.decodeToken(params.tokenType, headers['authorization'].slice(7))
 	}
 
 	@Get('token/validate/:tokenType')
 	@ApiOperation({
 		summary: 'Use this endpoint to validate token',
 	})
-	@UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
-	tokenValidate(@Param() params: ParamsDTO): void {
-		console.log(params)
-		throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented')
-	}
+	@MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
+	@UseGuards(MultipleAuthorizeGuard)
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	tokenValidate(): void {}
 }
