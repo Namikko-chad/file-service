@@ -10,15 +10,12 @@ function configLoad() {
 			jwt: {
 				file: {
 					secret: process.env['FA_SECRET'],
-					lifetime: Number(process.env['FA_LIFETIME']),
 				},
 				user: {
 					secret: process.env['UA_SECRET'],
-					lifetime: Number(process.env['UA_LIFETIME']),
 				},
 				admin: {
 					secret: process.env['AA_SECRET'],
-					lifetime: Number(process.env['AA_LIFETIME']),
 				},
 			},
 		},

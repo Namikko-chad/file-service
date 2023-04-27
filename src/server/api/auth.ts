@@ -14,7 +14,7 @@ export function tokenGenerate(r: Request): IOutputOk<{ token: string }> | Boom {
 		const token = sign(
 			{ userId, fileId, timestamp: Date.now(), },
 			config.auth.jwt[tokenType].secret as string,
-			{ expiresIn: config.auth.jwt[tokenType].lifetime, }
+			{ expiresIn: 642000000, }
 		);
 
 		return outputOk({ token, });

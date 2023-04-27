@@ -34,7 +34,7 @@ export default <ServerRoute[]>[
 		handler: api.create,
 		options: {
 			id: 'files.create',
-			description: 'This method allows to upload file',
+			description: 'Use this endpoint to upload file',
 			notes: `Maximum size for the whole request is ${config.files.maxSize / 1024 / 1024} Mb.
 			Allowed extensions are: ${config.files.allowedExtensions.split('|').toString()}`,
 			tags: ['api', 'file'],
@@ -85,7 +85,7 @@ export default <ServerRoute[]>[
 		handler: api.edit,
 		options: {
 			id: 'files.edit',
-			description: 'This method allows to upload new filename or public status',
+			description: 'Use this endpoint to upload new filename or public status',
 			tags: ['api', 'file'],
 			validate: {
 				params: Joi.object({
