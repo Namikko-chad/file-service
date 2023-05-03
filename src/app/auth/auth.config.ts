@@ -13,20 +13,20 @@ export interface JwtAuthInterface {
 
 @Injectable()
 export class AuthConfig {
-	/** JWT auth secrets */
-	public jwt: JwtAuthInterface;
+  /** JWT auth secrets */
+  public jwt: JwtAuthInterface;
 
-	constructor(private readonly configService: ConfigService) {
-		this.jwt = {
-			file: {
-				secret: this.configService.getOrThrow<string>('FA_SECRET'),
-			},
-			user: {
-				secret: this.configService.getOrThrow<string>('UA_SECRET'),
-			},
-			admin: {
-				secret: this.configService.getOrThrow<string>('AA_SECRET'),
-			},
-		};
-	}
+  constructor(private readonly configService: ConfigService) {
+    this.jwt = {
+      file: {
+        secret: this.configService.getOrThrow<string>('FA_SECRET'),
+      },
+      user: {
+        secret: this.configService.getOrThrow<string>('UA_SECRET'),
+      },
+      admin: {
+        secret: this.configService.getOrThrow<string>('AA_SECRET'),
+      },
+    };
+  }
 }

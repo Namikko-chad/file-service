@@ -1,31 +1,32 @@
-import { Entity, Column, } from 'typeorm';
-import { AbstractEntity, } from 'app/database/AbstractEntity';
+import { Column, Entity, } from 'typeorm';
+
+import { AbstractEntity, } from '../../database/AbstractEntity';
 
 @Entity()
 export class File extends AbstractEntity {
-	@Column({
-		length: 10,
-	})
-		ext!: string;
+  @Column({
+    length: 10,
+  })
+    ext!: string;
 
-	@Column({
-		length: 255,
-	})
-		mime!: string;
+  @Column({
+    length: 255,
+  })
+    mime!: string;
 
-	@Column({
-		type: 'bigint',
-	})
-		size!: number;
+  @Column({
+    type: 'bigint',
+  })
+    size!: number;
 
-	@Column({
-		default: 'db',
-		length: 255,
-	})
-		storage!: string;
+  @Column({
+    default: 'db',
+    length: 255,
+  })
+    storage!: string;
 
-	@Column({
-		length: 255,
-	})
-		hash!: string;
+  @Column({
+    length: 255,
+  })
+    hash!: string;
 }
