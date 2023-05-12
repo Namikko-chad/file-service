@@ -12,6 +12,7 @@ class ParamsDTO {
 @ApiTags('control')
 @Controller('control')
 export class ControlController {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   constructor(private readonly _service: ControlService) {}
 

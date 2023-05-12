@@ -16,9 +16,10 @@ export class DBStorage extends AbstractStorage {
   type = StorageType.DB;
 
   async saveFile(file: File, data: Buffer): Promise<void> {
-    const storage = this._storageRepository.create();
-    storage.data = data;
-    storage.id = file.id;
+    const storage = this._storageRepository.create({
+      data,
+      id: file.id,
+    });
     await this._storageRepository.save(storage);
   }
 

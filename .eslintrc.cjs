@@ -175,7 +175,18 @@ const tsRules = {
    * @summary Однотипные импорты и код доступен в своей области видимости
    */
   '@typescript-eslint/no-var-requires': 'warn',
+  /**
+   * @link https://typescript-eslint.io/rules/indent/
+   * @description 
+   * @summary 
+   */
   '@typescript-eslint/indent': ['error', 2],
+  /**
+   * @link https://typescript-eslint.io/rules/no-unused-vars/
+   * @description Проверяет на неиспользуемые переменные
+   * @summary Делает код чище, исключение составляет переменные '_'
+   */
+  '@typescript-eslint/no-unused-vars': ["error", { "destructuredArrayIgnorePattern": "^_" }],
   // For Hapi.js
   '@hapi/hapi/scope-start': 'off',
   '@hapi/hapi/for-loop': 'off',
@@ -199,6 +210,7 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
         'plugin:security/recommended',
+        'prettier',
       ],
       env: {
         node: true,

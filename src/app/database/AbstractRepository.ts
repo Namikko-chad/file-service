@@ -9,15 +9,15 @@ export abstract class AbstractRepository<Entity> extends Repository<Entity> {
     });
   }
 
-  async findOrCreate(param: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[], property: DeepPartial<Entity>): Promise<Entity> {
-    let findRes = (await this.findOneBy(param)) as Entity;
+  async findOrCreate(param: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[], property: DeepPartial<Entity>): Promise<[Entity, boolean]> {
+    const findRes = (await this.findOneBy(param)) as Entity;
+    let newEntity: Entity;
 
     if (!findRes) {
-      const newEntity = this.create(property);
+      newEntity = this.create(property);
       await this.save(newEntity);
-      findRes = newEntity;
     }
 
-    return findRes;
+    return [newEntity ?? findRes, !!findRes];
   }
 }

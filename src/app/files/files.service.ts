@@ -30,7 +30,7 @@ export class FileService {
       headers: {},
       payload: payload.buffer,
     });
-    const fileUser = await this._fileUserRepository.findOrCreate(
+    const [fileUser] = await this._fileUserRepository.findOrCreate(
       {
         userId,
         fileId: file.id,

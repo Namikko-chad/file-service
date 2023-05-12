@@ -55,7 +55,7 @@ const ErrorsMessages: Record<Errors, string> = {
 @ApiTags('files')
 @Controller('files')
 export class FileController {
-  constructor(private readonly _service: FileService) {}
+  private readonly _service: FileService;
 
   private editAccess(req: RequestAuth, file: FileUser): void {
     const user = req.user;
@@ -113,7 +113,6 @@ export class FileController {
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
   async retrieveFile(@Req() req: RequestAuth, @Param() params: QueryDTO, @Res({ passthrough: true, }) res: Response): Promise<StreamableFile> {
-    console.log(req.user);
     const [fileUser, data] = await this._service.retrieve(params.fileId);
 
     this.viewAccess(req, fileUser);

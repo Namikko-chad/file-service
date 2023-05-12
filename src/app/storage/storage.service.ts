@@ -17,13 +17,14 @@ import { FolderStorage, } from './storages/storage.Folder';
 
 @Injectable()
 export class StorageService {
+  @Inject(FileRepository) private readonly _fileRepository: FileRepository;
+  @Inject(StorageConfig) private readonly config: StorageConfig;
   storages: Map<StorageType, AbstractStorage> = new Map();
 
   constructor(
-    @Inject(StorageConfig) private readonly config: StorageConfig,
+  // eslint-disable-next-line @typescript-eslint/indent
     @Inject(DBStorage) dbStorage: DBStorage,
-    @Inject(FolderStorage) folderStorage: FolderStorage,
-    @Inject(FileRepository) private readonly _fileRepository: FileRepository
+    @Inject(FolderStorage) folderStorage: FolderStorage
   ) {
     this.storages.set(StorageType.DB, dbStorage);
     this.storages.set(StorageType.FOLDER, folderStorage);
@@ -84,6 +85,16 @@ export class StorageService {
     return hash_md5.digest('hex');
   }
 
+  private selectStorage(size: number): AbstractStorage {
+    for (const [_, storage] of this.storages) {
+      if (storage.params.fileSizeLimit > size) {
+        return storage;
+      }
+    }
+
+    throw new Exception(HttpStatus.PAYLOAD_TOO_LARGE, 'File is too large');
+  }
+
   private async loadFileInfo(fileId: string): Promise<File> {
     const file = await this._fileRepository.findOneBy({
       id: fileId,
@@ -105,18 +116,21 @@ export class StorageService {
   async saveFile(uploadedFile: FileFormData): Promise<File> {
     const hash = this.getHash(uploadedFile.payload);
     const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
-    const file = this._fileRepository.findOrCreate(
+    const size = uploadedFile.payload.length;
+    const storage = this.selectStorage(size);
+    const [file, created] = await this._fileRepository.findOrCreate(
       {
         hash,
       },
       {
         ext,
         mime,
-        size: uploadedFile.payload.length,
-        storage: StorageType.DB,
+        size,
+        storage: storage.type,
         hash,
       }
     );
+    if (created) await storage.saveFile(file, uploadedFile.payload);
 
     return file;
   }
