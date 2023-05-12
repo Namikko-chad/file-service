@@ -1,4 +1,4 @@
 export enum StorageType {
-	FOLDER = 'folder',
-	DB = 'db',
+  FOLDER = 'folder',
+  DB = 'db',
 }

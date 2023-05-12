@@ -1,15 +1,15 @@
 import { StorageType, } from './enum';
 
 export interface StorageParam {
-	fileSizeLimit: number;
+  fileSizeLimit: number;
 }
 
 export type StorageOptions = {
-	readonly type: StorageType;
+  readonly type: StorageType;
 };
 
 export interface FileFormData {
-	filename: string;
-	headers: object;
-	payload: Buffer;
+  filename: string;
+  headers: object;
+  payload: Buffer;
 }

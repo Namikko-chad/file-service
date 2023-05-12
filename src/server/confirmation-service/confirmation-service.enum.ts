@@ -1,5 +1,5 @@
 export enum ConfirmationStatus {
-	Created = 'created',
-	Sent = 'sent',
-	Confirmed = 'confirmed',
+  Created = 'created',
+  Sent = 'sent',
+  Confirmed = 'confirmed',
 }

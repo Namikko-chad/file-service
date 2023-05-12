@@ -19,8 +19,8 @@ Default success response (200):
 
 ```json
 {
-	"ok": true,
-	"result": {}
+  "ok": true,
+  "result": {}
 }
 ```
 
@@ -28,10 +28,10 @@ Default error response:
 
 ```json
 {
-	"ok": false,
-	"code": 404000,
-	"msg": "Not found.",
-	"data": {}
+  "ok": false,
+  "code": 404000,
+  "msg": "Not found.",
+  "data": {}
 }
 ```
 
@@ -43,10 +43,10 @@ Default response with server pagination:
 
 ```json
 {
-	"ok": true,
-	"result": {
-		"count": 10,
-		"rows": []
-	}
+  "ok": true,
+  "result": {
+    "count": 10,
+    "rows": []
+  }
 }
 ```
