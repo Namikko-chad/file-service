@@ -10,6 +10,6 @@ module.exports = {
 		],
     'scope-empty': [1, 'never'],
     'scope-min-length': [2, 'always', 3],
-    'subject-min-length': [2, 'always', 15],
+    'subject-min-length': [2, 'always', 8],
 	},
 }
