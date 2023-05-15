@@ -37,7 +37,7 @@ import { FileUser, } from './entity';
 import { FileService, } from './files.service';
 
 class QueryDTO {
-  fileId: string;
+  fileId!: string;
 }
 
 enum Errors {

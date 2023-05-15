@@ -143,6 +143,7 @@ export class StorageService {
 
   async deleteFile(fileId: string): Promise<void> {
     const file = await this.loadFileInfo(fileId);
+    await this._fileRepository.delete(fileId);
 
     return this.storages.get(file.storage as StorageType).deleteFile(file);
   }

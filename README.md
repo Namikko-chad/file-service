@@ -2,16 +2,16 @@
 
 The repository provides examples of the main toolkit used to write a basic service on the NestJS framework.
 
-### Required
+## Required
 
 1. NodeJS v16.15.0
 2. Postgres 12
 
-### Pre use required
+## Pre use required
 
 `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
 
-### Project structure
+## Project structure
 
 ```
 test                                ─ e2e tests
@@ -24,112 +24,105 @@ src                                 ─ Source code
 │   │   app.module.ts               ─ Application module
 │   └───auth
 │       ├───guards                  ─ Auth guards implementations
-│       └───strategies              ─ Auth strategies implementations
-│
-├───────config                      ─ Server configs
 │
 ├───────database
 │       │   database.module.ts      ─ Database module with db connection
-│       ├───entity                  ─ TypeORM entities
-│       └───repositories            ─ Database repositories
 │
-├───────routes
-│       │   routes.module.ts        ─ Routes module with routes connection
-│       ├───v1                      ─ Module with routes of version 1
-│       │   ├───auth                ─ Example of auth routes
-│       │   ├───jobs                ─ Routes for jobs testing
-│       │   ├───users               ─ Routes for users testing
-│       │   ├───template            ─ Other templates routes
-│       │   └───other routes module
-│       │
-│       └───other versions module
+├───────files                       ─ Files module
 │
-├───────other modules
+├───────storage                     ─ Storage module
 │
 └───────utils                       ─ Utils.
 ```
 
-### Files naming
+## Files naming
 
 ```
 {name}.{resource_type}.ts
 {name}.{resource_type}.spec.ts - For unit tests.
 ```
 
-### Service start:
+## Service start
 
-1. Create .env file from env_template
+1. Create .env file from .env.example
 2. Install node-modules
 
 ```
-npm install
+pnpm install
 ```
 
-3. Create ormconfig.json file from ormconfig.json_template or use
+3. Build project
+
+```
+pnpm build
+```
+
+4. Create ormconfig.json file from ormconfig.json_template or use
 
 ```
 npx typeorm init
 ```
 
-4. Run migrations.
+5. Sync database.
 
 ```
-npm run-script typeorm:migration:run
+pnpm sync
 ```
 
-5. Start tests
+6. Run migrations.
 
 ```
-npm tests
+npx typeorm:migration:run
 ```
 
-6. Start server
+7. Start tests
 
 ```
-npm start
+pnpm tests
 ```
 
-7. Checkout swagger (Default: http://localhost:3000/api/api-info)
-
-### Server responses
-
-Success:
+8. Start server
 
 ```
+pnpm start
+```
+
+9. Checkout swagger (Default: http://localhost:3050/api/documentation)
+
+## Default server response
+
+### Default success response (200):
+
+```json
 {
   "ok": true,
-  "result": {result}
+  "result": {}
 }
 ```
 
+### Default error response:
+
+```json
+{
+  "ok": false,
+  "code": 404000,
+  "msg": "Not found.",
+  "data": {}
+}
 ```
+
+### Default pagination 
+
+`GET - /api/files?offset=10&limit=10`
+
+Default response with server pagination:
+
+```json
 {
   "ok": true,
   "result": {
-    "id": "9eccf36c-976b-4876-830d-72976cb449a1",
-    "firstname": "firstname",
-    "lastname": "lastname",
-    "email": "d29f9cbd-1da1-4a88-8f1c-5d38016cfed0@email.com"
+    "count": 10,
+    "rows": []
   }
-}
-```
-
-Error:
-
-```
-{
-  "ok": false,
-  "statusCode": {Status code},
-  "timestamp": {Timestamp},
-  "message": {Error message}
-}
-```
-
-```
-{
-  "ok": false,
-  "statusCode": 403,
-  "timestamp": "2022-05-24T11:36:58.434Z",
-  "message": "Wrong password"
 }
 ```

@@ -8,6 +8,12 @@
       "root": "src",
       "entryFile": "main",
       "sourceRoot": "src"
+    },
+    "sync": {
+      "type": "application",
+      "root": "src",
+      "entryFile": "sync",
+      "sourceRoot": "src"
     }
   }
 }

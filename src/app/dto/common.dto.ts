@@ -6,7 +6,7 @@ export interface RequestAuth extends Request {
   artifacts: {
     guard: AbstractGuard;
   };
-  user?: {
+  user: {
     id: string;
   };
   fileId?: string;

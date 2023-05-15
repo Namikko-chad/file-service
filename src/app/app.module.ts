@@ -1,10 +1,12 @@
 import { Module, } from '@nestjs/common';
 import { ConfigModule, } from '@nestjs/config';
+import { ScheduleModule, } from '@nestjs/schedule';
 
 import { AuthModule, } from './auth/auth.module';
 import { ControlModule, } from './control/control.module';
 import { DatabaseModule, } from './database/database.module';
 import { FileModule, } from './files/files.module';
+import { SchedulerTasksModule, } from './scheduler-tasks/scheduler.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { FileModule, } from './files/files.module';
       isGlobal: true,
     }),
     DatabaseModule,
+    ScheduleModule.forRoot(),
+    SchedulerTasksModule,
     AuthModule,
     FileModule,
     ControlModule

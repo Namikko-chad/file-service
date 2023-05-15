@@ -12,10 +12,6 @@ pids
 allFiredEvents
 scTopics
 
-# migrations
-ormconfig.json
-db-config.json
-
 # node-waf configuration
 .lock-wscript
 
@@ -48,6 +44,9 @@ test.js
 
 # DB
 db.sqlite
+db-config.json
+.ormconfig
+ormconfig.json
 
 # Cache
 .eslintcache
