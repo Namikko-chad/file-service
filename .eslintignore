@@ -3,6 +3,7 @@
 /node_modules
 /plugins
 /build
+/dist
 /lib
 /test
 .eslintrc.js

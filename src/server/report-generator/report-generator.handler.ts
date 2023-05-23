@@ -1,18 +1,19 @@
 import { Server, } from '@hapi/hapi';
-import { DocumentMeta, } from '../document-generator';
+
 import { File, } from '../db';
+import { DocumentMeta, } from '../document-generator';
 import { AbstractReport, } from './abstract-report';
 import { ReportParam, } from './report-generator.interfaces';
 import { ReportList, } from './report-generator.plugin';
 
 export class ReportHandler {
-	private reports = new Map<ReportList | string, AbstractReport>();
+  private reports = new Map<ReportList | string, AbstractReport>();
 
-	constructor(private readonly server: Server) {}
+  constructor(private readonly server: Server) {}
 
-	public registerReport(report: ReportList | string, worker: AbstractReport): void {
-		this.reports.set(report, worker);
-	}
+  public registerReport(report: ReportList | string, worker: AbstractReport): void {
+    this.reports.set(report, worker);
+  }
 
 	public async create(reportType: ReportList | string, reportParam: ReportParam): Promise<File> {
 		const report = this.reports.get(reportType);

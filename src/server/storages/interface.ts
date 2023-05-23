@@ -2,11 +2,11 @@ import fs from 'fs';
 import { StorageType, } from './enum';
 
 export interface StorageParam {
-	fileSizeLimit: number;
+  fileSizeLimit: number;
 }
 
 export type StorageOptions = {
-	readonly type: StorageType;
+  readonly type: StorageType;
 };
 
 export interface FilePayload {

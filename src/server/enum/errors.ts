@@ -1,7 +1,10 @@
 export enum Errors {
   // Bad Request (400)
   InvalidPayload = 400000,
+<<<<<<< HEAD
   InvalidHeader = 400001,
+=======
+>>>>>>> 35e75f8c834ab18aa28b9f1cbdea578849276554
   // Unauthorized (401)
   TokenExpired = 401001,
   TokenInvalid = 401002,
@@ -19,6 +22,8 @@ export enum Errors {
   // Conflict (409)
   Conflict = 409000,
   StorageLimit = 409001,
+  // Payload too large,
+  PayloadTYooLarge = 413000,
   // Internal Server Error (500)
   InternalServerError = 500000,
 }

@@ -1,5 +1,5 @@
-import { Request, ResponseObject, ResponseToolkit, } from '@hapi/hapi';
 import { Boom, } from '@hapi/boom';
+<<<<<<< HEAD
 import {
 	IOutputEmpty,
 	IOutputOk,
@@ -19,186 +19,179 @@ import {
 import { Errors, ErrorsMessages, } from '../enum';
 import { File, FileUser, } from '../db';
 import { fileResponse, } from '../helper/fileResponse';
+=======
+import { Request, ResponseObject, ResponseToolkit, } from '@hapi/hapi';
+
+>>>>>>> 35e75f8c834ab18aa28b9f1cbdea578849276554
 import { config, } from '../config/config';
+import { File, FileUser, } from '../db';
+import { Errors, ErrorsMessages, } from '../enum';
+import { fileResponse, } from '../helper/fileResponse';
+import { IFileCreatePayload,IFileEditPayload, IFileResponse, IOutputEmpty, IOutputOk, IOutputPagination, } from '../interfaces';
+import { Exception, handlerError, outputEmpty, outputOk, outputPagination, Token, } from '../utils';
 
 function editAccess(r: Request, file: FileUser): void {
-	const user = r.auth.credentials.user;
-	if (file.userId !== user?.id && r.auth.artifacts.tokenType !== Token.Admin)
-		throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+  const user = r.auth.credentials.user;
+  if (file.userId !== user?.id && r.auth.artifacts.tokenType !== Token.Admin)
+    throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
 }
 
 function viewAccess(r: Request, file: FileUser): void {
-	if (!file.public) {
-		if (!r.auth.isAuthenticated)
-			throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
-		const user = r.auth.credentials.user;
-		switch (r.auth.artifacts.tokenType) {
-		case Token.User:
-			if (file.userId !== user?.id)
-				throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
-			break;
-		case Token.File:
-			if (file.id !== r.auth.credentials.fileId)
-				throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
-		}
-	}
+  if (!file.public) {
+    if (!r.auth.isAuthenticated) throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+    const user = r.auth.credentials.user;
+
+    switch (r.auth.artifacts.tokenType) {
+      case Token.User:
+        if (file.userId !== user?.id) throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+        break;
+      case Token.File:
+        if (file.id !== r.auth.credentials.fileId) throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+    }
+  }
 }
 
 export async function list(r: Request): Promise<IOutputPagination<IFileResponse[]> | Boom> {
-	try {
-		const user = r.auth.credentials.user;
-		if (!user) throw new Exception(Errors.UserNotFound, ErrorsMessages[Errors.UserNotFound]);
-		const { id: userId, } = user;
-		const { rows, count, } = await FileUser.findAndCountAll({
-			where: {
-				userId,
-			},
-			include: [
-				{
-					model: File,
-					required: true,
-				}
-			],
-		});
+  try {
+    const user = r.auth.credentials.user;
+    if (!user) throw new Exception(Errors.UserNotFound, ErrorsMessages[Errors.UserNotFound]);
+    const { id: userId, } = user;
+    const { rows, count, } = await FileUser.findAndCountAll({
+      where: {
+        userId,
+      },
+      include: [
+        {
+          model: File,
+          required: true,
+        }
+      ],
+    });
 
-		return outputPagination(
-			count,
-			rows.map((row) => fileResponse(row, row.file))
-		);
-	} catch (err) {
-		return handlerError('Failed get file list', err);
-	}
+    return outputPagination(
+      count,
+      rows.map((row) => fileResponse(row, row.file))
+    );
+  } catch (err) {
+    return handlerError('Failed get file list', err);
+  }
 }
 
 export async function retrieve(r: Request, h: ResponseToolkit): Promise<ResponseObject | Boom> {
-	try {
-		const { fileId, } = r.params as { fileId: string };
-		const fileUser = await FileUser.findByPk(fileId);
-		if (!fileUser)
-			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+  try {
+    const { fileId, } = r.params as { fileId: string };
+    const fileUser = await FileUser.findByPk(fileId);
+    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 
-		viewAccess(r, fileUser);
+    viewAccess(r, fileUser);
 
-		const file = await r.server.app.storage.loadFile(fileUser.fileId);
+    const [file, data] = await r.server.app.storage.loadFile(fileUser.fileId);
 
-		const response: ResponseObject = h
-			.response(file.data)
-			.type(file.mime)
-			.header('Connection', 'keep-alive')
-			.header('Cache-Control', 'no-cache')
-			.header(
-				'Content-Disposition',
-				'attachment; filename*=UTF-8\'\'' + encodeURIComponent(fileUser.name + '.' + file.ext)
-			);
-		return response;
-	} catch (err) {
-		return handlerError('Failed retrieve file', err);
-	}
+    const response: ResponseObject = h
+      .response(data)
+      .type(file.mime)
+      .header('Connection', 'keep-alive')
+      .header('Cache-Control', 'no-cache')
+      .header('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(fileUser.name + '.' + file.ext));
+
+    return response;
+  } catch (err) {
+    return handlerError('Failed retrieve file', err);
+  }
 }
 
 export async function info(r: Request): Promise<IOutputOk<IFileResponse> | Boom> {
-	try {
-		const { fileId, } = r.params as { fileId: string };
-		const fileUser = await FileUser.findByPk(fileId, {
-			include: [
-				{
-					model: File,
-					required: true,
-				}
-			],
-		});
-		if (!fileUser)
-			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+  try {
+    const { fileId, } = r.params as { fileId: string };
+    const fileUser = await FileUser.findByPk(fileId, {
+      include: [
+        {
+          model: File,
+          required: true,
+        }
+      ],
+    });
+    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 
-		viewAccess(r, fileUser);
+    viewAccess(r, fileUser);
 
-		return outputOk(fileResponse(fileUser, fileUser.file));
-	} catch (err) {
-		return handlerError('Failed retrieve file info', err);
-	}
+    return outputOk(fileResponse(fileUser, fileUser.file));
+  } catch (err) {
+    return handlerError('Failed retrieve file info', err);
+  }
 }
 
-export async function create(r: Request): Promise<IOutputPagination<IFileResponse[]> | IOutputOk<IFileResponse> | Boom> {
-	try {
+export async function create(r: Request, h: ResponseToolkit): Promise<ResponseObject | IOutputOk<IFileResponse> | Boom> {
+  try {
 		const payload = await r.server.app.storage.streamer(r);
 		console.log(payload);
-		if (!payload.length)
-			throw new Exception(
-				Errors.InvalidPayload,
-				ErrorsMessages[Errors.InvalidPayload]
-			);
-		const user = r.auth.credentials.user;
-		if (!user) throw new Exception(Errors.UserNotFound, ErrorsMessages[Errors.UserNotFound]);
-		const { id: userId, } = user;
-		const files = await FileUser.findAll({
-			where: {
-				userId,
-			},
-			attributes: ['fileId'],
-		});
-		let usedCapacity = await r.server.app.storage.fileSize(files.map((file) => file.fileId));
-		payload.forEach((value) => {
-			usedCapacity = usedCapacity + value.length;
-		})
-		if (usedCapacity > config.files.capacityPerUser)
-			throw new Exception(Errors.StorageLimit, ErrorsMessages[Errors.StorageLimit]);
-		const res = await Promise.all(
-			payload.map( async (uploadedFile) => {
-				const file = await r.server.app.storage.saveFile(uploadedFile);
-				const { name, } = splitFilename(uploadedFile.name);
-				const [fileUser] = await FileUser.findOrCreate({
-					where: {
-						userId,
-						fileId: file.id,
-						name,
-					},
-					defaults: {
-						userId,
-						fileId: file.id,
-						name,
-					},
-				});
-				return fileResponse(fileUser, file);
-			})
-		)
-		return res.length === 1 ? outputOk(res.pop() as IFileResponse) : outputPagination(res.length, res);
-	} catch (err) {
-		return handlerError('Create file error', err);
-	}
+    // const payload = r.payload as IFileCreatePayload;
+    if (!payload?.file || !payload?.file.filename || !payload.file.payload.length)
+      throw new Exception(Errors.InvalidPayload, ErrorsMessages[Errors.InvalidPayload]);
+    const user = r.auth.credentials.user;
+    if (!user) throw new Exception(Errors.UserNotFound, ErrorsMessages[Errors.UserNotFound]);
+    const { id: userId, } = user;
+    const files = await FileUser.findAll({
+      where: {
+        userId,
+      },
+      attributes: ['fileId'],
+    });
+    const usedCapacity = await r.server.app.storage.sizeFile(files.map((file) => file.fileId));
+    if (usedCapacity + payload.file.payload.length > config.files.capacityPerUser)
+      throw new Exception(Errors.StorageLimit, ErrorsMessages[Errors.StorageLimit]);
+    const file = await r.server.app.storage.saveFile(payload.file);
+    const { name, } = r.server.app.storage.splitFilename(payload.file.filename);
+    const [fileUser] = await FileUser.findOrCreate({
+      where: {
+        userId,
+        fileId: file.id,
+        name,
+      },
+      defaults: {
+        userId,
+        fileId: file.id,
+        name,
+      },
+    });
+
+    return h.response(outputOk(fileResponse(fileUser, file))).code(201);
+  } catch (err) {
+    return handlerError('Create file error', err);
+  }
 }
 
 export async function edit(r: Request): Promise<IOutputEmpty | Boom> {
-	try {
-		const payload = r.payload as IFileEditPayload;
-		const { fileId, } = r.params as { fileId: string };
-		const fileUser = await FileUser.findByPk(fileId);
-		if (!fileUser)
-			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
-		editAccess(r, fileUser);
+  try {
+    const payload = r.payload as IFileEditPayload;
+    const { fileId, } = r.params as { fileId: string };
+    const fileUser = await FileUser.findByPk(fileId);
+    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+    editAccess(r, fileUser);
 
-		await fileUser.update({
-			name: payload.name ? splitFilename(payload.name).name : fileUser.name,
-			public: payload.public ?? fileUser.public,
-		});
-		return outputEmpty();
-	} catch (err) {
-		return handlerError('Edit file error', err);
-	}
+    await fileUser.update({
+      name: payload.name ? r.server.app.storage.splitFilename(payload.name).name : fileUser.name,
+      public: payload.public ?? fileUser.public,
+    });
+
+    return outputEmpty();
+  } catch (err) {
+    return handlerError('Edit file error', err);
+  }
 }
 
 export async function destroy(r: Request): Promise<IOutputEmpty | Boom> {
-	try {
-		const { fileId, } = r.params as { fileId: string };
-		const fileUser = await FileUser.findByPk(fileId);
+  try {
+    const { fileId, } = r.params as { fileId: string };
+    const fileUser = await FileUser.findByPk(fileId);
 
-		if (!fileUser)
-			throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
 
-		editAccess(r, fileUser);
-		await fileUser.destroy();
+    editAccess(r, fileUser);
+    await fileUser.destroy();
 
-		return outputEmpty();
-	} catch (err) {
-		return handlerError('Destroy file error', err);
-	}
+    return outputEmpty();
+  } catch (err) {
+    return handlerError('Destroy file error', err);
+  }
 }

@@ -1,4 +1,4 @@
 export enum EmailType {
-	Confirmation = 'confirmation',
-	Test = 'test',
+  Confirmation = 'confirmation',
+  Test = 'test',
 }

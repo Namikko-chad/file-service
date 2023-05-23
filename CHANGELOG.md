@@ -1,3 +1,17 @@
+## [3.5.0](https://github.com/Namikko-chan/file-service/compare/v3.4.0...v3.5.0) (2023-05-12)
+
+
+### Features
+
+* added sync query ([ccc8977](https://github.com/Namikko-chan/file-service/commit/ccc89770b4cfbdea9c86a81f5a79c821e901a790))
+* **reports:** added new report ([69c3250](https://github.com/Namikko-chan/file-service/commit/69c3250664a9289f6f90017fa6c9159cb54f935f))
+* **storage:** new model for db-storage ([a412fda](https://github.com/Namikko-chan/file-service/commit/a412fda7d9c9e20ae790220b2b57b3db4f1d872e))
+
+
+### Bug Fixes
+
+* **style:** code and config ([e985479](https://github.com/Namikko-chan/file-service/commit/e985479e243802efe7a9e7e3dc1712881e314e54))
+
 ## [3.4.0](https://github.com/Namikko-chan/file-service/compare/v3.3.0...v3.4.0) (2022-10-26)
 
 

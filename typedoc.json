@@ -1,6 +1,0 @@
-{
-	"entryPoints": ["./src/main.ts", "./src/sync.ts"],
-	"out": "docs",
-	"name": "File service",
-	"includeVersion": true
-}

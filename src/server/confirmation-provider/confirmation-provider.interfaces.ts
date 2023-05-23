@@ -1,13 +1,10 @@
 import { ConfirmationProviderList, } from './confirmation-provider.enum';
 
 export interface ConfirmationProviderServerAddon {
-	confirmationProviderSend(
-		_provider: ConfirmationProviderList,
-		_data: ConfirmationSendData,
-	): Promise<boolean>;
+  confirmationProviderSend(_provider: ConfirmationProviderList, _data: ConfirmationSendData): Promise<boolean>;
 }
 
 export interface ConfirmationSendData {
-	code: string;
-	to: string;
+  code: string;
+  to: string;
 }

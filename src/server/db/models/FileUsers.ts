@@ -1,57 +1,42 @@
-import {
-	Column,
-	DataType,
-	Model,
-	Table,
-	Scopes,
-	ForeignKey,
-	BelongsTo,
-} from 'sequelize-typescript';
-import { getUUID, } from '../../utils/index';
+import { BelongsTo,Column, DataType, ForeignKey, Scopes, Table, } from 'sequelize-typescript';
+
+import { AbstractModel, } from './abstract/AbstractModel';
 import { File, } from './File';
 
 @Scopes(() => ({
-	defaultScope: {
-		attributes: {
-			exclude: ['createdAt', 'updatedAt'],
-		},
-	},
+  defaultScope: {
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  },
 }))
 @Table({})
-export class FileUser extends Model {
-	@Column({
-		type: DataType.UUID,
-		primaryKey: true,
-		unique: true,
-		defaultValue: () => getUUID(),
-	})
-	override id!: string;
+export class FileUser extends AbstractModel {
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+    userId!: string;
 
-	@Column({
-		type: DataType.UUID,
-		allowNull: false,
-	})
-		userId!: string;
+  @ForeignKey(() => File)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+    fileId!: string;
 
-	@ForeignKey(() => File)
-	@Column({
-		type: DataType.UUID,
-		allowNull: false,
-	})
-		fileId!: string;
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+    name!: string;
 
-	@Column({
-		type: DataType.STRING,
-		allowNull: false,
-	})
-		name!: string;
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+    public!: boolean;
 
-	@Column({
-		type: DataType.BOOLEAN,
-		defaultValue: false,
-	})
-		public!: boolean;
-
-	@BelongsTo(() => File)
-		file!: File;
+  @BelongsTo(() => File)
+    file!: File;
 }
