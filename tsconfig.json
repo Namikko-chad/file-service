@@ -1,18 +1,23 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "baseUrl": "./src",
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "incremental": true,
     "lib": ["ES2021"],
     "module": "node16",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": false,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
@@ -21,10 +26,14 @@
     "removeComments": true,
     "resolveJsonModule": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "strict": true,
     "target": "ES2021",
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "server": ["src/server"]
+    }
   },
   "include": ["./src/**/*.ts"],
-  "exclude": ["node_modules", "build", "test"]
+  "exclude": ["node_modules", "test", "build"]
 }

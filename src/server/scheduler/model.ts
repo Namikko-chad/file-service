@@ -1,4 +1,4 @@
-import { DataTypes, } from 'sequelize';
+import { fn, } from 'sequelize';
 import { Column, DataType, Model, Table, } from 'sequelize-typescript';
 
 import { getUUID, } from '../utils';
@@ -25,7 +25,7 @@ export class SchedulerTask extends Model {
   @Column({
     type: DataType.DATE,
     allowNull: false,
-    defaultValue: DataTypes.NOW,
+    defaultValue: fn('now'),
   })
     startedAt!: string;
 
@@ -46,5 +46,5 @@ export class SchedulerTask extends Model {
     type: DataType.TEXT,
     allowNull: true,
   })
-    error!: unknown;
+    error!: string;
 }
