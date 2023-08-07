@@ -14,8 +14,8 @@ export function loadDatabaseConfig(): DatabaseOptions {
       username: String(process.env['DATABASE_USERNAME']),
       password: String(process.env['DATABASE_PASSWORD']),
       database: String(process.env['DATABASE_NAME']),
-      development: process.env['NODE_ENV'] === 'development' ? true : false,
-      test: process.env['NODE_ENV'] === 'test' ? true : false,
+      development: process.env['MODE'] === 'development' ? true : false,
+      test: process.env['MODE'] === 'test' ? true : false,
       test_link: String(process.env['TEST_DATABASE_LINK']),
       logging: undefined,
     };

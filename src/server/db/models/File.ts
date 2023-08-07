@@ -33,7 +33,6 @@ export class File extends AbstractModel {
 
   @Column({
     type: DataType.STRING,
-    defaultValue: StorageType.DB,
   })
     storage!: StorageType;
 

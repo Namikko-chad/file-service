@@ -1,5 +1,5 @@
 FROM node:18
-ENV NODE_ENV=production
+ENV MODE=production
 WORKDIR /app
 COPY "./build" "./build"
 COPY ["./package.json", "./pnpm-lock.yaml", "./app.json", "./"]
