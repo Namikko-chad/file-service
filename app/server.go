@@ -1,16 +1,18 @@
 package app
 
 import (
-	"file-service/app/config"
+	_ "github.com/joho/godotenv/autoload"
+
+	_ "file-service/app/config"
 	"file-service/app/db"
-	"file-service/app/routes"
-	"file-service/docs"
+	_ "file-service/app/storage"
+	// "file-service/app/routes"
+	// "file-service/docs"
 
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	// ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
-
-	swaggerfiles "github.com/swaggo/files"
+	// swaggerfiles "github.com/swaggo/files"
 )
 
 type Server struct {
@@ -23,14 +25,13 @@ var (
 )
 
 func CreateServer() {
-	config.New()
 	server.DB = db.ConnectDB()
 	db.MigrateDB(server.DB)
-	go db.MockDB(server.DB)
-	gin.SetMode(config.Config.Mode)
-	server.Router = gin.Default()
-	router := server.Router.Group("/api")
-	routes.AddRoutes(router)
+	// go db.MockDB(server.DB)
+	// gin.SetMode(config.Config.Mode)
+	// server.Router = gin.Default()
+	// router := server.Router.Group("/api")
+	// routes.AddRoutes(router)
 	// Swagger
 	// @title           File-Service
 	// @version         1.0
@@ -45,13 +46,12 @@ func CreateServer() {
 	// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
 	// @securityDefinitions.apikey  JWT
-	docs.SwaggerInfo.BasePath = "/api"
-	docs.SwaggerInfo.Host = config.Config.Server.Host + ":" + config.Config.Server.Port
-	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	router.GET("documentation/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	server.Router.Run(config.Config.Server.Host + ":" + config.Config.Server.Port)
+	// docs.SwaggerInfo.BasePath = "/api"
+	// docs.SwaggerInfo.Host = config.Config.Server.Host + ":" + config.Config.Server.Port
+	// docs.SwaggerInfo.Version = "1.0"
+	// docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	// router.GET("documentation/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	// server.Router.Run(config.Config.Server.Host + ":" + config.Config.Server.Port)
 	// JWT
-	
 
 }

@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"file-service/app/config"
 	"fmt"
 	"net/http"
 	"time"
@@ -18,13 +17,11 @@ type JWTService interface {
 
 type jwtConfig struct {
 	secretKey string
-	lifetime  uint64
 }
 
 func JWTAuthService() JWTService {
 	return &jwtConfig{
-		secretKey: config.Config.Auth.AccessToken,
-		lifetime:  config.Config.Auth.AccessTokenLifetime,
+		secretKey: "config.Config.Auth.AccessToken",
 	}
 }
 
@@ -37,7 +34,7 @@ func (service *jwtConfig) GenerateToken(UserId uuid.UUID) string {
 	data := &AuthData{
 		UserId,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(service.lifetime)).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(900000)).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}

@@ -1,16 +1,19 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type File struct {
-	ID      uuid.UUID `gorm:"primaryKey;type:varchar(255)"`
-	EXT     string    `gorm:"type:varchar(10)"`
-	MIME    string    `gorm:"type:varchar(255)"`
-	Storage string    `gorm:"type:varchar(255)"`
-	Hash    string    `gorm:"type:varchar(255)"`
-	Data    []byte    `gorm:"type:bytea"`
-	gorm.Model
+	ID        uuid.UUID `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	EXT       string    `gorm:"type:varchar(10);column:ext;not null"`
+	MIME      string    `gorm:"type:varchar(255);column:mime;not null"`
+	Size      string    `gorm:"type:bigint;not null"`
+	Storage   string    `gorm:"type:varchar(255);not null"`
+	Hash      string    `gorm:"type:varchar(255);not null"`
+	// fileUsers *FileUser
 }

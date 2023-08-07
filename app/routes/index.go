@@ -1,8 +1,11 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+
+	"file-service/app/files"
+)
 
 func AddRoutes(superRoute *gin.RouterGroup) {
-	AuthRoutes(superRoute)
-	FileRoutes(superRoute)
+	files.FileRoutes(superRoute)
 }

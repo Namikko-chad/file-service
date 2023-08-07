@@ -1,20 +1,21 @@
 package config
 
 import (
-	"os"
-	"strconv"
+	"file-service/app/utils"
+
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
-type AuthConfig struct {
-	AccessToken         string
-	AccessTokenLifetime uint64
+type JWTParams struct {
+	Secret string
 }
 
-type DataBaseConfig struct {
-	Link string
-	Type string
+type AuthConfig struct {
+	File  JWTParams
+	User  JWTParams
+	Admin JWTParams
 }
 
 type ServerConfig struct {
@@ -23,42 +24,33 @@ type ServerConfig struct {
 }
 
 type TConfig struct {
-	Auth     AuthConfig
-	DataBase DataBaseConfig
-	Server   ServerConfig
-	Mode     string
+	Auth   AuthConfig
+	Server ServerConfig
+	Mode   string
 }
 
 var (
 	Config *TConfig
 )
 
-func New() *TConfig {
-	accessTokenLifetime, err := strconv.ParseInt(getEnv("ACCESS_JWT_TOKEN_LIFETIME", "900"), 10, 32)
-	if err != nil {
-		panic("Can't parse ACCESS_JWT_TOKEN_LIFETIME")
-	}
+func init() {
+	log.Print("Load global config");
 	Config = &TConfig{
 		Auth: AuthConfig{
-			AccessToken:         getEnv("ACCESS_JWT_TOKEN", ""),
-			AccessTokenLifetime: uint64(accessTokenLifetime),
-		},
-		DataBase: DataBaseConfig{
-			Link: getEnv("DATABASE_LINK", ""),
-			Type: getEnv("DATABASE_TYPE", "sqlite"),
+			File: JWTParams{
+				Secret: utils.GetEnv("FA_SECRET", ""),
+			},
+			User: JWTParams{
+				Secret: utils.GetEnv("UA_SECRET", ""),
+			},
+			Admin: JWTParams{
+				Secret: utils.GetEnv("AA_SECRET", ""),
+			},
 		},
 		Server: ServerConfig{
-			Host: getEnv("SERVER_HOST", "127.0.0.1"),
-			Port: getEnv("SERVER_PORT", "3000"),
+			Host: utils.GetEnv("SERVER_HOST", "127.0.0.1"),
+			Port: utils.GetEnv("SERVER_PORT", "3050"),
 		},
-		Mode: getEnv("GIN_MODE", gin.ReleaseMode),
+		Mode: utils.GetEnv("MODE", gin.ReleaseMode),
 	}
-	return Config
-}
-
-func getEnv(key string, defaultVal string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultVal
 }
