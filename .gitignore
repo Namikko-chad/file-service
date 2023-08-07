@@ -50,3 +50,5 @@ ormconfig.json
 
 # Cache
 .eslintcache
+
+google-auth-key.json

@@ -1,33 +1,41 @@
-import { HttpStatus, Inject, Injectable, } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, } from '@nestjs/common';
 import crypto from 'crypto';
 import * as fileType from 'file-type';
 import * as mimeType from 'mime-types';
-import { In, } from 'typeorm';
+import { DataSource, In, } from 'typeorm';
 
-import { Errors, ErrorsMessages, } from '../enum';
 import { File, } from '../files/entity';
 import { FileRepository, } from '../files/repositories';
 import { Exception, } from '../utils/Exception';
 import { StorageConfig, } from './storage.config';
-import { StorageType, } from './storage.enum';
+import { Errors, ErrorsMessages, } from './storage.errors';
 import { FileFormData, IFilename, } from './storage.interface';
-import { DBStorage, } from './storages/database/storage.database';
-import { AbstractStorage, } from './storages/storage.abstract';
-import { FolderStorage, } from './storages/storage.Folder';
+import { DBStorage, } from './storages/database/storage.database.service';
+import { FolderStorage, } from './storages/folder/storage.folder.service';
+import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
+import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
+import { AbstractStorage, } from './storages/storage.abstract.service';
 
 @Injectable()
 export class StorageService {
   @Inject(FileRepository) private readonly _fileRepository: FileRepository;
   @Inject(StorageConfig) private readonly config: StorageConfig;
-  storages: Map<StorageType, AbstractStorage> = new Map();
+  protected readonly _logger = new Logger(StorageService.name);
+  storages: Map<string, AbstractStorage> = new Map();
 
   constructor(
-  // eslint-disable-next-line @typescript-eslint/indent
+    @Inject(DataSource) private readonly _DS: DataSource,
     @Inject(DBStorage) dbStorage: DBStorage,
-    @Inject(FolderStorage) folderStorage: FolderStorage
+    @Inject(FolderStorage) folderStorage: FolderStorage,
+    @Inject(GoogleDriveStorage) googleDriveStorage: GoogleDriveStorage,
+    @Inject(MegaIOStorage) megaIOStorage: MegaIOStorage
   ) {
-    this.storages.set(StorageType.DB, dbStorage);
-    this.storages.set(StorageType.FOLDER, folderStorage);
+    const storages: AbstractStorage[] = [
+      dbStorage, folderStorage, googleDriveStorage,megaIOStorage
+    ];
+    storages.sort ( (a,b) => a.config.fileSizeLimit - b.config.fileSizeLimit ).forEach( storage => 
+      this.storages.set(storage.constructor.name, storage)
+    );
   }
 
   splitFilename(filename: string): IFilename {
@@ -85,14 +93,18 @@ export class StorageService {
     return hash_md5.digest('hex');
   }
 
-  private selectStorage(size: number): AbstractStorage {
+  private getStorage(size: number): AbstractStorage {
     for (const [_, storage] of this.storages) {
-      if (storage.params.fileSizeLimit > size) {
+      if (storage.config.fileSizeLimit > size && storage.enabled) {
         return storage;
       }
     }
 
     throw new Exception(HttpStatus.PAYLOAD_TOO_LARGE, 'File is too large');
+  }
+
+  private getStorageType(storage: AbstractStorage): string {
+    return storage.constructor.name.slice(0, -7).toLowerCase();
   }
 
   private async loadFileInfo(fileId: string): Promise<File> {
@@ -114,37 +126,50 @@ export class StorageService {
   }
 
   async saveFile(uploadedFile: FileFormData): Promise<File> {
-    const hash = this.getHash(uploadedFile.payload);
-    const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
-    const size = uploadedFile.payload.length;
-    const storage = this.selectStorage(size);
-    const [file, created] = await this._fileRepository.findOrCreate(
-      {
-        hash,
-      },
-      {
-        ext,
-        mime,
-        size,
-        storage: storage.type,
-        hash,
-      }
-    );
-    if (created) await storage.saveFile(file, uploadedFile.payload);
+    const queryRunner = this._DS.createQueryRunner();
+    await queryRunner.startTransaction();
 
-    return file;
+    try {
+      const hash = this.getHash(uploadedFile.payload);
+      const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
+      const size = uploadedFile.payload.length;
+      const storage = this.getStorage(size);
+      const [file, created] = await this._fileRepository.findOrCreate(
+        {
+          hash,
+        },
+        {
+          ext,
+          mime,
+          size,
+          storage: this.getStorageType(storage),
+          hash,
+        }, {
+          queryRunner,
+        }
+      );
+      if (created) await storage.saveFile(file, uploadedFile.payload);
+      await queryRunner.commitTransaction();
+
+      return file;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async loadFile(fileId: string): Promise<[File, Buffer]> {
     const file = await this.loadFileInfo(fileId);
 
-    return [file, await this.storages.get(file.storage as StorageType).loadFile(file)];
+    return [file, await this.storages.get(file.storage).loadFile(file)];
   }
 
   async deleteFile(fileId: string): Promise<void> {
     const file = await this.loadFileInfo(fileId);
     await this._fileRepository.delete(fileId);
 
-    return this.storages.get(file.storage as StorageType).deleteFile(file);
+    return this.storages.get(file.storage).deleteFile(file);
   }
 }

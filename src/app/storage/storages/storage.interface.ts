@@ -1,3 +1,8 @@
+export interface StorageParam {
+  enabled: boolean;
+  fileSizeLimit: number;
+  capacity: number;
+}
 
 export interface FileFormData {
   filename: string;

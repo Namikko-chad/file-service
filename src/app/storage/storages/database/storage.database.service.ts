@@ -1,19 +1,17 @@
 import { Inject, } from '@nestjs/common';
 
 import { File, } from '../../../files/entity';
-import { StorageType, } from '../../storage.enum';
-import { AbstractStorage, } from '../storage.abstract';
-import { StorageRepository, } from './storage.repository';
+import { AbstractStorage, } from '../storage.abstract.service';
+import { DatabaseConfig, } from './storage.database.config';
+import { StorageRepository, } from './storage.database.repository';
 
 export class DBStorage extends AbstractStorage {
-  constructor(@Inject(StorageRepository) private readonly _storageRepository: StorageRepository) {
-    super();
-  }
 
-  params = {
-    fileSizeLimit: 1024 * 1024 * 30,
-  };
-  type = StorageType.DB;
+  constructor(
+    @Inject(StorageRepository) private readonly _storageRepository: StorageRepository,
+    @Inject(DatabaseConfig) config: DatabaseConfig) {
+    super(config);
+  }
 
   async saveFile(file: File, data: Buffer): Promise<void> {
     const storage = this._storageRepository.create({

@@ -27,7 +27,6 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "strictBindCallApply": false,
     "strictNullChecks": false,
     "strict": true,
     "target": "ES2021",

@@ -2,11 +2,11 @@ import { Controller, Delete, Get, HttpStatus, Param, UsePipes, ValidationPipe, }
 import { ApiOperation, ApiTags, } from '@nestjs/swagger';
 
 import { Exception, } from '../utils/Exception';
+import { ControlFlushStorageDto, } from './control.dto';
 import { ControlService, } from './control.service';
 
 class ParamsDTO {
   reportType?: string;
-  storage?: string;
 }
 
 @ApiTags('control')
@@ -26,13 +26,13 @@ export class ControlController {
     throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented');
   }
 
-  @Delete('storage/:storage/flush')
+  @Delete('storage/:storageType/flush')
   @ApiOperation({
     summary: 'Use this endpoint to flush storage',
   })
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
-  tokenValidate(@Param() params: ParamsDTO): void {
-    console.log(params);
+  async tokenValidate(@Param() params: ControlFlushStorageDto): Promise<void> {
+    await this._service.flushStorage(params.storageType);
     throw new Exception(HttpStatus.NOT_IMPLEMENTED, 'Route not implemented');
   }
 }

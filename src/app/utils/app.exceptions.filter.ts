@@ -47,14 +47,14 @@ export class AppExceptionsFilter implements ExceptionFilter {
     }
 
     if (httpStatus === HttpStatus.INTERNAL_SERVER_ERROR) {
-      this._logger.error(exception);
+      this._logger.error(exception, (exception as Error).stack);
     }
 
     const responseBody = {
       ok: false,
       code: httpStatus,
       data: exception instanceof Exception ? exception.data : {},
-      message:
+      msg:
         typeof message === 'string'
           ? message
           : Array.isArray((message as { message: string | string[] }).message)

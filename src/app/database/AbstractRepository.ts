@@ -1,6 +1,8 @@
 import { DeepPartial, DeleteResult, FindOptionsWhere, ObjectID, QueryRunner, Repository, } from 'typeorm';
 
-export interface DeleteOptions {
+import { AbstractEntity, } from './AbstractEntity';
+
+export interface Options {
   queryRunner?: QueryRunner;
 }
 
@@ -15,30 +17,43 @@ type conditions<Entity> =
   | ObjectID[]
   | FindOptionsWhere<Entity>;
 
-export abstract class AbstractRepository<Entity> extends Repository<Entity> {
-  async reload(entity: Entity & { id: string }): Promise<Entity> {
-    return this.findOneBy({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      id: entity.id,
-    });
+export abstract class AbstractRepository<Entity extends AbstractEntity> extends Repository<Entity> {
+  async reload(entity: Entity): Promise<Entity> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.findOneBy({ id: entity.id, });
   }
 
-  async findOrCreate(param: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[], property: DeepPartial<Entity>): Promise<[Entity, boolean]> {
-    const findRes = (await this.findOneBy(param)) as Entity;
+  async findOrCreate(
+    param: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[], 
+    property: DeepPartial<Entity>,
+    options?: Options
+  ): Promise<[Entity, boolean]> {
+    let findRes: Entity;
     let newEntity: Entity;
 
-    if (!findRes) {
-      newEntity = this.create(property);
-      await this.save(newEntity);
+    if (options?.queryRunner) {
+      findRes = await options.queryRunner.manager.findOneBy(this.metadata.tableName, param);
+
+      if (!findRes) {
+        newEntity = this.create(property);
+        await options.queryRunner.manager.save(newEntity);
+      }
+    } else {
+      findRes = (await this.findOneBy(param));
+
+      if (!findRes) {
+        newEntity = this.create(property);
+        await this.save(newEntity);
+      }
     }
 
-    return [newEntity ?? findRes, !!findRes];
+    return [newEntity ?? findRes, !findRes];
   }
 
   override async delete(
     criteria: conditions<Entity>,
-    options?: DeleteOptions
+    options?: Options
   ): Promise<DeleteResult> {
     let data: DeleteResult;
 

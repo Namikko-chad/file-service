@@ -1,19 +1,20 @@
-import { Inject, } from '@nestjs/common';
 import { Cron, } from '@nestjs/schedule';
 import { LessThan, QueryRunner, } from 'typeorm';
 
 import { AbstractTask, } from './abstract-task';
 import { SchedulerStatus, } from './scheduler.enum';
-import { SchedulerTaskRepository, } from './scheduler.repository';
 
 export class DeleteOldLogsTask extends AbstractTask {
-  @Inject(SchedulerTaskRepository)
-  private readonly _repository: SchedulerTaskRepository;
+  override taskName = DeleteOldLogsTask.name;
 
-  @Cron('*/5 * * * * *', {
+  @Cron('0 0 * * *', {
     name: DeleteOldLogsTask.name,
   })
-  async handler(queryRunner?: QueryRunner): Promise<void> {
+  override async handler(queryRunner?: QueryRunner): Promise<void> {
+    await super.handler(queryRunner);
+  };
+
+  async task(queryRunner?: QueryRunner): Promise<void> {
     await this._repository.delete({
       status: SchedulerStatus.Completed,
       finishedAt: LessThan(new Date(Date.now() - 2592000000)),
@@ -21,5 +22,5 @@ export class DeleteOldLogsTask extends AbstractTask {
     {
       queryRunner,
     });
-  };
+  }
 }

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Post,
   Put,
@@ -33,28 +34,15 @@ import { ListDto, } from '../dto';
 import { RequestAuth, } from '../dto/common.dto';
 import { Exception, } from '../utils/Exception';
 import { FileEditDto, FileInfoDto, } from './dto';
+import { FileIdDto, } from './dto/common.dto';
 import { FileUser, } from './entity';
+import { Errors, ErrorsMessages, } from './files.errors';
 import { FileService, } from './files.service';
-
-class QueryDTO {
-  fileId!: string;
-}
-
-enum Errors {
-  FileIsPrivate = 403001,
-  UserNotFound = 404001,
-  FileNotFound = 404002,
-}
-
-const ErrorsMessages: Record<Errors, string> = {
-  [Errors.FileIsPrivate]: 'File: Private',
-  [Errors.FileNotFound]: 'File: Not found',
-  [Errors.UserNotFound]: 'User: Not found',
-};
 
 @ApiTags('files')
 @Controller('files')
 export class FileController {
+  @Inject(FileService)
   private readonly _service: FileService;
 
   private editAccess(req: RequestAuth, file: FileUser): void {
@@ -87,6 +75,7 @@ export class FileController {
   @UseGuards(MultipleAuthorizeGuard)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
   async list(@Req() req: RequestAuth, @Query() listParam: ListDto<FileUser>): Promise<{ count: number; rows: FileInfoDto[] }> {
+    console.log(listParam);
     const [files, count] = await this._service.list(req.user.id, listParam);
 
     return { count, rows: files.map((file) => this._service.fileResponse(file)), };
@@ -112,7 +101,7 @@ export class FileController {
   @AuthTry()
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
-  async retrieveFile(@Req() req: RequestAuth, @Param() params: QueryDTO, @Res({ passthrough: true, }) res: Response): Promise<StreamableFile> {
+  async retrieveFile(@Req() req: RequestAuth, @Param() params: FileIdDto, @Res({ passthrough: true, }) res: Response): Promise<StreamableFile> {
     const [fileUser, data] = await this._service.retrieve(params.fileId);
 
     this.viewAccess(req, fileUser);
@@ -132,7 +121,7 @@ export class FileController {
   @AuthTry()
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
-  async retrieveInfo(@Req() req: RequestAuth, @Param() params: QueryDTO): Promise<FileInfoDto> {
+  async retrieveInfo(@Req() req: RequestAuth, @Param() params: FileIdDto): Promise<FileInfoDto> {
     const fileUser = await this._service.retrieveInfo(params.fileId);
 
     this.viewAccess(req, fileUser);
@@ -147,7 +136,7 @@ export class FileController {
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
   // @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
-  async fileEdit(@Req() req: RequestAuth, @Param() params: QueryDTO, @Body() payload: FileEditDto): Promise<FileInfoDto> {
+  async fileEdit(@Req() req: RequestAuth, @Param() params: FileIdDto, @Body() payload: FileEditDto): Promise<FileInfoDto> {
     let fileUser = await this._service.retrieveInfo(params.fileId);
 
     this.editAccess(req, fileUser);
@@ -162,7 +151,7 @@ export class FileController {
   })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
-  async fileDelete(@Req() req: RequestAuth, @Param() params: QueryDTO): Promise<void> {
+  async fileDelete(@Req() req: RequestAuth, @Param() params: FileIdDto): Promise<void> {
     const fileUser = await this._service.retrieveInfo(params.fileId);
 
     this.editAccess(req, fileUser);

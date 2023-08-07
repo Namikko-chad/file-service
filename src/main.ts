@@ -32,7 +32,7 @@ async function init() {
 
   app.use(helmet());
 
-  if (config.getOrThrow<string>('NODE_ENV') !== 'production') {
+  if (config.getOrThrow<string>('MODE') !== 'production') {
     initSwagger(app, config);
   }
 

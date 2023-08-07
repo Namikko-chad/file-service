@@ -2,12 +2,12 @@ import { Injectable, } from '@nestjs/common';
 import { FindOptionsWhere, } from 'typeorm';
 
 import { ListDto, } from '../dto';
-import { Errors, ErrorsMessages, } from '../enum/errors';
 import { StorageService, } from '../storage/storage.service';
 import { Exception, } from '../utils/Exception';
 import { Utils, } from '../utils/utils';
 import { FileEditDto, FileInfoDto, } from './dto';
 import { FileUser, } from './entity/file-user.entity';
+import { Errors, ErrorsMessages, } from './files.errors';
 import { FileUserRepository, } from './repositories/file-user.repository';
 
 @Injectable()

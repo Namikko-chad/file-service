@@ -1,7 +1,7 @@
-import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, } from 'typeorm';
+import { CreateDateColumn, ObjectLiteral, PrimaryGeneratedColumn, UpdateDateColumn, } from 'typeorm';
 import { v4 as uuidv4, } from 'uuid';
 
-export abstract class AbstractEntity {
+export abstract class AbstractEntity implements ObjectLiteral {
   @PrimaryGeneratedColumn('uuid', {})
     id: string = uuidv4();
 

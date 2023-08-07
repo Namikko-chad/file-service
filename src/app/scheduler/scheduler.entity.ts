@@ -20,11 +20,11 @@ export class SchedulerTask {
     type: 'timestamp with time zone',
     nullable: false,
   })
-    createdAt!: Date;
+    startedAt!: Date;
  
   @Column({
     type: 'timestamp with time zone',
-    nullable: false,
+    nullable: true,
   })
     finishedAt!: Date;
  

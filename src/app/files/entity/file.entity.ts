@@ -20,7 +20,6 @@ export class File extends AbstractEntity {
     size!: number;
 
   @Column({
-    default: 'db',
     length: 255,
   })
     storage!: string;

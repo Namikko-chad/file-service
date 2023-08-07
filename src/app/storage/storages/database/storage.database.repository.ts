@@ -2,7 +2,7 @@ import { Injectable, } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
 
 import { AbstractRepository, } from '../../../database/AbstractRepository';
-import { Storage, } from './storage.entity';
+import { Storage, } from './storage.database.entity';
 
 @Injectable()
 export class StorageRepository extends AbstractRepository<Storage> {
