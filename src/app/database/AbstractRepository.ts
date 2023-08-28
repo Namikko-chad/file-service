@@ -1,4 +1,4 @@
-import { DeepPartial, DeleteResult, FindOptionsWhere, ObjectID, QueryRunner, Repository, } from 'typeorm';
+import { DeepPartial, DeleteResult, FindOptionsWhere, QueryRunner, Repository, } from 'typeorm';
 
 import { AbstractEntity, } from './AbstractEntity';
 
@@ -13,8 +13,6 @@ type conditions<Entity> =
   | number[]
   | Date
   | Date[]
-  | ObjectID
-  | ObjectID[]
   | FindOptionsWhere<Entity>;
 
 export abstract class AbstractRepository<Entity extends AbstractEntity | object> extends Repository<Entity> {
