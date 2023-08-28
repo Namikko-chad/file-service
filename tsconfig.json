@@ -10,7 +10,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "lib": ["ES2021"],
+    "lib": ["ES2022"],
     "module": "node16",
     "moduleResolution": "node",
     "noEmitOnError": true,
@@ -29,12 +29,12 @@
     "skipLibCheck": true,
     "strictNullChecks": false,
     "strict": true,
-    "target": "ES2021",
+    "target": "ES2022",
     "types": ["node"],
     "paths": {
       "app": ["src/app"]
     }
   },
   "include": ["./src/**/*.ts"],
-  "exclude": ["node_modules", "test", "dist"]
+  "exclude": ["node_modules", "dist", "./src/**/*.test.ts"]
 }

@@ -8,14 +8,18 @@ import { MegaIOConfig, } from './storage.mega-io.config';
 export class MegaIOStorage extends AbstractStorage {
   private storage?: MegaStorage;
  
-  constructor(@Inject(MegaIOConfig) config: MegaIOConfig) {
+  constructor(@Inject(MegaIOConfig) public override readonly config: MegaIOConfig) {
     super(config);
+  }
 
+  override async init(): Promise<void> {
     if (this.enabled) {
-      this.storage = new MegaStorage({
-        email: config.email,
-        password: config.password,
+      const storage = new MegaStorage({
+        email: this.config.email,
+        password: this.config.password,
       }).ready;
+
+      this.storage = await storage;
     }
   }
 

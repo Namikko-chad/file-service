@@ -13,6 +13,10 @@ export class DBStorage extends AbstractStorage {
     super(config);
   }
 
+  override init(): Promise<void> {
+    return Promise.resolve();
+  }
+
   async saveFile(file: File, data: Buffer): Promise<void> {
     const storage = this._storageRepository.create({
       data,

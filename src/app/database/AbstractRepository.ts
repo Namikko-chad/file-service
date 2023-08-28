@@ -17,7 +17,7 @@ type conditions<Entity> =
   | ObjectID[]
   | FindOptionsWhere<Entity>;
 
-export abstract class AbstractRepository<Entity extends AbstractEntity> extends Repository<Entity> {
+export abstract class AbstractRepository<Entity extends AbstractEntity | object> extends Repository<Entity> {
   async reload(entity: Entity): Promise<Entity> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

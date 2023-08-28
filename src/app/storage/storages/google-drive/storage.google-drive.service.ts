@@ -43,10 +43,14 @@ export class GoogleDriveStorage extends AbstractStorage {
 
   }
 
+  override init(): Promise<void> {
+    return Promise.resolve();
+  }
+
   private async getAccessToken(): Promise<void> {
     const jwtToken = this._jwtService.sign({
       iss: this.googleKey.client_email,
-      scope:'https://www.googleapis.com/auth/drive',
+      scope: 'https://www.googleapis.com/auth/drive',
       aud: this.googleKey.token_uri,
     }, {
       algorithm: 'RS256',
@@ -125,9 +129,9 @@ export class GoogleDriveStorage extends AbstractStorage {
       }
 
       if (contentType.includes('application/json'))
-        return response.json() as Res;
+        return response.json() as unknown as Res;
 
-      return response.buffer() as Res;
+      return response.buffer() as unknown as Res;
     } catch (error) {
       if ((error as {code:number;}).code === 401) {
         this._logger.warn('Update access-token');
