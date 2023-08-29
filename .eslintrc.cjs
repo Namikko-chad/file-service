@@ -152,6 +152,8 @@ const tsRules = {
         // Packages `nest` related packages come first.
         ['^@nestjs', '^@?\\w'],
         ['^@hapi', '^@?\\w'],
+        ['^@jest', '^@?\\w'],
+        ['^@libs', '^@?\\w'],
         // Internal packages.
         ['^(@|app)(/.*|$)'],
         // Side effect imports.
@@ -174,7 +176,7 @@ const tsRules = {
    * @description Требует использовать все переменные
    * @summary используются все ресурсы
    */
-  "@typescript-eslint/no-unused-vars": ["error", { "destructuredArrayIgnorePattern": "^_" }],
+  '@typescript-eslint/no-unused-vars': ["off", /*{ "destructuredArrayIgnorePattern": "^_" }*/],
   /**
    * @link https://typescript-eslint.io/rules/no-var-requires/
    * @description Запрещяет использование var и старых способов импорта
@@ -196,7 +198,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint/eslint-plugin', 'simple-import-sort'],
   root: true,
-  ignorePatterns: ['node_modules/', 'build/', 'dist/', 'docs/', '*.spec.ts', '*.test.ts', '*.d.ts'],
+  ignorePatterns: ['node_modules/', 'build/', 'dist/', 'docs/', '*.d.ts', '*.json*', '*.md'],
   overrides: [
     {
       files: ['*.ts'],
@@ -213,7 +215,7 @@ module.exports = {
       rules: tsRules,
     },
     {
-      files: ['*.spec.ts', '*.test.ts', '*.try.ts'],
+      files: ['*.spec.ts', '*.test.ts', '*.try.ts', '*.mock.ts'],
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
@@ -227,6 +229,8 @@ module.exports = {
       },
       rules: {
         ...tsRules,
+        '@typescript-eslint/require-await': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/ban-types': 'off',
       },
     },
