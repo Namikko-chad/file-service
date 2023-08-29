@@ -8,7 +8,7 @@ async function init() {
   const config = new ConfigService();
   const dataSource = new DataSource({
     ...databaseConfig(config),
-    migrations: ['migrations/*.js'],
+    entities: ['dist/**/*.entity.js'],
     synchronize: true,
   });
   await dataSource.initialize();
