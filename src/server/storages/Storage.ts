@@ -2,18 +2,19 @@
 import crypto from 'crypto';
 import * as fileType from 'file-type';
 import * as mimeType from 'mime-types';
-import { Sequelize, } from 'sequelize-typescript';
 
 import { config, } from '../config/config';
 import { File, } from '../db';
 import { Errors, ErrorsMessages, } from '../enum';
 import { IFilename, } from '../interfaces';
 import { Exception, } from '../utils';
-import { AbstractStorage, } from './abstract';
 import { StorageType, } from './enum';
 import { FileFormData, StorageOptions, } from './interface';
-import { DBStorage, } from './storage.DB';
-import { FolderStorage, } from './storage.Folder';
+import { DBStorage, } from './storages/database/storage.database.service';
+import { FolderStorage, } from './storages/folder/storage.folder.service';
+import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
+import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
+import { AbstractStorage, } from './storages/storage.abstract.service';
 
 export class Storage {
   defaultStorage: StorageType;
@@ -23,13 +24,15 @@ export class Storage {
     this.defaultStorage = options?.type ?? StorageType.DB;
     this.storages.set(StorageType.DB, new DBStorage());
     this.storages.set(StorageType.FOLDER, new FolderStorage());
+    this.storages.set(StorageType.FOLDER, new GoogleDriveStorage());
+    this.storages.set(StorageType.FOLDER, new MegaIOStorage());
   }
 
-  async init(db: Sequelize): Promise<void> {
+  async init(): Promise<void> {
     await Promise.all(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Array.from(this.storages).map(async ([_type, storage]) => {
-        await storage.init(db);
+        await storage.init();
       })
     );
   }
@@ -91,7 +94,7 @@ export class Storage {
 
   private selectStorage(size: number): AbstractStorage {
     for (const [_, storage] of this.storages) {
-      if (storage.params.fileSizeLimit > size) {
+      if (storage.config.fileSizeLimit > size && storage.enabled) {
         return storage;
       }
     }
