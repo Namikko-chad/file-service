@@ -11,7 +11,7 @@ describe('Storage.MegaIO', () => {
   const file = FileEntityGenerator.create();
 
   beforeAll(() => {
-    process.env['MODE'] = 'test';
+    process.env['NODE_ENV'] = 'test';
   } )
 
   beforeEach(async () => {

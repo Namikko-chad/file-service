@@ -9,7 +9,7 @@ export function databaseConfig(configService: ConfigService): DataSourceOptions 
     type: 'postgres',
     
     url: configService.getOrThrow('DATABASE_LINK'),
-    synchronize: configService.get<string>('MODE') === 'test',
+    synchronize: configService.get<string>('NODE_ENV') === 'test',
     migrationsRun: false,
     logging: configService.get<string>('DEBUG') === 'true',
   };
