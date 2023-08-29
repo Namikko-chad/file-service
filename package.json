@@ -19,9 +19,9 @@
     "@hapi/vision": "^6.1.0",
     "bcrypt": "^5.0.1",
     "docxtemplater": "^3.31.5",
-    "dotenv": "^10.0.0",
+    "dotenv": "^16.3.1",
     "file-type": "^16.5.3",
-    "generate-password": "^1.6.1",
+    "generate-password": "^1.7.0",
     "handlebars": "^4.7.7",
     "hapi-auth-bearer-token": "^8.0.0",
     "hapi-pino": "^8.5.0",
@@ -85,7 +85,7 @@
     "sqlite3": "^5.0.2",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.4.0",
-    "typescript": "^5.2.2"
+    "typescript": "4.7.2"
   },
   "scripts": {
     "development": "nodemon -e ts --exec \"tsc && node ./build/main.js\"",
