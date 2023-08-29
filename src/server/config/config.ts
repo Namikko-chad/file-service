@@ -29,10 +29,10 @@ function configLoad() {
         : ['Content-Type', 'Content-length', 'Content-Disposition'],
     },
     debug: process.env['DEBUG'] === 'true',
-    development: process.env['MODE'] === 'development',
+    development: process.env['NODE_ENV'] === 'development',
     db: <Sequelize>{},
     dbLink: process.env['DATABASE_LINK'] as string,
-    env: process.env['MODE'] as 'development' | 'stage' | 'test' | 'production',
+    env: process.env['NODE_ENV'] as 'development' | 'stage' | 'test' | 'production',
     files: {
       allowedExtensions: process.env['FILETYPE'] ?? 'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso',
       allowedExtensionsRegExp: RegExp(`(${process.env['FILETYPE'] ?? 'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso'})$`),
@@ -47,7 +47,7 @@ function configLoad() {
       host: process.env['SERVER_HOST'] ?? 'localhost',
       shutdownTimeout: process.env['SERVER_SHUTDOWN_TIMEOUT'] ? Number(process.env['SERVER_SHUTDOWN_TIMEOUT']) : 15000,
     },
-    test: process.env['MODE'] === 'test' ? true : false,
+    test: process.env['NODE_ENV'] === 'test' ? true : false,
   };
 }
 

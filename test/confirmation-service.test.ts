@@ -1,4 +1,4 @@
-import { describe, beforeAll, it, expect } from '@jest/globals';
+import { describe, beforeAll, it, expect, beforeEach } from '@jest/globals';
 import { Server } from '@hapi/hapi';
 import {
   ConfirmationData,
@@ -46,6 +46,7 @@ describe('Confirmation service', () => {
 
   beforeAll(async () => {
     process.env['DEBUG'] = 'true';
+    console.log(process.env['DEBUG'])
     await server.register({
       plugin: ConfirmationServicePlugin,
     });
@@ -54,9 +55,12 @@ describe('Confirmation service', () => {
     });
   });
 
+  beforeEach(() => {
+    data = server.confirmationCreate(to, ConfirmationProviderList.TEST);
+  })
+
   describe('Full flow', () => {
     it('should return confirmation object', () => {
-      data = server.confirmationCreate(to, ConfirmationProviderList.TEST);
       expect(data).toEqual({
         id: expect.any(String),
         provider: ConfirmationProviderList.TEST,
@@ -77,25 +81,26 @@ describe('Confirmation service', () => {
     });
 
     it('should return exception', async () => {
-      data = await server.confirmationVerify(data, '23423455');
+      data = server.confirmationVerify(data, '23423455');
       expect(data.error).toBeInstanceOf(Exception);
       expect(data.counter).toBe(4);
     });
 
     it('should verify code', async () => {
-      data = await server.confirmationVerify(data, String(data.test));
+      data = await server.confirmationSend(data);
+      data = server.confirmationVerify(data, String(data.test));
       expect(data.status).toStrictEqual(ConfirmationStatus.Confirmed);
       expect(data.error).toBeNull();
     });
 
     it('should return exception, trying verify code 6 times', async () => {
-      const data = await server.confirmationVerify(zeroAttempts, '23423455');
+      const data = server.confirmationVerify(zeroAttempts, '23423455');
       expect(data.error).toBeInstanceOf(Exception);
       expect(data.counter).toBe(0);
     });
 
     it('should return exception, trying expires code', async () => {
-      const data = await server.confirmationVerify(expiredData, '23423455');
+      const data = server.confirmationVerify(expiredData, '23423455');
       expect(data.error).toBeInstanceOf(Exception);
     });
 
@@ -105,7 +110,7 @@ describe('Confirmation service', () => {
       data = await server.confirmationSend(data);
       let attempts: number = 1;
       for (let i = 0; i < ConfirmationProviderDefaults[ConfirmationProviderList.TEST].count + 1; i++) {
-        data = await server.confirmationVerify(data, '');
+        data = server.confirmationVerify(data, '');
         if (data.error?.code !== ConfirmationErrors.Deactivated) attempts++;
       }
       expect(attempts).toBe(ConfirmationProviderDefaults[ConfirmationProviderList.TEST].count);
