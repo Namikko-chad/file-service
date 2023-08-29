@@ -1,5 +1,5 @@
-import { File, FileUser, } from '../db';
-import { IFileResponse, } from '../interfaces/file';
+import { File, FileUser, } from '.';
+import { IFileResponse, } from './file.interfaces';
 
 export function fileResponse(fileUser: FileUser, file: File): IFileResponse {
   return {

@@ -2,7 +2,6 @@ import Joi from 'joi';
 
 import { ServerRoute, } from '@hapi/hapi';
 
-import * as api from '../api/file';
 import { config, } from '../config/config';
 import {
   fileCreatePayloadSchema,
@@ -15,6 +14,7 @@ import {
   tokenSchema,
 } from '../schemas';
 import { Strategies, } from '../utils';
+import * as api from './files.api';
 
 export default <ServerRoute[]>[
   {

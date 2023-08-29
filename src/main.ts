@@ -10,8 +10,7 @@ import * as Vision from '@hapi/vision';
 
 import { config, pinoConfig,swaggerConfig, } from './server/config';
 import { Database, loadDatabaseConfig, } from './server/db';
-import { DocumentGeneratorPlugin, } from './server/document-generator';
-import { ReportGeneratorPlugin, } from './server/report-generator';
+import { FilesPlugin, } from './server/files';
 import routes from './server/routes';
 import { SchedulerPlugin, } from './server/scheduler';
 import { StoragePlugin, } from './server/storages';
@@ -80,12 +79,6 @@ export async function init(): Promise<Hapi.Server> {
   await server.register({
     plugin: SchedulerPlugin,
   });
-  await server.register({
-    plugin: DocumentGeneratorPlugin,
-  });
-  await server.register({
-    plugin: ReportGeneratorPlugin,
-  });
   // JWT Auth
   server.auth.strategy(Strategies.Header, 'bearer-access-token', {
     validate: tokenValidate,
@@ -101,6 +94,10 @@ export async function init(): Promise<Hapi.Server> {
   // Error handler
   server.ext('onPreResponse', responseHandler);
 
+  await server.register({
+    plugin: FilesPlugin,
+  });
+  
   // Запускаем сервер
   try {
     server.app.scheduler.init();

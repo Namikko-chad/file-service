@@ -1,6 +1,6 @@
 import { literal, Op,Transaction, } from 'sequelize';
 
-import { File, FileUser, } from '../db';
+import { File, FileUser, } from '../files';
 import { AbstractTask, } from './abstract-task';
 
 export class DeleteUnboundFileTask extends AbstractTask {

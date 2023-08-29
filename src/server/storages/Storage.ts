@@ -4,16 +4,16 @@ import * as fileType from 'file-type';
 import * as mimeType from 'mime-types';
 
 import { config, } from '../config/config';
-import { File, } from '../db';
 import { Errors, ErrorsMessages, } from '../enum';
+import { File, } from '../files';
 import { IFilename, } from '../interfaces';
 import { Exception, } from '../utils';
 import { StorageType, } from './enum';
 import { FileFormData, StorageOptions, } from './interface';
 import { DBStorage, } from './storages/database/storage.database.service';
 import { FolderStorage, } from './storages/folder/storage.folder.service';
-import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
-import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
+// import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
+// import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
 import { AbstractStorage, } from './storages/storage.abstract.service';
 
 export class Storage {
@@ -24,8 +24,8 @@ export class Storage {
     this.defaultStorage = options?.type ?? StorageType.DB;
     this.storages.set(StorageType.DB, new DBStorage());
     this.storages.set(StorageType.FOLDER, new FolderStorage());
-    this.storages.set(StorageType.FOLDER, new GoogleDriveStorage());
-    this.storages.set(StorageType.FOLDER, new MegaIOStorage());
+    // this.storages.set(StorageType.FOLDER, new GoogleDriveStorage());
+    // this.storages.set(StorageType.FOLDER, new MegaIOStorage());
   }
 
   async init(): Promise<void> {
@@ -92,7 +92,7 @@ export class Storage {
     return hash_md5.digest('hex');
   }
 
-  private selectStorage(size: number): AbstractStorage {
+  private getStorage(size: number): AbstractStorage {
     for (const [_, storage] of this.storages) {
       if (storage.config.fileSizeLimit > size && storage.enabled) {
         return storage;
@@ -100,6 +100,10 @@ export class Storage {
     }
 
     throw new Exception(Errors.PayloadTYooLarge, ErrorsMessages[Errors.PayloadTYooLarge]);
+  }
+
+  private getStorageType(storage: AbstractStorage): string {
+    return storage.constructor.name.slice(0, -7).toLowerCase();
   }
 
   private async loadFileInfo(fileId: string): Promise<File> {
@@ -123,7 +127,7 @@ export class Storage {
     const hash = this.getHash(uploadedFile.payload);
     const { mime, ext, } = await this.getExt(uploadedFile.filename, uploadedFile.payload);
     const size = uploadedFile.payload.length;
-    const storage = this.selectStorage(size);
+    const storage = this.getStorage(size);
     const [file, created] = await File.findOrCreate({
       where: {
         hash,
@@ -132,7 +136,7 @@ export class Storage {
         ext,
         mime,
         size: uploadedFile.payload.length,
-        storage: this.defaultStorage,
+        storage: this.getStorageType(storage),
         hash,
       },
     });

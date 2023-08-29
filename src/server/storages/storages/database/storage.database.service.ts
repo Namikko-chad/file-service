@@ -1,5 +1,5 @@
 import { config, } from '../../../config';
-import { File, } from '../../../db';
+import { File, } from '../../../files';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { DatabaseConfig, } from './storage.database.config';
 import { Storage, } from './storage.database.model';

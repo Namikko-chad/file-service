@@ -6,8 +6,8 @@ import * as multipart from 'parse-multipart-data';
 import * as p from 'path';
 import { URL, } from 'url';
 
-import { File, } from '../../../db';
 import { Errors, ErrorsMessages, } from '../../../enum';
+import { File, } from '../../../files';
 import { Exception, } from '../../../utils/Exception';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { GoogleDriveConfig, } from './storage.google-drive.config';

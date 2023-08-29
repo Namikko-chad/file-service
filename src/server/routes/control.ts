@@ -8,22 +8,6 @@ import { StorageType, } from '../storages';
 
 export default <ServerRoute[]>[
   {
-    method: 'GET',
-    path: '/control/report/{reportType}',
-    handler: api.generateReport,
-    options: {
-      pre: [checkAdmin],
-      id: 'control.report',
-      description: 'Use this endpoint to get report',
-      tags: ['api', 'control'],
-      validate: {
-        params: Joi.object({
-          reportType: Joi.string().required(),
-        }),
-      },
-    },
-  },
-  {
     method: 'DELETE',
     path: '/control/storage/{storage}/flush',
     handler: api.flushStorage,

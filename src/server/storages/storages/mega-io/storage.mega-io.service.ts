@@ -1,7 +1,7 @@
 import { Storage as MegaStorage, } from 'megajs';
 
-import { File, } from '../../../db';
 import { Errors, ErrorsMessages, } from '../../../enum';
+import { File, } from '../../../files';
 import { Exception, } from '../../../utils';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { MegaIOConfig, } from './storage.mega-io.config';

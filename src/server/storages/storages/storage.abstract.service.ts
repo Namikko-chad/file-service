@@ -1,4 +1,4 @@
-import { File, } from '../../db';
+import { File, } from '../../files';
 import { AbstractStorageConfig, } from './storage.abstract.config';
 
 export abstract class AbstractStorage {

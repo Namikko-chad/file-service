@@ -1,8 +1,8 @@
 import { Column, DataType, HasMany,Scopes, Table, } from 'sequelize-typescript';
 
+import { AbstractModel, } from '../../db/AbstractModel';
 import { StorageType, } from '../../storages';
-import { AbstractModel, } from './abstract/AbstractModel';
-import { FileUser, } from './FileUsers';
+import { FileUser, } from './FileUser.model';
 
 @Scopes(() => ({
   defaultScope: {

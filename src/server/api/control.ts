@@ -1,8 +1,8 @@
 import { Boom, } from '@hapi/boom';
-import { Request, ResponseObject, ResponseToolkit, } from '@hapi/hapi';
+import { Request, } from '@hapi/hapi';
 
-import { File, FileUser, } from '../db';
-import { fileResponse, } from '../helper/fileResponse';
+import { File, FileUser, } from '../files';
+import { fileResponse, } from '../files/files.helper';
 import { listParam, } from '../helper/listParam';
 import { IFileResponse, IListParam,IOutputEmpty, IOutputPagination, } from '../interfaces';
 import { handlerError, outputEmpty, outputPagination, } from '../utils';
@@ -48,22 +48,5 @@ export async function flushStorage(r: Request): Promise<IOutputEmpty | Boom> {
     return outputEmpty();
   } catch (err) {
     return handlerError('Failed flush storage', err);
-  }
-}
-
-export async function generateReport(r: Request, h: ResponseToolkit): Promise<ResponseObject | Boom> {
-  try {
-    const { reportType, } = r.params as { reportType: string };
-    const [file, data] = await r.server.app.reports.create(reportType, {});
-    const response: ResponseObject = h
-      .response(data)
-      .type(file.mime)
-      .header('Connection', 'keep-alive')
-      .header('Cache-Control', 'no-cache')
-      .header('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(reportType + '.' + file.ext));
-
-    return response;
-  } catch (err) {
-    return handlerError('Failed generate report', err);
   }
 }

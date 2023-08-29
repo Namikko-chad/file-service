@@ -2,7 +2,7 @@
 import * as fs from 'fs/promises';
 import * as p from 'path';
 
-import { File, } from '../../../db';
+import { File, } from '../../../files';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { FolderConfig, } from './storage.folder.config';
 

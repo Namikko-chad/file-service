@@ -5,7 +5,7 @@ export class DatabaseConfig extends AbstractStorageConfig implements StoragePara
 
   constructor() {
     super();
-    this.fileSizeLimit = Number(process.env['DATABASE_FILESIZE_LIMIT']) ?? (5 * 1024 + 120) * 1024 * 1024;
+    this.fileSizeLimit = Number(process.env['DATABASE_FILESIZE_LIMIT']) ?? 2 * 1024 * 1024;
     this.capacity = Number(process.env['DATABASE_CAPACITY']) ?? (5 * 1024 + 120) * 1024 * 1024;
   }
 }

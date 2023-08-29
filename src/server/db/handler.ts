@@ -1,13 +1,11 @@
 import { Sequelize, SequelizeOptions, } from 'sequelize-typescript';
 
 import { DatabaseOptions, } from './interface';
-import { File, FileUser, } from './models';
 
 export async function initDatabase(config: DatabaseOptions, sync = false): Promise<Sequelize> {
   let forceSync = false;
   if (!config.link && !config.host) throw new Error('Database not configured');
   const options: SequelizeOptions = {
-    models: [File, FileUser],
     logging: config.logging,
     pool: {
       acquire: 9000000,

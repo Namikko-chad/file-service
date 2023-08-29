@@ -2,11 +2,12 @@ import { Boom, } from '@hapi/boom';
 import { Request, ResponseObject, ResponseToolkit, } from '@hapi/hapi';
 
 import { config, } from '../config/config';
-import { File, FileUser, } from '../db';
 import { Errors, ErrorsMessages, } from '../enum';
-import { fileResponse, } from '../helper/fileResponse';
 import { IFileCreatePayload,IFileEditPayload, IFileResponse, IOutputEmpty, IOutputOk, IOutputPagination, } from '../interfaces';
 import { Exception, handlerError, outputEmpty, outputOk, outputPagination, Token, } from '../utils';
+import { fileResponse, } from './files.helper';
+import { File, } from './models/File.model';
+import { FileUser, } from './models/FileUser.model';
 
 function editAccess(r: Request, file: FileUser): void {
   const user = r.auth.credentials.user;
@@ -70,7 +71,7 @@ export async function retrieve(r: Request, h: ResponseToolkit): Promise<Response
       .type(file.mime)
       .header('Connection', 'keep-alive')
       .header('Cache-Control', 'no-cache')
-      .header('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(fileUser.name + '.' + file.ext));
+      .header('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(`${fileUser.name}.${file.ext}`));
 
     return response;
   } catch (err) {

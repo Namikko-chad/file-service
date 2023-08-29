@@ -30,9 +30,6 @@
     "strict": true,
     "target": "ES2021",
     "types": ["node"],
-    "paths": {
-      "server": ["src/server"]
-    }
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["node_modules", "test", "build"]
