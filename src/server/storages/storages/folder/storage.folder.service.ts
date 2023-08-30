@@ -1,6 +1,7 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 import * as fs from 'fs/promises';
 import * as p from 'path';
+import { Sequelize, } from 'sequelize-typescript';
 
 import { File, } from '../../../files';
 import { AbstractStorage, } from '../storage.abstract.service';
@@ -15,7 +16,11 @@ export class FolderStorage extends AbstractStorage {
     this.filesDir = config.filesDir;
   }
 
-  override init(): Promise<void> {
+  override init(_db: Sequelize): Promise<void> {
+    return Promise.resolve();
+  }
+
+  override close(): Promise<void> {
     return Promise.resolve();
   }
 

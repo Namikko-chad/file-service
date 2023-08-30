@@ -2,19 +2,21 @@ import Joi from 'joi';
 
 import { ServerRoute, } from '@hapi/hapi';
 
-import { config, } from '../config/config';
+import { Strategies, } from '../auth';
 import {
-  fileCreatePayloadSchema,
-  fileEditPayloadSchema,
-  fileSchemaResponse,
   guidSchema,
   listSchema,
   outputEmptySchema,
   outputOkSchema,
   tokenSchema,
 } from '../schemas';
-import { Strategies, } from '../utils';
 import * as api from './files.api';
+import { filesConfig, } from './files.config';
+import { 
+  fileCreatePayloadSchema,
+  fileEditPayloadSchema,
+  fileSchemaResponse,
+} from './files.schemas';
 
 export default <ServerRoute[]>[
   {
@@ -37,11 +39,11 @@ export default <ServerRoute[]>[
     options: {
       id: 'files.create',
       description: 'Use this endpoint to upload file',
-      notes: `Maximum size for the whole request is ${config.files.maxSize / 1024 / 1024} Mb.
-			Allowed extensions are: ${config.files.allowedExtensions.split('|').toString()}`,
+      notes: `Maximum size for the whole request is ${filesConfig.files.maxSize / 1024 / 1024} Mb.
+			Allowed extensions are: ${filesConfig.files.allowedExtensions.split('|').toString()}`,
       tags: ['api', 'file'],
       payload: {
-        maxBytes: config.files.maxSize,
+        maxBytes: filesConfig.files.maxSize,
         output: 'data',
         allow: 'multipart/form-data',
         multipart: {

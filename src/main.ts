@@ -8,26 +8,14 @@ import * as Hapi from '@hapi/hapi';
 import * as Inert from '@hapi/inert';
 import * as Vision from '@hapi/vision';
 
+import { AuthPlugin, } from './server/auth';
 import { config, pinoConfig,swaggerConfig, } from './server/config';
-import { Database, loadDatabaseConfig, } from './server/db';
+import { ControlPlugin, } from './server/control';
+import { Database, loadDatabaseConfig, } from './server/database';
 import { FilesPlugin, } from './server/files';
-import routes from './server/routes';
 import { SchedulerPlugin, } from './server/scheduler';
 import { StoragePlugin, } from './server/storages';
-import { handleValidationError, responseHandler, Strategies, Token, tokenValidate, } from './server/utils';
-
-declare module '@hapi/hapi' {
-  interface UserCredentials {
-    id: string;
-  }
-  interface AuthCredentials {
-    fileId: string | undefined;
-  }
-  interface AuthArtifacts {
-    token: string;
-    tokenType: Token;
-  }
-}
+import { handleValidationError, responseHandler, } from './server/utils';
 
 export async function init(): Promise<Hapi.Server> {
   const server = new Hapi.Server({
@@ -51,7 +39,7 @@ export async function init(): Promise<Hapi.Server> {
     },
   });
   server.realm.modifiers.route.prefix = '/api';
-  // Регистрируем расширения
+  
   await server.register([Inert, Vision, HapiBearer]);
   await server.register({
     plugin: Pino,
@@ -74,29 +62,23 @@ export async function init(): Promise<Hapi.Server> {
     options: loadDatabaseConfig(),
   });
   await server.register({
+    plugin: AuthPlugin,
+  });
+  await server.register({
     plugin: StoragePlugin,
   });
   await server.register({
     plugin: SchedulerPlugin,
   });
-  // JWT Auth
-  server.auth.strategy(Strategies.Header, 'bearer-access-token', {
-    validate: tokenValidate,
-  });
-  server.auth.strategy(Strategies.Query, 'bearer-access-token', {
-    allowQueryToken: true,
-    validate: tokenValidate,
-  });
-  server.auth.default(Strategies.Header);
-  // Load routes
-  server.route(routes);
-
-  // Error handler
-  server.ext('onPreResponse', responseHandler);
-
   await server.register({
     plugin: FilesPlugin,
   });
+  await server.register({
+    plugin: ControlPlugin,
+  });
+
+  // Error handler
+  server.ext('onPreResponse', responseHandler);
   
   // Запускаем сервер
   try {

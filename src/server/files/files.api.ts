@@ -1,31 +1,34 @@
 import { Boom, } from '@hapi/boom';
 import { Request, ResponseObject, ResponseToolkit, } from '@hapi/hapi';
 
-import { config, } from '../config/config';
+import { Token, } from '../auth';
 import { Errors, ErrorsMessages, } from '../enum';
-import { IFileCreatePayload,IFileEditPayload, IFileResponse, IOutputEmpty, IOutputOk, IOutputPagination, } from '../interfaces';
-import { Exception, handlerError, outputEmpty, outputOk, outputPagination, Token, } from '../utils';
+import { IOutputEmpty, IOutputOk, IOutputPagination, } from '../interfaces';
+import { Exception, handlerError, outputEmpty, outputOk, outputPagination, } from '../utils';
+import { filesConfig, } from './files.config';
+import { FilesErrors, FilesErrorsMessages, } from './files.errors';
 import { fileResponse, } from './files.helper';
+import { IFileCreatePayload,IFileEditPayload, IFileResponse, } from './files.interfaces';
 import { File, } from './models/File.model';
 import { FileUser, } from './models/FileUser.model';
 
 function editAccess(r: Request, file: FileUser): void {
   const user = r.auth.credentials.user;
   if (file.userId !== user?.id && r.auth.artifacts.tokenType !== Token.Admin)
-    throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+    throw new Exception(FilesErrors.FileIsPrivate, FilesErrorsMessages[FilesErrors.FileIsPrivate]);
 }
 
 function viewAccess(r: Request, file: FileUser): void {
   if (!file.public) {
-    if (!r.auth.isAuthenticated) throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+    if (!r.auth.isAuthenticated) throw new Exception(FilesErrors.FileIsPrivate, FilesErrorsMessages[FilesErrors.FileIsPrivate]);
     const user = r.auth.credentials.user;
 
     switch (r.auth.artifacts.tokenType) {
       case Token.User:
-        if (file.userId !== user?.id) throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+        if (file.userId !== user?.id) throw new Exception(FilesErrors.FileIsPrivate, FilesErrorsMessages[FilesErrors.FileIsPrivate]);
         break;
       case Token.File:
-        if (file.id !== r.auth.credentials.fileId) throw new Exception(Errors.FileIsPrivate, ErrorsMessages[Errors.FileIsPrivate]);
+        if (file.id !== r.auth.credentials.fileId) throw new Exception(FilesErrors.FileIsPrivate, FilesErrorsMessages[FilesErrors.FileIsPrivate]);
     }
   }
 }
@@ -60,7 +63,7 @@ export async function retrieve(r: Request, h: ResponseToolkit): Promise<Response
   try {
     const { fileId, } = r.params as { fileId: string };
     const fileUser = await FileUser.findByPk(fileId);
-    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+    if (!fileUser) throw new Exception(FilesErrors.FileNotFound, FilesErrorsMessages[FilesErrors.FileNotFound], { fileId, });
 
     viewAccess(r, fileUser);
 
@@ -90,7 +93,7 @@ export async function info(r: Request): Promise<IOutputOk<IFileResponse> | Boom>
         }
       ],
     });
-    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+    if (!fileUser) throw new Exception(FilesErrors.FileNotFound, FilesErrorsMessages[FilesErrors.FileNotFound], { fileId, });
 
     viewAccess(r, fileUser);
 
@@ -115,7 +118,7 @@ export async function create(r: Request, h: ResponseToolkit): Promise<ResponseOb
       attributes: ['fileId'],
     });
     const usedCapacity = await r.server.app.storage.sizeFile(files.map((file) => file.fileId));
-    if (usedCapacity + payload.file.payload.length > config.files.capacityPerUser)
+    if (usedCapacity + payload.file.payload.length > filesConfig.files.capacityPerUser)
       throw new Exception(Errors.StorageLimit, ErrorsMessages[Errors.StorageLimit]);
     const file = await r.server.app.storage.saveFile(payload.file);
     const { name, } = r.server.app.storage.splitFilename(payload.file.filename);
@@ -143,7 +146,7 @@ export async function edit(r: Request): Promise<IOutputEmpty | Boom> {
     const payload = r.payload as IFileEditPayload;
     const { fileId, } = r.params as { fileId: string };
     const fileUser = await FileUser.findByPk(fileId);
-    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+    if (!fileUser) throw new Exception(FilesErrors.FileNotFound, FilesErrorsMessages[FilesErrors.FileNotFound], { fileId, });
     editAccess(r, fileUser);
 
     await fileUser.update({
@@ -162,7 +165,7 @@ export async function destroy(r: Request): Promise<IOutputEmpty | Boom> {
     const { fileId, } = r.params as { fileId: string };
     const fileUser = await FileUser.findByPk(fileId);
 
-    if (!fileUser) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+    if (!fileUser) throw new Exception(FilesErrors.FileNotFound, FilesErrorsMessages[FilesErrors.FileNotFound], { fileId, });
 
     editAccess(r, fileUser);
     await fileUser.destroy();

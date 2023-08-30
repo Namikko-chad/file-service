@@ -1,5 +1,4 @@
 import { config as dotenv, } from 'dotenv';
-import * as os from 'os';
 import { Sequelize, } from 'sequelize-typescript';
 
 dotenv();
@@ -31,17 +30,7 @@ function configLoad() {
     debug: process.env['DEBUG'] === 'true',
     development: process.env['NODE_ENV'] === 'development',
     db: <Sequelize>{},
-    dbLink: process.env['DATABASE_LINK'] as string,
     env: process.env['NODE_ENV'] as 'development' | 'stage' | 'test' | 'production',
-    files: {
-      allowedExtensions: process.env['FILETYPE'] ?? 'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso',
-      allowedExtensionsRegExp: RegExp(`(${process.env['FILETYPE'] ?? 'jpg|jpeg|png|gif|html|webp|pdf|docx|rtf|xls|xlsx|sig|svg|iso'})$`),
-      bufferSize: 1024 * 1024 * 1,
-      bufferStorage: process.env['STORAGE_TEMP'] ?? os.tmpdir() + '/',
-      capacityPerUser: 1024 * 1024 * 100,
-      filesDir: 'assert',
-      maxSize: 1024 * 1024 * 30 * 30000,
-    },
     server: {
       port: process.env['SERVER_PORT'] ? Number(process.env['SERVER_PORT']) : 3000,
       host: process.env['SERVER_HOST'] ?? 'localhost',

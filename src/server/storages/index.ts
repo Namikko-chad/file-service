@@ -1,3 +1,2 @@
-export * from './enum';
-export * from './interface';
-export * from './plugin';
+export * from './storages.interface';
+export * from './storages.plugin';

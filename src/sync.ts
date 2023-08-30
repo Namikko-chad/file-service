@@ -1,4 +1,4 @@
-import { initDatabase, loadDatabaseConfig, } from './server/db';
+import { initDatabase, loadDatabaseConfig, } from './server/database';
 
 async function init() {
   await initDatabase(

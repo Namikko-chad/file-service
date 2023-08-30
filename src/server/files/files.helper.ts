@@ -1,5 +1,5 @@
 import { File, FileUser, } from '.';
-import { IFileResponse, } from './file.interfaces';
+import { IFileResponse, } from './files.interfaces';
 
 export function fileResponse(fileUser: FileUser, file: File): IFileResponse {
   return {

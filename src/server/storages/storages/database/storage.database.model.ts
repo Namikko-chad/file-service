@@ -1,6 +1,7 @@
 import { Column, DataType, Model, Table, } from 'sequelize-typescript';
 
 @Table({
+  tableName: 'Storage',
   timestamps: false,
 })
 export class Storage extends Model {

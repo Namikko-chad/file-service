@@ -1,8 +1,9 @@
 import { Boom, } from '@hapi/boom';
 import { Request, } from '@hapi/hapi';
 
+import { Token, } from '../auth';
 import { Errors, ErrorsMessages, } from '../enum';
-import { Exception, handlerError, Token, } from '../utils';
+import { Exception, handlerError, } from '../utils';
 
 export function checkAdmin(r: Request): boolean | Boom {
   try {

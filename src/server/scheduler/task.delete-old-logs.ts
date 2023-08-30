@@ -1,8 +1,8 @@
 import { Op,Transaction, } from 'sequelize';
 
-import { AbstractTask, } from './abstract-task';
-import { SchedulerStatus, } from './enum';
-import { SchedulerTask, } from './model';
+import { AbstractTask, } from './AbstractTask';
+import { SchedulerStatus, } from './scheduler.enum';
+import { SchedulerTask, } from './scheduler.model';
 
 export class DeleteOldLogsTask extends AbstractTask {
   interval = '0 0 * * *';

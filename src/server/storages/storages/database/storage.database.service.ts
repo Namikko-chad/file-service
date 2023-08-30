@@ -1,4 +1,5 @@
-import { config, } from '../../../config';
+import { Sequelize, } from 'sequelize-typescript';
+
 import { File, } from '../../../files';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { DatabaseConfig, } from './storage.database.config';
@@ -13,9 +14,14 @@ export class DBStorage extends AbstractStorage {
     this.config = config;
   }
 
-  async init(): Promise<void> {
-    config.db.addModels([Storage]);
-    await config.db.sync();
+  override init(db: Sequelize): Promise<void> {
+    db.addModels([Storage]);
+
+    return Promise.resolve();
+  }
+
+  override close(): Promise<void> {
+    return Promise.resolve();
   }
 
   async saveFile(file: File, data: Buffer): Promise<void> {

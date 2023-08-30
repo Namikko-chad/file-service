@@ -2,9 +2,9 @@ import cron from 'node-cron';
 
 import { Server, } from '@hapi/hapi';
 
-import { AbstractTask, } from './abstract-task';
-import { SchedulerStatus, } from './enum';
-import { SchedulerTask, } from './model';
+import { AbstractTask, } from './AbstractTask';
+import { SchedulerStatus, } from './scheduler.enum';
+import { SchedulerTask, } from './scheduler.model';
 import { TaskList, } from './scheduler.plugin';
 
 export class SchedulerHandler {

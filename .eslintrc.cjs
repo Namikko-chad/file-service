@@ -192,13 +192,14 @@ const tsRules = {
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: 'tsconfig.json',
+    project: 'tsconfig.eslint.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
+    include: ['']
   },
   plugins: ['@typescript-eslint/eslint-plugin', 'simple-import-sort'],
   root: true,
-  ignorePatterns: ['node_modules/', 'build/', 'dist/', 'docs/', '*.d.ts', '*.json*', '*.md'],
+  ignorePatterns: ['node_modules/', 'build/', 'dist/', 'docs/', '*.d.ts', '*.json*', '*.md', '*.cjs'],
   overrides: [
     {
       files: ['*.ts'],

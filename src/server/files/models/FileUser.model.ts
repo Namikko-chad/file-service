@@ -1,6 +1,6 @@
 import { BelongsTo,Column, DataType, ForeignKey, Scopes, Table, } from 'sequelize-typescript';
 
-import { AbstractModel, } from '../../db/AbstractModel';
+import { AbstractModel, } from '../../database/AbstractModel';
 import { File, } from './File.model';
 
 @Scopes(() => ({

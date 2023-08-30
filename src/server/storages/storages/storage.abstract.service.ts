@@ -1,3 +1,5 @@
+import { Sequelize, } from 'sequelize-typescript';
+
 import { File, } from '../../files';
 import { AbstractStorageConfig, } from './storage.abstract.config';
 
@@ -12,7 +14,9 @@ export abstract class AbstractStorage {
     }
   }
 
-  abstract init(): Promise<void>;
+  abstract init(db: Sequelize): Promise<void>;
+
+  abstract close(): Promise<void>;
 
   abstract saveFile(file: File, data: Buffer): Promise<void>;
 

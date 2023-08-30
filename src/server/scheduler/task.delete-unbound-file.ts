@@ -1,7 +1,7 @@
 import { literal, Op,Transaction, } from 'sequelize';
 
 import { File, FileUser, } from '../files';
-import { AbstractTask, } from './abstract-task';
+import { AbstractTask, } from './AbstractTask';
 
 export class DeleteUnboundFileTask extends AbstractTask {
   interval = '0 0 * * *';

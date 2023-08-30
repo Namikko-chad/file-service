@@ -1,2 +1,2 @@
-export * from './abstract-task';
+export * from './AbstractTask';
 export * from './scheduler.plugin';

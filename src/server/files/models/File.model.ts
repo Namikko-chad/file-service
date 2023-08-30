@@ -1,7 +1,6 @@
 import { Column, DataType, HasMany,Scopes, Table, } from 'sequelize-typescript';
 
-import { AbstractModel, } from '../../db/AbstractModel';
-import { StorageType, } from '../../storages';
+import { AbstractModel, } from '../../database/AbstractModel';
 import { FileUser, } from './FileUser.model';
 
 @Scopes(() => ({
@@ -34,7 +33,7 @@ export class File extends AbstractModel {
   @Column({
     type: DataType.STRING,
   })
-    storage!: StorageType;
+    storage!: string;
 
   @Column({
     type: DataType.STRING(),

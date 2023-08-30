@@ -4,11 +4,12 @@ import * as jwt from 'jsonwebtoken';
 import fetch, { BodyInit, } from 'node-fetch';
 import * as multipart from 'parse-multipart-data';
 import * as p from 'path';
+import { Sequelize, } from 'sequelize-typescript';
 import { URL, } from 'url';
 
-import { Errors, ErrorsMessages, } from '../../../enum';
 import { File, } from '../../../files';
-import { Exception, } from '../../../utils/Exception';
+import { Exception, } from '../../../utils';
+import { StoragesErrors, StoragesErrorsMessages, } from '../../storages.errors';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { GoogleDriveConfig, } from './storage.google-drive.config';
 import { GoogleDrive, } from './storage.google-drive.model';
@@ -36,10 +37,15 @@ export class GoogleDriveStorage extends AbstractStorage {
     super(config);
     // eslint-disable-next-line security/detect-non-literal-fs-filename
     this.googleKey = JSON.parse(fs.readFileSync(p.resolve(config.keyFileName), { encoding: 'utf8', }).toString()) as GoogleKey;
-
   }
 
-  override init(): Promise<void> {
+  override init(db: Sequelize): Promise<void> {
+    db.addModels([GoogleDrive]);
+
+    return Promise.resolve();
+  }
+
+  override close(): Promise<void> {
     return Promise.resolve();
   }
 
@@ -169,7 +175,7 @@ export class GoogleDriveStorage extends AbstractStorage {
       },
     });
     if (!drive)
-      throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound]);
+      throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
     const buffer = await this.request<Buffer>('GET', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`, {
       alt: 'media',
     });
@@ -191,7 +197,7 @@ export class GoogleDriveStorage extends AbstractStorage {
       },
     });
     if (!drive)
-      throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound]);
+      throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
     await this.request('DELETE', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`);
   }
 }
