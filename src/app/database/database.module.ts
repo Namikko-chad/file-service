@@ -11,6 +11,7 @@ import { databaseConfig, } from './database.config';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         ...databaseConfig(config),
+        autoLoadEntities: true,
       }),
     })
   ],

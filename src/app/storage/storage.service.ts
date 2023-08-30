@@ -34,7 +34,7 @@ export class StorageService {
       dbStorage, folderStorage, googleDriveStorage,megaIOStorage
     ];
     storages.sort ( (a,b) => a.config.fileSizeLimit - b.config.fileSizeLimit ).forEach( storage => 
-      this.storages.set(storage.constructor.name, storage)
+      this.storages.set(storage.constructor.name.slice(0, -7).toLowerCase(), storage)
     );
   }
 
