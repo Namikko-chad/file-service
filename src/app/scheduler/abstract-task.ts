@@ -1,8 +1,7 @@
 import { Inject, Logger, } from '@nestjs/common';
 import { QueryRunner, } from 'typeorm';
 
-import { Exception, } from 'app/utils/Exception';
-
+import { Exception, } from '../utils';
 import { SchedulerTask, } from './scheduler.entity';
 import { SchedulerStatus, } from './scheduler.enum';
 import { SchedulerTaskRepository, } from './scheduler.repository';

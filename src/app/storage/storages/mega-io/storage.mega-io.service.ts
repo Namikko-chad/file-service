@@ -23,6 +23,12 @@ export class MegaIOStorage extends AbstractStorage {
     }
   }
 
+  override async close(): Promise<void> {
+    if (this.enabled) {
+      await this.storage.close();
+    }
+  }
+
   async saveFile({ id: fileId, }: File, data: Buffer): Promise<void> {
     await this.storage.upload(fileId, data).complete;
   }

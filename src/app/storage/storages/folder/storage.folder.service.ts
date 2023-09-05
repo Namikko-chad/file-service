@@ -19,6 +19,10 @@ export class FolderStorage extends AbstractStorage {
     return Promise.resolve();
   }
 
+  override close(): Promise<void> {
+    return Promise.resolve();
+  }
+
   async saveFile(file: File, data: Buffer): Promise<void> {
     const dirPath = p.join(this.filesDir);
     await fs.mkdir(dirPath, { recursive: true, });

@@ -14,7 +14,7 @@ export class GoogleDriveConfig extends AbstractStorageConfig implements StorageP
     this._keyFileName = configService.get<string>('GOOGLEDRIVE_KEY') || 'google-auth-key.json';
     // eslint-disable-next-line security/detect-non-literal-fs-filename
     this.enabled = fs.existsSync(this._keyFileName);
-    this.fileSizeLimit = this.fileSizeLimit ?? (5 * 1024 + 120) * 1024 * 1024;
+    this.fileSizeLimit = this.fileSizeLimit ?? 10 * 1024 * 1024;
     this.capacity = this.capacity ?? (5 * 1024 + 120) * 1024 * 1024;
   }
 

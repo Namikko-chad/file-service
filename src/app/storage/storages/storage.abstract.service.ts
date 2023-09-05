@@ -17,6 +17,8 @@ export abstract class AbstractStorage {
 
   abstract init(): Promise<void>;
 
+  abstract close(): Promise<void>;
+
   abstract saveFile(file: File, data: Buffer): Promise<void>;
 
   abstract loadFile(file: File): Promise<Buffer>;

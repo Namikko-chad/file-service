@@ -3,11 +3,11 @@ import { HttpAdapterHost, NestFactory, } from '@nestjs/core';
 import helmet from 'helmet';
 import { initSwagger, } from 'swagger/swagger';
 
-import { AppModule, } from 'app/app.module';
-import { AppExceptionsFilter, } from 'app/utils/app.exceptions.filter';
-import { LoggingInterceptor, } from 'app/utils/app.logging.interceptor';
-import { ResponseInterceptor, } from 'app/utils/app.response.interceptor';
-import { AppValidationPipe, } from 'app/utils/app.validation.pipe';
+import { AppModule, } from './app/app.module';
+import { AppExceptionsFilter, } from './app/utils/app.exceptions.filter';
+import { LoggingInterceptor, } from './app/utils/app.logging.interceptor';
+import { ResponseInterceptor, } from './app/utils/app.response.interceptor';
+import { AppValidationPipe, } from './app/utils/app.validation.pipe';
 
 async function init() {
   ConfigModule.forRoot();

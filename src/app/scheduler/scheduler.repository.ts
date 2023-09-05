@@ -1,8 +1,7 @@
 import { Injectable, } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
 
-import { AbstractRepository, } from 'app/database/AbstractRepository';
-
+import { AbstractRepository, } from '../database';
 import { SchedulerTask, } from './scheduler.entity';
 
 @Injectable()

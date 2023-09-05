@@ -1,16 +1,18 @@
 import { ConfigModule, } from '@nestjs/config';
 import { Test, } from '@nestjs/testing';
 
-import { beforeAll,describe, expect, it,  } from '@jest/globals';
+import { beforeAll, describe, expect, it, jest, } from '@jest/globals';
 
 import { DatabaseModule, } from '../../../database';
 import { File, } from '../../../files';
 import { Utils, } from '../../../utils';
-import { StorageDatabaseModule, } from './storage.database.module';
-import { DBStorage, } from './storage.database.service';
+import { GoogleDriveModule, } from './storage.google-drive.module';
+import { GoogleDriveStorage, } from './storage.google-drive.service';
 
-describe('Storage.Database', () => {
-  let storage: DBStorage;
+jest.setTimeout(10000);
+
+describe('Storage.GoogleDrive', () => {
+  let storage: GoogleDriveStorage;
   const buffer = Buffer.from('test text');
   const file = new File();
   file.id = Utils.getUUID();
@@ -23,12 +25,13 @@ describe('Storage.Database', () => {
           isGlobal: true,
         }),
         DatabaseModule, 
-        StorageDatabaseModule
+        GoogleDriveModule
       ],
     }).compile();
 
-    storage = moduleRef.get<DBStorage>(DBStorage);
-  } );
+    storage = moduleRef.get<GoogleDriveStorage>(GoogleDriveStorage);
+    await storage.init();
+  });
 
   describe('work with file', () => {
     it('should save file', async () => {

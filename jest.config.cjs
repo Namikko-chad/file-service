@@ -8,7 +8,4 @@ module.exports = {
   collectCoverageFrom: ['**/*controller.ts', '**/*service.ts', '**/*processor.ts'],
   coverageDirectory: './coverage',
   testEnvironment: 'node',
-  moduleNameMapper: {
-    "^app/(.*)$": "<rootDir>/app/$1",
-  }
 };

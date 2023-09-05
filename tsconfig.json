@@ -31,10 +31,7 @@
     "strict": true,
     "target": "ES2022",
     "types": ["node"],
-    "paths": {
-      "app": ["src/app"]
-    }
   },
   "include": ["./src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "./src/**/*.test.ts"]
+  "exclude": ["node_modules", "test", "build", "*.spec.ts", "*.test.ts", "*.try.ts", "*.mock.ts"]
 }

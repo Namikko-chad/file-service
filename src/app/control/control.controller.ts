@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, HttpStatus, Param, UsePipes, ValidationPipe, } from '@nestjs/common';
 import { ApiOperation, ApiTags, } from '@nestjs/swagger';
 
-import { Exception, } from '../utils/Exception';
+import { Exception, } from '../utils';
 import { ControlFlushStorageDto, } from './control.dto';
 import { ControlService, } from './control.service';
 

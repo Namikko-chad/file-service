@@ -1,10 +1,8 @@
 import { Module, } from '@nestjs/common';
 import { TypeOrmModule, } from '@nestjs/typeorm';
 
-import { File, } from 'app/files/entity';
-import { FileRepository, } from 'app/files/repositories';
-import { StorageModule, } from 'app/storage/storage.module';
-
+import { File, FileRepository, } from '../files';
+import { StorageModule, } from '../storage';
 import { SchedulerTask, } from './scheduler.entity';
 import { SchedulerTaskRepository, } from './scheduler.repository';
 import { DeleteOldLogsTask, } from './task.delete-old-logs';

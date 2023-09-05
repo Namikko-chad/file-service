@@ -31,11 +31,12 @@ export class StorageService {
     @Inject(MegaIOStorage) megaIOStorage: MegaIOStorage
   ) {
     const storages: AbstractStorage[] = [
-      dbStorage, folderStorage, googleDriveStorage,megaIOStorage
+      dbStorage, folderStorage, googleDriveStorage, megaIOStorage
     ];
     storages.sort ( (a,b) => a.config.fileSizeLimit - b.config.fileSizeLimit ).forEach( storage => 
       this.storages.set(storage.constructor.name.slice(0, -7).toLowerCase(), storage)
     );
+    storages.forEach( storage => void storage.init() );
   }
 
   splitFilename(filename: string): IFilename {

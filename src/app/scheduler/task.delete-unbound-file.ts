@@ -2,10 +2,8 @@ import { Inject, Injectable, } from '@nestjs/common';
 import { Cron, } from '@nestjs/schedule';
 import { QueryRunner, } from 'typeorm';
 
-import { FileUser, } from 'app/files/entity';
-import { FileRepository, } from 'app/files/repositories';
-import { StorageService, } from 'app/storage/storage.service';
-
+import { FileRepository,FileUser,  } from '../files';
+import { StorageService, } from '../storage';
 import { AbstractTask, } from './abstract-task';
 
 @Injectable()

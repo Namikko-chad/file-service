@@ -1,9 +1,8 @@
 import crypto from 'crypto';
 import { DeepPartial, } from 'typeorm';
 
-import { AbstractGenerator, } from 'app/database';
-import { Utils, } from 'app/utils';
-
+import { AbstractGenerator, } from '../../database';
+import { Utils, } from '../../utils';
 import { File, } from '../entity';
 
 export class FileEntityGenerator extends AbstractGenerator<File> {

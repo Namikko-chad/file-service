@@ -7,9 +7,8 @@ import * as multipart from 'parse-multipart-data';
 import * as p from 'path';
 import { URL, } from 'url';
 
-import { Exception, } from 'app/utils/Exception';
-
-import { File, } from '../../../files/entity';
+import { File, } from '../../../files';
+import { Exception, } from '../../../utils';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { GoogleDriveConfig, } from './storage.google-drive.config';
 import { GoogleDriveRepository, } from './storage.google-drive.repository';
@@ -44,6 +43,10 @@ export class GoogleDriveStorage extends AbstractStorage {
   }
 
   override init(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  override close(): Promise<void> {
     return Promise.resolve();
   }
 

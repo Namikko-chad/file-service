@@ -1,7 +1,7 @@
 import { Inject, Injectable, } from '@nestjs/common';
 
-import { FileRepository, } from 'app/files/repositories';
-import { StorageService, } from 'app/storage/storage.service';
+import { FileRepository, } from '../files';
+import { StorageService, } from '../storage';
 
 @Injectable()
 export class ControlService {
