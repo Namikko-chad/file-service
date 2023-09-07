@@ -14,7 +14,7 @@ export class SchedulerTask extends Model {
     type: DataType.UUID,
     defaultValue: () => getUUID(),
   })
-  override id!: string;
+  declare id: string;
 
   @Column({
     type: DataType.STRING,

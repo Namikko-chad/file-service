@@ -4,9 +4,9 @@ import { Boom, } from '@hapi/boom';
 import { AuthArtifacts, AuthCredentials, Request, } from '@hapi/hapi';
 
 import { config, } from '../config/config';
-import { Errors, ErrorsMessages, } from '../enum/errors';
-import { error, } from '../utils/index';
+import { error, } from '../utils';
 import { Strategies, Token, } from './auth.enum';
+import { AuthErrors, AuthErrorsMessages, } from './auth.errors';
 
 export interface IJwtData {
   userId: string;
@@ -45,14 +45,14 @@ export function tokenValidate(r: Request, token: string): TokenValidateSuccess |
           return true;
         } catch (err) {
           const e = err as Error;
-          if (e.name === 'TokenExpiredError') throw error(Errors.TokenExpired, ErrorsMessages[Errors.TokenExpired], {});
+          if (e.name === 'TokenExpiredError') throw error(AuthErrors.TokenExpired, AuthErrorsMessages[AuthErrors.TokenExpired], {});
         }
 
         return false;
       });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (!data || !tokenType) throw error(Errors.TokenInvalid, ErrorsMessages[Errors.TokenInvalid], {});
+    if (!data || !tokenType) throw error(AuthErrors.TokenInvalid, AuthErrorsMessages[AuthErrors.TokenInvalid], {});
 
     return [data, tokenType];
   }
@@ -62,7 +62,7 @@ export function tokenValidate(r: Request, token: string): TokenValidateSuccess |
   switch (tokenType) {
     case Token.File:
       if (!r.route.settings.auth?.strategies.includes(tokenType === Token.File ? Strategies.Query : Strategies.Header))
-        throw error(Errors.TokenInvalid, ErrorsMessages[Errors.TokenInvalid], {});
+        throw error(AuthErrors.TokenInvalid, AuthErrorsMessages[AuthErrors.TokenInvalid], {});
       break;
   }
 

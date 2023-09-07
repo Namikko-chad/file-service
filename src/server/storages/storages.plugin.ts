@@ -13,6 +13,6 @@ export const StoragePlugin: Plugin<unknown> = {
   dependencies: ['database'],
   register: async (server: Server) => {
     server.app.storage = new Storage();
-    await server.app.storage.init(server);
+    await server.app.storage.init(server.app.db);
   },
 };

@@ -1,10 +1,9 @@
 import { Boom, } from '@hapi/boom';
 import { Request, } from '@hapi/hapi';
 
-import { File, FileUser, } from '../files';
-import { fileResponse, } from '../files/files.helper';
+import { File, fileResponse, FileUser, IFileResponse, } from '../files';
 import { listParam, } from '../helper/listParam';
-import { IFileResponse, IListParam,IOutputEmpty, IOutputPagination, } from '../interfaces';
+import { IListParam,IOutputEmpty, IOutputPagination, } from '../interfaces';
 import { handlerError, outputEmpty, outputPagination, } from '../utils';
 
 export async function list(r: Request): Promise<IOutputPagination<IFileResponse[]> | Boom> {

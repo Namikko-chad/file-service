@@ -10,7 +10,7 @@ export class Storage extends Model {
     primaryKey: true,
     unique: true,
   })
-  override id!: string;
+  declare id: string;
 
   @Column({
     type: DataType.BLOB,
