@@ -10,10 +10,10 @@ export class GoogleDrive extends Model {
     primaryKey: true,
     unique: true,
   })
-    fileId!: string;
+  declare fileId: string;
 
   @Column({
     type: DataType.UUID,
   })
-    driveId!: string;
+  declare driveId: string;
 }

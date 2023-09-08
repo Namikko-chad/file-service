@@ -16,30 +16,30 @@ export class File extends AbstractModel {
     type: DataType.STRING(10),
     allowNull: false,
   })
-    ext!: string;
+  declare ext: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    mime!: string;
+  declare mime: string;
 
   @Column({
     type: DataType.BIGINT,
     allowNull: false,
   })
-    size!: number;
+  declare size: number;
 
   @Column({
     type: DataType.STRING,
   })
-    storage!: string;
+  declare storage: string;
 
   @Column({
     type: DataType.STRING(),
     allowNull: false,
   })
-    hash!: string;
+  declare hash: string;
 
   @HasMany(() => FileUser)
     fileUsers?: FileUser[];

@@ -20,31 +20,31 @@ export class SchedulerTask extends Model {
     type: DataType.STRING,
     allowNull: false,
   })
-    name!: string;
+  declare name: string;
 
   @Column({
     type: DataType.DATE,
     allowNull: false,
     defaultValue: fn('now'),
   })
-    startedAt!: string;
+  declare startedAt: string;
 
   @Column({
     type: DataType.DATE,
     allowNull: true,
   })
-    finishedAt!: string;
+  declare finishedAt: string;
 
   @Column({
     type: DataType.ENUM(...Object.values(SchedulerStatus)),
     allowNull: false,
     defaultValue: SchedulerStatus.Started,
   })
-    status!: SchedulerStatus;
+  declare status: SchedulerStatus;
 
   @Column({
     type: DataType.TEXT,
     allowNull: true,
   })
-    error!: string;
+  declare error: string;
 }

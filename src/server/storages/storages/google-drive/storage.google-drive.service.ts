@@ -39,10 +39,10 @@ export class GoogleDriveStorage extends AbstractStorage {
     this.googleKey = JSON.parse(fs.readFileSync(p.resolve(config.keyFileName), { encoding: 'utf8', }).toString()) as GoogleKey;
   }
 
-  override init(db: Sequelize): Promise<void> {
+  override async init(db: Sequelize): Promise<void> {
     db.addModels([GoogleDrive]);
 
-    return Promise.resolve();
+    await this.getAccessToken();
   }
 
   override close(): Promise<void> {
@@ -75,7 +75,7 @@ export class GoogleDriveStorage extends AbstractStorage {
       this.accessToken = response.access_token;
     } catch (error) {
       this.enabled = false;
-      console.warn(`${this.constructor.name} disabled`);
+      console.warn(`[${this.constructor.name}] disabled`);
       throw error;
     }
   }
@@ -91,7 +91,7 @@ export class GoogleDriveStorage extends AbstractStorage {
     payload?: FormData | object | string
   ): Promise<Res> {
     try {
-      console.log(`${method}, ${endpoint}`);
+      console.log(`[${this.constructor.name}:${method}], ${endpoint}`);
       const url = this.apiURL(endpoint);
       new URLSearchParams(query).forEach((value,name) => {
         url.searchParams.append(name,value);
@@ -129,7 +129,7 @@ export class GoogleDriveStorage extends AbstractStorage {
         throw new ReferenceError('Content-type not recognized');
 
       if (!response.ok) {
-        console.error(`Failed to request. Status: ${response.status} ${response.statusText}`);
+        console.error(`[${this.constructor.name}:${method}] Failed to request. Status: ${response.status} ${response.statusText}`);
         throw new Exception(response.status, 'Failed send request', response as unknown as Readonly<Record<string, unknown>>);
       }
 
@@ -138,22 +138,14 @@ export class GoogleDriveStorage extends AbstractStorage {
 
       return response.buffer() as unknown as Res;
     } catch (error) {
-      if ((error as {code:number;}).code === 401) {
-        console.warn('Update access-token');
-        await this.getAccessToken();
-
-        // FIX this shit
-        return this.request(method, endpoint, query, payload);
-      } else {
-        throw error;
-      }
+      throw error;
     }
   }
 
   async saveFile(file: File, data: Buffer): Promise<void> {
     const payload = new FormData();
     payload.append('content', data);
-
+    await this.getAccessToken();
     const res = await this.request<{
       kind: string;
       id: string;
@@ -176,6 +168,7 @@ export class GoogleDriveStorage extends AbstractStorage {
     });
     if (!drive)
       throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
+    await this.getAccessToken();
     const buffer = await this.request<Buffer>('GET', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`, {
       alt: 'media',
     });
@@ -198,6 +191,7 @@ export class GoogleDriveStorage extends AbstractStorage {
     });
     if (!drive)
       throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
+    await this.getAccessToken();
     await this.request('DELETE', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`);
   }
 }

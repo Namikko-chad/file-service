@@ -16,27 +16,27 @@ export class FileUser extends AbstractModel {
     type: DataType.UUID,
     allowNull: false,
   })
-    userId!: string;
+  declare userId: string;
 
   @ForeignKey(() => File)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-    fileId!: string;
+  declare fileId: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-    name!: string;
+  declare name: string;
 
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
-    public!: boolean;
+  declare public: boolean;
 
   @BelongsTo(() => File)
-    file!: File;
+  declare file: File;
 }

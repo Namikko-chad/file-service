@@ -15,5 +15,5 @@ export class Storage extends Model {
   @Column({
     type: DataType.BLOB,
   })
-    data!: Buffer;
+  declare data: Buffer;
 }

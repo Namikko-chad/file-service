@@ -3,7 +3,8 @@ import { Request, ResponseObject, ResponseToolkit, } from '@hapi/hapi';
 
 import { Token, } from '../auth';
 import { Errors, ErrorsMessages, } from '../enum';
-import { IOutputEmpty, IOutputOk, IOutputPagination, } from '../interfaces';
+import { listParam, } from '../helper/listParam';
+import { IListParam, IOutputEmpty, IOutputOk, IOutputPagination, } from '../interfaces';
 import { Exception, handlerError, outputEmpty, outputOk, outputPagination, } from '../utils';
 import { filesConfig, } from './files.config';
 import { FilesErrors, FilesErrorsMessages, } from './files.errors';
@@ -38,10 +39,11 @@ export async function list(r: Request): Promise<IOutputPagination<IFileResponse[
     const user = r.auth.credentials.user;
     if (!user) throw new Exception(Errors.UserNotFound, ErrorsMessages[Errors.UserNotFound]);
     const { id: userId, } = user;
+    const query = r.query as IListParam;
+    const params = listParam(query, ['name']);
+    Object.assign(params.where, { userId, });
     const { rows, count, } = await FileUser.findAndCountAll({
-      where: {
-        userId,
-      },
+      ...params,
       include: [
         {
           model: File,
@@ -49,7 +51,7 @@ export async function list(r: Request): Promise<IOutputPagination<IFileResponse[
         }
       ],
     });
-
+    
     return outputPagination(
       count,
       rows.map((row) => fileResponse(row, row.file))

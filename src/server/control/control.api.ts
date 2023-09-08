@@ -8,7 +8,7 @@ import { handlerError, outputEmpty, outputPagination, } from '../utils';
 
 export async function list(r: Request): Promise<IOutputPagination<IFileResponse[]> | Boom> {
   try {
-    const query = r.payload as IListParam & { userId: string };
+    const query = r.query as IListParam & { userId: string };
     const params = listParam(query);
     Object.assign(params.where, { userId: query.userId, });
     const { rows, count, } = await FileUser.findAndCountAll({
