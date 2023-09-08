@@ -75,7 +75,6 @@ export class FileController {
   @UseGuards(MultipleAuthorizeGuard)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
   async list(@Req() req: RequestAuth, @Query() listParam: ListDto<FileUser>): Promise<{ count: number; rows: FileInfoDto[] }> {
-    console.log(listParam);
     const [files, count] = await this._service.list(req.user.id, listParam);
 
     return { count, rows: files.map((file) => this._service.fileResponse(file)), };

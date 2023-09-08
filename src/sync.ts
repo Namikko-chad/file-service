@@ -9,9 +9,12 @@ async function init() {
   const dataSource = new DataSource({
     ...databaseConfig(config),
     entities: ['dist/**/*.entity.js'],
-    synchronize: true,
   });
   await dataSource.initialize();
+  await Promise.all(
+    ['public', 'logs'].map( async (schema) => dataSource.query(`CREATE SCHEMA IF NOT EXISTS ${schema}`) )
+  );
+  await dataSource.synchronize();
   console.log('Database sync complete');
 }
 

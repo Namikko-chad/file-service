@@ -42,8 +42,8 @@ export class GoogleDriveStorage extends AbstractStorage {
 
   }
 
-  override init(): Promise<void> {
-    return Promise.resolve();
+  override async init(): Promise<void> {
+    await this.getAccessToken();
   }
 
   override close(): Promise<void> {
@@ -136,15 +136,7 @@ export class GoogleDriveStorage extends AbstractStorage {
 
       return response.buffer() as unknown as Res;
     } catch (error) {
-      if ((error as {code:number;}).code === 401) {
-        this._logger.warn('Update access-token');
-        await this.getAccessToken();
-
-        // FIX this shit
-        return this.request(method, endpoint, query, payload);
-      } else {
-        throw error;
-      }
+      throw error;
     }
   }
 
@@ -152,6 +144,7 @@ export class GoogleDriveStorage extends AbstractStorage {
     const payload = new FormData();
     payload.append('content', data);
 
+    await this.getAccessToken();
     const res = await this.request<{
       kind: string;
       id: string;
@@ -171,6 +164,7 @@ export class GoogleDriveStorage extends AbstractStorage {
     const drive = await this._repository.findOneBy({
       fileId,
     });
+    await this.getAccessToken();
     const buffer = await this.request<Buffer>('GET', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`, {
       alt: 'media',
     });
@@ -184,6 +178,7 @@ export class GoogleDriveStorage extends AbstractStorage {
     const drive = await this._repository.findOneBy({
       fileId,
     });
+    await this.getAccessToken();
     await this.request('DELETE', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`);
   }
 }
