@@ -1,0 +1,68 @@
+{
+  "name": "fs-plugin",
+  "version": "2.1.1",
+  "description": "FS plug-in for File service HapiJS (https://github.com/CryptonStudio/file-service)",
+  "main": "./lib/index.js",
+  "author": "Leonhard Schmidt <bloodheavendevelop@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CryptonStudio/fs-plugin"
+  },
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "types": "./lib/index.d.ts",
+  "peerDependencies": {
+    "@hapi/hapi": "^20.2.1"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "form-data": "^4.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^2.6.6",
+    "reflect-metadata": "^0.1.13",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^14.1.0",
+    "@commitlint/config-conventional": "^14.1.0",
+    "@hapi/hapi": "^20.2.1",
+    "@jest/globals": "^27.3.1",
+    "@types/eslint-plugin-prettier": "^3.1.0",
+    "@types/hapi__hapi": "^20.0.9",
+    "@types/jsonwebtoken": "^8.5.7",
+    "@types/node": "^16.10.1",
+    "@types/node-fetch": "^2.5.12",
+    "@types/uuid": "^8.3.1",
+    "@types/validator": "^13.6.3",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-jest": "^25.2.4",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-plugin-security": "^1.4.0",
+    "husky": "^7.0.0",
+    "jest": "^27.3.1",
+    "jest-mock": "^27.3.0",
+    "lint-staged": "^12.1.7",
+    "prettier": "^2.4.1",
+    "shx": "^0.3.3",
+    "sqlite3": "^5.0.2",
+    "ts-jest": "^27.0.7",
+    "typescript": "^4.4.4"
+  },
+  "scripts": {
+    "clean": "shx rm -rf lib",
+    "build": "tsc -p ./tsconfig.json",
+    "format": "prettier --write ./src ./lib ./test './*.{cjs,md}' './tsconfig.*'",
+    "lint": "eslint --fix .",
+    "test": "jest",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.ts": "eslint --fix"
+  }
+}
