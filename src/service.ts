@@ -24,8 +24,10 @@ interface FileServicePOSTResponse {
 export class FileServiceConnectorService {
   private readonly logger = new Logger('File-service');
 
-  @Inject(JwtService) private readonly jwtService: JwtService;
-  @Inject(FileServiceConnectorConfig) private readonly config: FileServiceConnectorConfig;
+  constructor(
+    @Inject(JwtService) private readonly jwtService: JwtService,
+    @Inject(FileServiceConnectorConfig) private readonly config: FileServiceConnectorConfig
+  ) {}
   
   // private apiURL(route: string): URL {
   //   return new URL(route);
