@@ -51,4 +51,7 @@ ormconfig.json
 # Cache
 .eslintcache
 
+# Storage
+assert
+
 google-auth-key.json
