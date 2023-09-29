@@ -9,11 +9,24 @@ import { StorageConfig, } from './storage.config';
 import { StorageService, } from './storage.service';
 import { StorageDatabaseModule, } from './storages/database/storage.database.module';
 import { StorageFolderModule, } from './storages/folder/storage.folder.module';
-import { GoogleDriveModule, } from './storages/google-drive/storage.google-drive.module';
-import { MegaIOModule, } from './storages/mega-io/storage.mega-io.module';
+// import { GoogleDriveModule, } from './storages/google-drive/storage.google-drive.module';
+// import { MegaIOModule, } from './storages/mega-io/storage.mega-io.module';
+import { AbstractStorage, } from './storages/storage.abstract.service';
+
+export interface StorageOptions {
+  readonly storages: AbstractStorage[]
+}
 
 @Module({
-  imports: [TypeOrmModule.forFeature([File]), StorageDatabaseModule, GoogleDriveModule, StorageFolderModule, MegaIOModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      File
+    ]), 
+    StorageDatabaseModule, 
+    StorageFolderModule
+    // GoogleDriveModule, 
+    // MegaIOModule
+  ],
   providers: [
     ConfigService, 
     JwtService, 
@@ -21,6 +34,17 @@ import { MegaIOModule, } from './storages/mega-io/storage.mega-io.module';
     FileRepository, 
     StorageService
   ],
-  exports: [StorageService],
+  exports: [
+    StorageService
+  ],
 })
-export class StorageModule {}
+export class StorageModule {
+  // static async forRootAsync(options: StorageOptions): Promise<DynamicModule> {
+  //   await Promise.all( options.storages.map ( async (storageConstructor) => {
+  //     const storage = new storageConstructor()
+  //   })
+  //   return {
+
+  //   };
+  // }
+}

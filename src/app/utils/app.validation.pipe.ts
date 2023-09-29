@@ -1,21 +1,27 @@
-import { ArgumentMetadata, HttpException, HttpStatus, Injectable, PipeTransform, } from '@nestjs/common';
-import { plainToInstance, } from 'class-transformer';
-import { validate, } from 'class-validator';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  ValidationError,
+  ValidationPipe,
+} from '@nestjs/common';
 
 @Injectable()
-export class AppValidationPipe implements PipeTransform<unknown> {
-  async transform(value: unknown, metadata: ArgumentMetadata): Promise<unknown> {
-    const obj = plainToInstance<object, unknown>(metadata.metatype, value);
-    const errors = await validate(obj);
+export class AppValidationPipe extends ValidationPipe {
+  constructor() {
+    super({
+      exceptionFactory: (errors) => this.transformErrors(errors),
+      transform: true,
+      validationError: { value: true, },
+    });
+  }
 
-    if (errors.length) {
-      const messages = errors.map((err) => {
-        return `${err.property}: ${Object.values(err.constraints).join(', ')}`;
-      });
-
-      throw new HttpException(messages.join(', '), HttpStatus.BAD_REQUEST);
-    }
-
-    return value;
+  private transformErrors(errors: readonly ValidationError[]): HttpException {
+    return new HttpException(
+      errors
+        .map((err) => `${err.property}: ${Object.values(err.constraints || {}).join(', ')}`)
+        .join(', '),
+      HttpStatus.BAD_REQUEST
+    );
   }
 }

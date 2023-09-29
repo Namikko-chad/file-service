@@ -8,12 +8,11 @@ import { File, } from '../files/entity';
 import { FileRepository, } from '../files/repositories';
 import { Exception, } from '../utils/Exception';
 import { StorageConfig, } from './storage.config';
-import { Errors, ErrorsMessages, } from './storage.errors';
 import { FileFormData, IFilename, } from './storage.interface';
 import { DBStorage, } from './storages/database/storage.database.service';
 import { FolderStorage, } from './storages/folder/storage.folder.service';
-import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
-import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
+// import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
+// import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
 import { AbstractStorage, } from './storages/storage.abstract.service';
 
 @Injectable()
@@ -26,12 +25,12 @@ export class StorageService {
   constructor(
     @Inject(DataSource) private readonly _DS: DataSource,
     @Inject(DBStorage) dbStorage: DBStorage,
-    @Inject(FolderStorage) folderStorage: FolderStorage,
-    @Inject(GoogleDriveStorage) googleDriveStorage: GoogleDriveStorage,
-    @Inject(MegaIOStorage) megaIOStorage: MegaIOStorage
+    @Inject(FolderStorage) folderStorage: FolderStorage
+    // @Inject(GoogleDriveStorage) googleDriveStorage: GoogleDriveStorage,
+    // @Inject(MegaIOStorage) megaIOStorage: MegaIOStorage
   ) {
     const storages: AbstractStorage[] = [
-      dbStorage, folderStorage, googleDriveStorage, megaIOStorage
+      dbStorage, folderStorage //googleDriveStorage, megaIOStorage
     ];
     storages.sort ( (a,b) => a.config.fileSizeLimit - b.config.fileSizeLimit ).forEach( storage => 
       this.storages.set(storage.constructor.name.slice(0, -7).toLowerCase(), storage)
@@ -81,7 +80,7 @@ export class StorageService {
     if (!ext || !mime) throw new Exception(HttpStatus.BAD_REQUEST, 'Unsupported file type');
 
     if (!this.config.allowedExtensionsRegExp.exec(ext)) {
-      throw new Exception(HttpStatus.FORBIDDEN, 'This media file extension forbidden');
+      throw new Exception(HttpStatus.UNSUPPORTED_MEDIA_TYPE, 'This media file extension forbidden');
     }
 
     return { ext, mime, };
@@ -113,7 +112,7 @@ export class StorageService {
       id: fileId,
     });
 
-    if (!file) throw new Exception(Errors.FileNotFound, ErrorsMessages[Errors.FileNotFound], { fileId, });
+    if (!file) throw new Exception(HttpStatus.NOT_FOUND, 'File not found', { fileId, });
 
     return file;
   }

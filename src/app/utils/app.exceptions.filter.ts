@@ -20,7 +20,11 @@ export class AppExceptionsFilter implements ExceptionFilter {
     let message: string | object;
 
     switch (exception.constructor.name) {
+      // FIXME
       case 'HttpException':
+      case 'BadRequestException':
+      case 'UnsupportedMediaTypeException':
+      case 'PayloadTooLargeException':
 
       case 'ForbiddenException': {
         httpStatus = (exception as HttpException).getStatus();

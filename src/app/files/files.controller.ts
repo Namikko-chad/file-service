@@ -37,6 +37,7 @@ import { FileEditDto, FileInfoDto, } from './dto';
 import { FileIdDto, } from './dto/common.dto';
 import { FileUser, } from './entity';
 import { Errors, ErrorsMessages, } from './files.errors';
+import { FilePipe, } from './files.pipe';
 import { FileService, } from './files.service';
 
 @ApiTags('files')
@@ -87,7 +88,7 @@ export class FileController {
   })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
-  async uploadFile(@Req() req: RequestAuth, @UploadedFile() file: Express.Multer.File): Promise<FileInfoDto> {
+  async uploadFile(@Req() req: RequestAuth, @UploadedFile(FilePipe) file: Express.Multer.File): Promise<FileInfoDto> {
     const fileUser = await this._service.create(req.user.id, file);
 
     return this._service.fileResponse(fileUser);
