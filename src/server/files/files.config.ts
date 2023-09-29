@@ -12,7 +12,7 @@ function configLoad() {
       bufferStorage: process.env['STORAGE_TEMP'] ?? os.tmpdir() + '/',
       capacityPerUser: 1024 * 1024 * 100,
       filesDir: 'assert',
-      maxSize: 1024 * 1024 * 30 * 30000,
+      maxSize: 1024 * 1024 * 30,
     },
   };
 }

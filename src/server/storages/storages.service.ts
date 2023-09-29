@@ -7,7 +7,6 @@ import { Sequelize, } from 'sequelize-typescript';
 import { Errors, ErrorsMessages, } from '../enum';
 import { File,filesConfig,  } from '../files';
 import { Exception, } from '../utils';
-import { StoragesErrors, StoragesErrorsMessages, } from './storages.errors';
 import { FileFormData, } from './storages.interface';
 import { DBStorage, } from './storages/database/storage.database.service';
 import { FolderStorage, } from './storages/folder/storage.folder.service';
@@ -79,7 +78,7 @@ export class Storage {
     if (!ext || !mime) throw new Exception(Errors.InvalidPayload, 'Unsupported file type');
 
     if (!filesConfig.files.allowedExtensionsRegExp.exec(ext)) {
-      throw new Exception(Errors.Forbidden, 'This media file extension forbidden');
+      throw new Exception(Errors.UnsupportedMediaType, 'This media file extension forbidden');
     }
 
     return { ext, mime, };
@@ -108,7 +107,7 @@ export class Storage {
 
   private async loadFileInfo(fileId: string): Promise<File> {
     const file = await File.findByPk(fileId);
-    if (!file) throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound], { fileId, });
+    if (!file) throw new Exception(Errors.NotFound, 'File not found', { fileId, });
 
     return file;
   }

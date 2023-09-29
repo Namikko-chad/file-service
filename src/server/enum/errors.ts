@@ -11,6 +11,8 @@ export enum Errors {
   StorageLimit = 409001,
   // Payload too large,
   PayloadTooLarge = 413000,
+  // Unsupported Media Type (415)
+  UnsupportedMediaType = 415000,
   // Internal Server Error (500)
   InternalServerError = 500000,
 }
@@ -23,5 +25,6 @@ export const ErrorsMessages: Record<Errors, string> = {
   [Errors.NotFound]: 'Not found',
   [Errors.PayloadTooLarge]: 'Payload too large',
   [Errors.StorageLimit]: 'Storage limit',
+  [Errors.UnsupportedMediaType]: 'Unsupported media type',
   [Errors.UserNotFound]: 'User: Not found',
 };
