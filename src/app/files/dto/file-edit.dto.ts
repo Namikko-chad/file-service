@@ -6,6 +6,7 @@ export class FileEditDto {
     required: false,
     default: false,
     example: false,
+    description: 'Visibility',
   })
   @IsOptional()
   @IsBoolean()
@@ -14,6 +15,7 @@ export class FileEditDto {
   @ApiProperty({
     required: false,
     example: 'photo.jpg',
+    description: 'File name',
   })
   @IsOptional()
   @IsString()

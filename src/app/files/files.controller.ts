@@ -18,7 +18,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor, } from '@nestjs/platform-express';
-import { ApiOperation, ApiTags, } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags, } from '@nestjs/swagger';
 import { Express, Response, } from 'express';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -30,18 +30,17 @@ import { AdminAccessGuard, } from '../auth/guards/admin.guard';
 import { FileAccessGuard, } from '../auth/guards/file.guard';
 import { MultipleAuthorizeGuard, MultipleGuardsReferences, } from '../auth/guards/multiple.guard';
 import { UserAccessGuard, } from '../auth/guards/user.guard';
-import { ListDto, } from '../dto';
-import { RequestAuth, } from '../dto/common.dto';
+import { ListDto, OutputEmptyDto, outputOkDtoGenerator, outputPaginationDtoGenerator, RequestAuth, } from '../dto';
 import { Exception, } from '../utils/Exception';
-import { FileEditDto, FileInfoDto, } from './dto';
-import { FileIdDto, } from './dto/common.dto';
+import { FileEditDto, FileIdDto, FileInfoDto, } from './dto';
 import { FileUser, } from './entity';
 import { Errors, ErrorsMessages, } from './files.errors';
 import { FilePipe, } from './files.pipe';
 import { FileService, } from './files.service';
 
-@ApiTags('files')
 @Controller('files')
+@ApiTags('files')
+@ApiBearerAuth()
 export class FileController {
   @Inject(FileService)
   private readonly _service: FileService;
@@ -70,7 +69,11 @@ export class FileController {
 
   @Get()
   @ApiOperation({
-    summary: 'Use this endpoint to list file',
+    summary: 'Use this endpoint to list files',
+  })
+  @ApiOkResponse({
+    description: 'List of files',
+    type: outputPaginationDtoGenerator(FileInfoDto),
   })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
@@ -86,12 +89,28 @@ export class FileController {
   @ApiOperation({
     summary: 'Use this endpoint to upload file',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({ 
+    type: outputOkDtoGenerator(FileInfoDto),
+    description: 'File information',
+  })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
   async uploadFile(@Req() req: RequestAuth, @UploadedFile(FilePipe) file: Express.Multer.File): Promise<FileInfoDto> {
     const fileUser = await this._service.create(req.user.id, file);
 
-    return this._service.fileResponse(fileUser);
+    return FileInfoDto.create(this._service.fileResponse(fileUser));
   }
 
   @Get(':fileId')
@@ -118,6 +137,10 @@ export class FileController {
   @ApiOperation({
     summary: 'Use this endpoint to get information about file',
   })
+  @ApiOkResponse({ 
+    type: outputOkDtoGenerator(FileInfoDto),
+    description: 'File information',
+  })
   @AuthTry()
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
@@ -126,28 +149,36 @@ export class FileController {
 
     this.viewAccess(req, fileUser);
 
-    return this._service.fileResponse(fileUser);
+    return FileInfoDto.create(this._service.fileResponse(fileUser));
   }
 
   @Put(':fileId')
   @ApiOperation({
     summary: 'Use this endpoint to upload new filename or public status',
   })
+  @ApiOkResponse({ 
+    type: outputOkDtoGenerator(FileInfoDto),
+    description: 'File information',
+  })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
-  // @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
   async fileEdit(@Req() req: RequestAuth, @Param() params: FileIdDto, @Body() payload: FileEditDto): Promise<FileInfoDto> {
     let fileUser = await this._service.retrieveInfo(params.fileId);
 
     this.editAccess(req, fileUser);
     fileUser = await this._service.update(params.fileId, payload);
 
-    return this._service.fileResponse(fileUser);
+    return FileInfoDto.create(this._service.fileResponse(fileUser));
   }
 
   @Delete(':fileId')
   @ApiOperation({
     summary: 'Use this endpoint to delete file',
+  })
+  @ApiOkResponse({ 
+    type: OutputEmptyDto,
+    description: 'Empty response',
   })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)

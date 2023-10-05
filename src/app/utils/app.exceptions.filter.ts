@@ -22,6 +22,8 @@ export class AppExceptionsFilter implements ExceptionFilter {
     switch (exception.constructor.name) {
       // FIXME
       case 'HttpException':
+      case 'UnauthorizedException':
+      case 'NotFoundException':
       case 'BadRequestException':
       case 'UnsupportedMediaTypeException':
       case 'PayloadTooLargeException':

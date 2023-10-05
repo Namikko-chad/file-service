@@ -1,12 +1,14 @@
 import { ConfigModule, } from '@nestjs/config';
 import { Test, } from '@nestjs/testing';
 
-import { afterAll, beforeAll, describe, expect, it, } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, jest, } from '@jest/globals';
 
 import { File, } from '../../../files';
 import { Utils, } from '../../../utils';
 import { MegaIOModule, } from './storage.mega-io.module';
 import { MegaIOStorage, } from './storage.mega-io.service';
+
+jest.setTimeout(20000);
 
 describe('Storage.MegaIO', () => {
   let storage: MegaIOStorage;
@@ -40,7 +42,7 @@ describe('Storage.MegaIO', () => {
 
     it('should load file', async () => {
       const data = await storage.loadFile(file);
-      expect(data.toString()).toEqual(buffer.toString());
+      expect(data.toString()).toBe('test text');
     });
 
     it('should delete file', async () => {

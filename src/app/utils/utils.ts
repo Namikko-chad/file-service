@@ -42,11 +42,14 @@ export class Utils {
     }
 
     const createdAt = Between(from, to);
-    const where: FindOptionsWhere<unknown>[] = searchFields.map((value) => Object.assign(value, { createdAt, }));
-    if (!searchFields.length) where.push({ createdAt, });
+    const where: FindOptionsWhere<unknown> = {
+      createdAt,
+    };
+    if (searchFields.length) searchFields.forEach( field => Object.assign(where, field) );
 
     return {
       where,
+      // TODO check property name in order on UPCASE letter
       order,
       take,
       skip,

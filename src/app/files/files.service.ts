@@ -100,7 +100,7 @@ export class FileService {
       name: fileUser.name,
       ext: fileUser.file.ext,
       mime: fileUser.file.mime,
-      size: fileUser.file.size,
+      size: Number(fileUser.file.size),
       public: fileUser.public,
       userId: fileUser.userId,
       hash: fileUser.file.hash,

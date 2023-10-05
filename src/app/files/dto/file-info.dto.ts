@@ -1,4 +1,5 @@
 import { ApiProperty, } from '@nestjs/swagger';
+import { Expose, plainToInstance, } from 'class-transformer';
 import { IsBoolean, IsPositive, IsString, IsUUID, } from 'class-validator';
 
 export interface FileInfo {
@@ -13,35 +14,47 @@ export interface FileInfo {
 }
 
 export class FileInfoDto implements FileInfo {
-  @ApiProperty({})
+  static create(this: void, input: FileInfoDto): FileInfoDto {
+    return plainToInstance(FileInfoDto, input, { strategy: 'excludeAll', });
+  }
+
+  @ApiProperty({ description: 'Unique identifier of user file', format: 'uuid', })
+  @Expose()
   @IsUUID()
     id: string;
 
-  @ApiProperty({})
+  @ApiProperty({ description: 'Name of user file', format: 'string', })
+  @Expose()
   @IsString()
     name: string;
 
-  @ApiProperty({})
+  @ApiProperty({ description: 'Extension of user file', format: 'string', })
+  @Expose()
   @IsString()
     ext: string;
 
-  @ApiProperty({})
+  @ApiProperty({ description: 'Mime type of user file', format: 'string', })
+  @Expose()
   @IsString()
     mime: string;
 
-  @ApiProperty({})
+  @ApiProperty({ description: 'File size in bytes', format: 'number', })
+  @Expose()
   @IsPositive()
     size: number;
 
-  @ApiProperty({})
+  @ApiProperty({ description: 'Visibility', format: 'boolean', })
+  @Expose()
   @IsBoolean()
     public: boolean;
 
-  @ApiProperty({})
+  @ApiProperty({ description: 'Unique identifier of user', format: 'uuid', })
+  @Expose()
   @IsUUID()
     userId: string;
 
-  @ApiProperty({})
+  @ApiProperty({ description: 'Hash of user file', format: 'string', })
+  @Expose()
   @IsString()
     hash: string;
 }
