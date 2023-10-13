@@ -1,10 +1,8 @@
 package storage
 
 import (
-	_ "file-service/app/storage/storages/db"
+
 )
-
-
 
 // md5 := md5.Sum(fileRaw.Payload)
 // file := models.File{

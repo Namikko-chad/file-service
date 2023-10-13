@@ -1,12 +1,14 @@
 package files
 
 import (
-	"file-service/app/db"
-	"file-service/app/db/models"
-	"file-service/app/storages"
+	db "file-service/app/database"
+	files "file-service/app/files/models"
+	models "file-service/app/files/models"
 	"file-service/app/types"
 	"file-service/app/utils"
-	"io/ioutil"
+
+	// "io/ioutil"
+
 	// "net/http"
 	"path/filepath"
 	"strconv"
@@ -15,8 +17,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func fileResponse(fileUser *models.FileUser) types.IFileResponse {
-	return types.IFileResponse{
+func fileResponse(fileUser *models.FileUser) IFileResponse {
+	return IFileResponse{
 		ID:     fileUser.ID,
 		UserID: fileUser.UserID,
 		Name:   fileUser.Name,
@@ -39,7 +41,7 @@ func fileResponse(fileUser *models.FileUser) types.IFileResponse {
 // @Failure      400  {object}  types.IOutputError
 // @Router       /files [post]
 func CreateFile(c *gin.Context) {
-	var payload types.IFileUpload
+	var payload IFileUpload
 	if err := c.ShouldBind(&payload); err != nil {
 		utils.OutputError(c, 400000, "File not uploaded", err.Error())
 		return
@@ -49,22 +51,25 @@ func CreateFile(c *gin.Context) {
 		utils.OutputError(c, 400000, "File not uploaded", err.Error())
 		return
 	}
-	openedFile, err := uploadedFile.Open()
-	if err != nil {
-		utils.OutputError(c, 400000, "File not uploaded", err.Error())
-		return
-	}
-	fileData, err := ioutil.ReadAll(openedFile)
-	if err != nil {
-		utils.OutputError(c, 400000, "File not uploaded", err.Error())
-		return
-	}
+	// openedFile, err := uploadedFile.Open()
+	// if err != nil {
+	// 	utils.OutputError(c, 400000, "File not uploaded", err.Error())
+	// 	return
+	// }
+	// fileData, err := ioutil.ReadAll(openedFile)
+	// if err != nil {
+	// 	utils.OutputError(c, 400000, "File not uploaded", err.Error())
+	// 	return
+	// }
 	// FIXME repair interface
-	file, err := storages.StorageType.SaveFile(storages.DB, storages.FileFormData{
-		Filename: uploadedFile.Filename,
-		Headers:  uploadedFile.Header,
-		Payload:  fileData,
-	})
+	// file, err := storage.IStorage.SaveFile(storage.DB, storage.FileFormData{
+	// 	Filename: uploadedFile.Filename,
+	// 	Headers:  uploadedFile.Header,
+	// 	Payload:  fileData,
+	// })
+	file := files.File{
+		ID: uuid.UUID{},
+	}
 	if err != nil {
 		utils.OutputError(c, 400000, "File not uploaded", err.Error())
 		return
@@ -85,7 +90,7 @@ func CreateFile(c *gin.Context) {
 }
 
 func UpdateFile(c *gin.Context) {
-	var payload types.IFileEdit
+	var payload IFileEdit
 	if err := c.ShouldBind(&payload); err != nil {
 		utils.OutputError(c, 400000, "Validation error", err.Error())
 		return
@@ -94,29 +99,6 @@ func UpdateFile(c *gin.Context) {
 	if err := db.DB.Where("id = ?", c.Param("fileId")).First(&fileUser).Error; err != nil {
 		utils.OutputError(c, 404000, "File not found", err.Error())
 		return
-	}
-	uploadedFile, err := c.FormFile("file")
-	if err == nil {
-		openedFile, err := uploadedFile.Open()
-		if err != nil {
-			utils.OutputError(c, 400000, "File not uploaded", err.Error())
-			return
-		}
-		fileData, err := ioutil.ReadAll(openedFile)
-		if err != nil {
-			utils.OutputError(c, 400000, "File not uploaded", err.Error())
-			return
-		}
-		file, err := storages.StorageType.SaveFile(storages.DB, storages.FileFormData{
-			Filename: uploadedFile.Filename,
-			Headers:  uploadedFile.Header,
-			Payload:  fileData,
-		})
-		if err != nil {
-			utils.OutputError(c, 400000, "File not uploaded", err.Error())
-			return
-		}
-		fileUser.ID = file.ID
 	}
 	fileUser.Public = payload.Public
 	fileUser.Name = payload.Name

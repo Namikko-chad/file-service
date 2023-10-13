@@ -1,4 +1,4 @@
-package models
+package files
 
 import (
 	"github.com/google/uuid"
@@ -11,6 +11,6 @@ type FileUser struct {
 	FileID uuid.UUID `gorm:"not null;type:varchar(255);column:fileId"`
 	Name   string    `gorm:"type:varchar(255)"`
 	Public bool
-	// File   *File
+	File   *File
 	gorm.Model
 }

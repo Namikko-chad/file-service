@@ -1,4 +1,4 @@
-package types
+package files
 
 import (
 	"github.com/google/uuid"

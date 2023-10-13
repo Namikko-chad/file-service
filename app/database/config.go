@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"file-service/app/utils"
@@ -9,6 +9,7 @@ import (
 type TDataBaseConfig struct {
 	Link string
 	Type string
+	Log  bool
 }
 
 var (
@@ -16,10 +17,11 @@ var (
 )
 
 func init() {
-	log.Print("Load db config")
+	log.Print("[Database] Load config")
 
 	DataBaseConfig = &TDataBaseConfig{
 		Link: utils.GetEnv("DATABASE_LINK", ""),
 		Type: utils.GetEnv("DATABASE_TYPE", "postgres"),
+		Log:  utils.GetEnv("DEBUG", "false") == "true",
 	}
 }

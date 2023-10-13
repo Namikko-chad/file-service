@@ -4,7 +4,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 
 	_ "file-service/app/config"
-	"file-service/app/db"
+	db "file-service/app/database"
 	_ "file-service/app/storage"
 	// "file-service/app/routes"
 	// "file-service/docs"
@@ -26,7 +26,7 @@ var (
 
 func CreateServer() {
 	server.DB = db.ConnectDB()
-	db.MigrateDB(server.DB)
+	// db.MigrateDB(server.DB)
 	// go db.MockDB(server.DB)
 	// gin.SetMode(config.Config.Mode)
 	// server.Router = gin.Default()
