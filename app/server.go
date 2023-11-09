@@ -3,9 +3,10 @@ package app
 import (
 	_ "github.com/joho/godotenv/autoload"
 
-	_ "file-service/app/config"
-	db "file-service/app/database"
-	_ "file-service/app/storage"
+	"file-service/app/config"
+	"file-service/app/database"
+	"file-service/app/files"
+
 	// "file-service/app/routes"
 	// "file-service/docs"
 
@@ -20,18 +21,17 @@ type Server struct {
 	Router *gin.Engine
 }
 
-var (
-	server Server
-)
+// var (
+// 	server Server
+// )
 
 func CreateServer() {
-	server.DB = db.ConnectDB()
-	// db.MigrateDB(server.DB)
-	// go db.MockDB(server.DB)
-	// gin.SetMode(config.Config.Mode)
-	// server.Router = gin.Default()
-	// router := server.Router.Group("/api")
-	// routes.AddRoutes(router)
+	db := database.ConnectDB()
+	gin.SetMode(config.Mode)
+	gin := gin.Default()
+	router := gin.Group("/api")
+	files.New(db, router);
+	gin.Run(config.Server.Host + ":" + config.Server.Port)
 	// Swagger
 	// @title           File-Service
 	// @version         1.0

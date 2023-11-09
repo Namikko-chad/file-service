@@ -5,14 +5,13 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	files "file-service/app/files/models"
 )
 
 func SyncDB() {
 	logger.Print("[Database] Synchronization started")
 	db := ConnectDB()
 	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
-	err := db.AutoMigrate(&files.File{}, &files.FileUser{})
+	err := db.AutoMigrate()
 	if err == nil {
 		logger.Print("[Database] Synchronization completed")
 	} else {

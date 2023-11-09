@@ -5,33 +5,15 @@ import (
 	"os"
 	"time"
 
-	"strings"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
 )
 
-var (
-	DB *gorm.DB
-)
-
-type CustomNameStrategy schema.NamingStrategy
-
-// ColumnName convert string to column name
-func (cns *CustomNameStrategy) ColumnName(table, column string) string {
-	return strings.ToLower(string(column[0])) + column[1:]
-}
-
-func (cns *CustomNameStrategy) TableName(table string) string {
-	return strings.ToUpper(string(table[0])) + table[1:]
-}
 
 func ConnectDB() *gorm.DB {
 	config := &gorm.Config{
-		NamingStrategy: CustomNameStrategy{
-			
+		NamingStrategy: CustomNamingStrategy{
 		},
 	}
 	if DataBaseConfig.Log {
@@ -50,7 +32,6 @@ func ConnectDB() *gorm.DB {
 		logger.Panic("[Database] Failed to connect", err)
 		panic("Failed to connect database")
 	} else {
-		DB = db
+		return db
 	}
-	return DB
 }
