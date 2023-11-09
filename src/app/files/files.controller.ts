@@ -18,7 +18,15 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor, } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags, } from '@nestjs/swagger';
+import { 
+  ApiBearerAuth, 
+  ApiBody, 
+  ApiConsumes, 
+  ApiNotFoundResponse, 
+  ApiOkResponse, 
+  ApiOperation, 
+  ApiPayloadTooLargeResponse, 
+  ApiTags, } from '@nestjs/swagger';
 import { Express, Response, } from 'express';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -30,7 +38,7 @@ import { AdminAccessGuard, } from '../auth/guards/admin.guard';
 import { FileAccessGuard, } from '../auth/guards/file.guard';
 import { MultipleAuthorizeGuard, MultipleGuardsReferences, } from '../auth/guards/multiple.guard';
 import { UserAccessGuard, } from '../auth/guards/user.guard';
-import { ListDto, OutputEmptyDto, outputOkDtoGenerator, outputPaginationDtoGenerator, RequestAuth, } from '../dto';
+import { ListDto, OutputEmptyDto, outputErrorDtoGenerator, outputOkDtoGenerator, outputPaginationDtoGenerator, RequestAuth, } from '../dto';
 import { Exception, } from '../utils/Exception';
 import { FileEditDto, FileIdDto, FileInfoDto, } from './dto';
 import { FileUser, } from './entity';
@@ -105,6 +113,9 @@ export class FileController {
     type: outputOkDtoGenerator(FileInfoDto),
     description: 'File information',
   })
+  @ApiPayloadTooLargeResponse({
+    description: 'Payload too large',
+  })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
   async uploadFile(@Req() req: RequestAuth, @UploadedFile(FilePipe) file: Express.Multer.File): Promise<FileInfoDto> {
@@ -116,6 +127,10 @@ export class FileController {
   @Get(':fileId')
   @ApiOperation({
     summary: 'Use this endpoint to get file',
+  })
+  @ApiNotFoundResponse({
+    type: outputErrorDtoGenerator(FileIdDto, 'File not found'),
+    description: 'File not found',
   })
   @AuthTry()
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
@@ -141,6 +156,10 @@ export class FileController {
     type: outputOkDtoGenerator(FileInfoDto),
     description: 'File information',
   })
+  @ApiNotFoundResponse({
+    type: outputErrorDtoGenerator(FileIdDto, 'File not found'),
+    description: 'File not found',
+  })
   @AuthTry()
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
@@ -159,6 +178,10 @@ export class FileController {
   @ApiOkResponse({ 
     type: outputOkDtoGenerator(FileInfoDto),
     description: 'File information',
+  })
+  @ApiNotFoundResponse({
+    type: outputErrorDtoGenerator(FileIdDto, 'File not found'),
+    description: 'File not found',
   })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)
@@ -179,6 +202,10 @@ export class FileController {
   @ApiOkResponse({ 
     type: OutputEmptyDto,
     description: 'Empty response',
+  })
+  @ApiNotFoundResponse({
+    type: outputErrorDtoGenerator(FileIdDto, 'File not found'),
+    description: 'File not found',
   })
   @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard)
   @UseGuards(MultipleAuthorizeGuard)

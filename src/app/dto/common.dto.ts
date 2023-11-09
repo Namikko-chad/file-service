@@ -22,6 +22,38 @@ export class OutputEmptyDto {
     ok: boolean;
 }
 
+export function outputErrorDtoGenerator<Data = Record<string, unknown>>(propertyType: Type<Data>, msg?: string): Type<unknown> {
+  class OutputErrorDto<Data> {
+    @ApiProperty({
+      type: 'boolean',
+      description: 'Whether the operation was successful',
+      default: false,
+    })
+      ok = false;
+
+    @ApiProperty({
+      type: 'integer',
+      description: 'Error code, first 3 digits of HTTP status code, last 3 digits of extended error code',
+    })
+      code: number;
+
+    @ApiProperty({
+      type: 'string',
+      default: msg,
+      description: 'Error message',
+    })
+      msg: string;
+
+    @ApiProperty({
+      type: () => propertyType,
+      description: 'Error details',
+    })
+      data?: Data;
+  }
+
+  return OutputErrorDto;
+}
+
 export function outputOkDtoGenerator<Response>(propertyType: Type<Response>): Type<unknown> {
   class OutputOkDto {
     @ApiProperty({

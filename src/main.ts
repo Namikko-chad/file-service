@@ -1,4 +1,4 @@
-import { ConfigModule, ConfigService, } from '@nestjs/config';
+import { ConfigService, } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory, } from '@nestjs/core';
 import helmet from 'helmet';
 import { initSwagger, } from 'swagger/swagger';
@@ -10,9 +10,8 @@ import { ResponseInterceptor, } from './app/utils/app.response.interceptor';
 import { AppValidationPipe, } from './app/utils/app.validation.pipe';
 
 async function init() {
-  ConfigModule.forRoot();
-  const config = new ConfigService();
   const app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigService);
 
   app.enableShutdownHooks();
 
@@ -22,8 +21,7 @@ async function init() {
 
   app.useGlobalPipes(new AppValidationPipe());
 
-  app.useGlobalInterceptors(new ResponseInterceptor());
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(new ResponseInterceptor(), new LoggingInterceptor());
 
   app.enableCors({
     origin: '*',
