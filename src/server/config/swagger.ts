@@ -26,6 +26,6 @@ export const swaggerConfig = <HapiSwagger.RegisterOptions>{
     }
   ],
   jsonPath: '/documentation.json',
-  documentationPath: '/documentation',
+  documentationPath: '/swagger',
   debug: true,
 };

@@ -9,7 +9,6 @@ import { URL, } from 'url';
 
 import { File, } from '../../../files';
 import { Exception, } from '../../../utils';
-import { StoragesErrors, StoragesErrorsMessages, } from '../../storages.errors';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { GoogleDriveConfig, } from './storage.google-drive.config';
 import { GoogleDrive, } from './storage.google-drive.model';
@@ -167,7 +166,7 @@ export class GoogleDriveStorage extends AbstractStorage {
       },
     });
     if (!drive)
-      throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
+      throw new Exception(404, 'File not found');
     await this.getAccessToken();
     const buffer = await this.request<Buffer>('GET', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`, {
       alt: 'media',
@@ -190,7 +189,7 @@ export class GoogleDriveStorage extends AbstractStorage {
       },
     });
     if (!drive)
-      throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
+      throw new Exception(404, 'File not found');
     await this.getAccessToken();
     await this.request('DELETE', `https://www.googleapis.com/drive/v3/files/${drive.driveId}`);
   }

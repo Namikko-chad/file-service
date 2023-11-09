@@ -10,8 +10,8 @@ import { Exception, } from '../utils';
 import { FileFormData, } from './storages.interface';
 import { DBStorage, } from './storages/database/storage.database.service';
 import { FolderStorage, } from './storages/folder/storage.folder.service';
-import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
-import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
+// import { GoogleDriveStorage, } from './storages/google-drive/storage.google-drive.service';
+// import { MegaIOStorage, } from './storages/mega-io/storage.mega-io.service';
 import { AbstractStorage, } from './storages/storage.abstract.service';
 import { IFilename, } from './storages/storage.interface';
 
@@ -20,7 +20,7 @@ export class Storage {
 
   constructor() {
     const storages: AbstractStorage[] = [
-      new DBStorage(), new FolderStorage(), new GoogleDriveStorage(), new MegaIOStorage()
+      new DBStorage(), new FolderStorage(), //new GoogleDriveStorage(), new MegaIOStorage()
     ];
     storages.sort ( (a,b) => a.config.fileSizeLimit - b.config.fileSizeLimit ).forEach( storage => 
       this.storages.set(storage.constructor.name.slice(0, -7).toLowerCase(), storage)

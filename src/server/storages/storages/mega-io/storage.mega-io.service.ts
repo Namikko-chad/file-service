@@ -3,7 +3,7 @@ import { Sequelize, } from 'sequelize-typescript';
 
 import { File, } from '../../../files';
 import { Exception, } from '../../../utils';
-import { StoragesErrors, StoragesErrorsMessages, } from '../../storages.errors';
+// import { StoragesErrors, StoragesErrorsMessages, } from '../../storages.errors';
 import { AbstractStorage, } from '../storage.abstract.service';
 import { MegaIOConfig, } from './storage.mega-io.config';
 
@@ -42,7 +42,7 @@ export class MegaIOStorage extends AbstractStorage {
   async loadFile({ id: fileId, }: File): Promise<Buffer> {
     const file = this.storage.root.children?.find( file => file.name === fileId );
     if (!file)
-      throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
+      throw new Exception(404, 'File not found');
     const buffer = await file.downloadBuffer({});
 
     return buffer;
@@ -51,7 +51,7 @@ export class MegaIOStorage extends AbstractStorage {
   async deleteFile({ id: fileId, }: File): Promise<void> {
     const file = this.storage.root.children?.find( file => file.name === fileId );
     if (!file)
-      throw new Exception(StoragesErrors.FileNotFound, StoragesErrorsMessages[StoragesErrors.FileNotFound]);
+      throw new Exception(404, 'File not found');
     await file.delete(true);
   }
 }
