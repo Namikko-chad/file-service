@@ -28,3 +28,12 @@ func (_ CustomNamingStrategy) TableName(table string) string {
 func (_ CustomNamingStrategy) ColumnName(table, column string) string {
 	return strings.ToLower(string(column[0])) + column[1:]
 }
+
+/**
+* FileUsers_fileId_fkey
+*/
+
+// RelationshipFKName generate fk name for relation
+func (_ CustomNamingStrategy) RelationshipFKName(rel schema.Relationship) string {
+	return rel.Name + "_" + rel.References[0].ForeignKey.DBName + "_fkey"
+}

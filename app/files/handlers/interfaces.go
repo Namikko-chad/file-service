@@ -1,4 +1,4 @@
-package files
+package handlers
 
 import (
 	"github.com/google/uuid"

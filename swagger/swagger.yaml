@@ -1,0 +1,97 @@
+definitions:
+  handlers.IFileResponse:
+    properties:
+      ext:
+        type: string
+      hash:
+        type: string
+      id:
+        type: string
+      mime:
+        type: string
+      name:
+        type: string
+      public:
+        type: boolean
+      userId:
+        type: string
+    type: object
+  types.IOutputPagination:
+    properties:
+      ok:
+        type: boolean
+      result:
+        $ref: '#/definitions/types.IOutputPaginationResult'
+    type: object
+  types.IOutputPaginationResult:
+    properties:
+      count:
+        type: integer
+      rows:
+        items: {}
+        type: array
+    type: object
+info:
+  contact:
+    email: bloodheaven.net@gmail.com
+    name: Leonhard Schmidt
+    url: bloodheaven.net
+  description: File-Service for store files.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: File-Service
+  version: "1.0"
+paths:
+  /files:
+    get:
+      description: List of files
+      parameters:
+      - description: limit result in response
+        in: query
+        name: limit
+        type: integer
+      - description: offset result in response
+        in: query
+        name: offset
+        type: integer
+      - description: search text
+        in: query
+        name: search
+        type: string
+      - description: search text
+        in: query
+        name: order
+        type: string
+      - description: search text
+        in: query
+        name: from
+        type: string
+      - description: search text
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.IOutputPagination'
+            - properties:
+                result:
+                  allOf:
+                  - $ref: '#/definitions/types.IOutputPaginationResult'
+                  - properties:
+                      rows:
+                        items:
+                          $ref: '#/definitions/handlers.IFileResponse'
+                        type: array
+                    type: object
+              type: object
+      summary: List of files
+      tags:
+      - files
+swagger: "2.0"

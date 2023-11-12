@@ -27,7 +27,12 @@ type IOutputError struct {
 }
 
 type IListParam struct {
-	Limit  int32  `form:"limit"`
-	Offset int32  `form:"offset"`
-	Search string `form:"search"`
+	Limit        int32  `form:"limit"`
+	Offset       int32  `form:"offset"`
+	Search       string `form:"search"`
+	Order        string `form:"order"`
+	From         string `form:"from"`
+	To           string `form:"to"`
+	SearchFields []string
+	Where        []string
 }

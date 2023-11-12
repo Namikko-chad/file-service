@@ -1,10 +1,9 @@
 package repositories
 
 import (
-	"errors"
+	// "errors"
 	models "file-service/app/files/models"
 	"file-service/app/types"
-	"fmt"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -14,43 +13,48 @@ type FileUserRepository struct {
 	DB *gorm.DB
 }
 
-func (r *FileUserRepository) List(userId uuid.UUID, param types.IListParam) ([]models.FileUser, int64, error) {
+func (r *FileUserRepository) List(param types.IListParam) ([]models.FileUser, int64, error) {
 	var fileUsers []models.FileUser
 	var count int64
-	fmt.Print(param.Limit)
-	fmt.Print(int(param.Limit | 10))
-	request := r.DB.Model(models.FileUser{})
-	request.
+	request := r.DB.Joins("INNER JOIN \"Files\" ON \"FileUsers\".\"fileId\" = \"Files\".id")
 	if len(param.Search) > 0 {
 		request.Where("\"FileUsers\".\"name\" LIKE ?", "%"+param.Search+"%")
 	}
-	request.Where("\"FileUsers\".\"userId\" = ?", userId)
+	for _, query := range param.Where {
+		request.Where(query)
+	}
 	request.Limit(int(param.Limit | 10))
 	request.Offset(int(param.Offset))
-	request.Find(&fileUsers)
-	request.Count(&count)
+	// TODO added dq query
+	// request.Find(&fileUsers)
+	// request.Count(&count)
+	fileUsers = append(fileUsers, fileUser)
+	count = 1
 	return fileUsers, count, nil
 }
 
-func (r *FileUserRepository) Retrieve(userId uuid.UUID, fileId uuid.UUID) (models.FileUser, error) {
-	var fileUser models.FileUser
-	if err := r.DB.InnerJoins("Files").Where("id = ?", fileId).First(&fileUser).Error; err != nil {
-		return fileUser, err
-	}
-	if (models.FileUser{}) == fileUser {
-		return fileUser, errors.New("file not found")
-	}
+func (r *FileUserRepository) Retrieve(fileId uuid.UUID) (models.FileUser, error) {
+	// var fileUser models.FileUser
+	// if err := r.DB.InnerJoins("Files").Where("id = ?", fileId).First(&fileUser).Error; err != nil {
+	// 	return fileUser, err
+	// }
+	// if (models.FileUser{}) == fileUser {
+	// 	return fileUser, errors.New("file not found")
+	// }
 	return fileUser, nil
 }
 
-func (r *FileUserRepository) Create(userId uuid.UUID, fileUser *models.FileUser) error {
-	return r.DB.Create(fileUser).Error
+func (r *FileUserRepository) Create(fileUser *models.FileUser) error {
+	// return r.DB.Create(fileUser).Error
+	return nil
 }
 
-func (r *FileUserRepository) Update(userId uuid.UUID, fileUser *models.FileUser) error {
-	return r.DB.Save(fileUser).Error
+func (r *FileUserRepository) Update(fileUser *models.FileUser) error {
+	// return r.DB.Save(fileUser).Error
+	return nil
 }
 
-func (r *FileUserRepository) Delete(userId uuid.UUID, fileId uuid.UUID) error {
-	return r.DB.Where("id = ?", fileId).Delete(&models.FileUser{}).Error
+func (r *FileUserRepository) Delete(fileId uuid.UUID) error {
+	// return r.DB.Where("id = ?", fileId).Delete(&models.FileUser{}).Error
+	return nil
 }

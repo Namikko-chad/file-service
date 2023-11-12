@@ -1,11 +1,18 @@
 package app
 
 import (
-	// "file-service/app/config"
-	// "net/http"
+	"file-service/app/config"
+
+	"file-service/swagger"
+
+	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func (s *Server) AddSwagger() {
-	// sh := http.StripPrefix("/swagger/", http.FileServer(http.Dir(s.config.SwaggerPath)))
-	// s.Router.StaticFS("/swagger", http.FS(http.Dir(config.Server.SwaggerPath).Open()))
+func AddSwagger(router *gin.RouterGroup) {
+	swagger.SwaggerInfo.BasePath = "/api"
+	swagger.SwaggerInfo.Host = config.Server.Host + ":" + config.Server.Port
+	swagger.SwaggerInfo.Schemes = []string{"http", "https"}
+	router.GET("swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
