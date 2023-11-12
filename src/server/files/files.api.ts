@@ -123,17 +123,16 @@ export async function create(r: Request, h: ResponseToolkit): Promise<ResponseOb
     if (usedCapacity + payload.file.payload.length > filesConfig.files.capacityPerUser)
       throw new Exception(Errors.StorageLimit, ErrorsMessages[Errors.StorageLimit]);
     const file = await r.server.app.storage.saveFile(payload.file);
-    const { name, } = r.server.app.storage.splitFilename(payload.file.filename);
     const [fileUser] = await FileUser.findOrCreate({
       where: {
         userId,
         fileId: file.id,
-        name,
+        name: payload.file.filename,
       },
       defaults: {
         userId,
         fileId: file.id,
-        name,
+        name: payload.file.filename,
       },
     });
 
