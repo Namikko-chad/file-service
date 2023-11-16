@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"crypto/md5"
-	"encoding/hex"
 	"time"
 
 	"github.com/google/uuid"
@@ -17,30 +16,32 @@ type Repositories struct {
 	FileUser FileUserRepository
 }
 
-var userId, _ = uuid.Parse("a00c03e4-2c90-4a85-8531-55bfcbb22127")
-var fileId, _ = uuid.Parse("f00c03e4-2c90-4a85-8531-55bfcbb22127")
+var userId, _ = uuid.Parse("145c094f-edcd-47a6-83aa-3ade32d4636e")
+var fileId, _ = uuid.Parse("c2da9966-078a-442a-8c1c-4d62d05e31f1")
+var fileUserId, _ = uuid.Parse("0c170e84-2c5f-49fa-979e-4edf4d18a037")
+var timed, _ = time.Parse("2006-01-02 15:04:05.999999999 -07:00", "2023-11-09 07:13:17.313173 +00:00")
 var hash = md5.Sum([]byte("test"))
 var fileUser = models.FileUser{
 	AbstractModel: database.AbstractModel{
-		Id:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Id:        fileUserId,
+		CreatedAt: timed,
+		UpdatedAt: timed,
 	},
 	UserId: userId,
 	FileId: fileId,
-	Name:   "test.txt",
-	Public: true,
+	Name:   "Screenshot from 2023-11-02 12-00-22.png",
+	Public: false,
 	File: &models.File{
 		AbstractModel: database.AbstractModel{
 			Id:        fileId,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			CreatedAt: timed,
+			UpdatedAt: timed,
 		},
-		EXT:     "txt",
-		MIME:    "text/plain",
-		Size:    1,
+		EXT:     "png",
+		MIME:    "image/png",
+		Size:    54044,
 		Storage: "db",
-		Hash:    hex.EncodeToString(hash[:]),
+		Hash:    "d8589a624f98b30a311a6316be089dff",
 	},
 }
 

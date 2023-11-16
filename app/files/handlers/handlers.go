@@ -13,7 +13,7 @@ type Handlers struct {
 	storage      *storage.Storage
 }
 
-var userId, _ = uuid.Parse("a00c03e4-2c90-4a85-8531-55bfcbb22127")
+var userId, _ = uuid.Parse("145c094f-edcd-47a6-83aa-3ade32d4636e")
 
 func New(repositories *repositories.Repositories, storage *storage.Storage) (*Handlers, error) {
 	return &Handlers{

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"file-service/app/storage"
 	"file-service/app/utils"
 	"net/http"
 	"strconv"
@@ -27,10 +28,18 @@ func (h *Handlers) RetrieveFile(c *gin.Context) {
 		utils.OutputError(c, 403000, "File is private", err.Error())
 		return
 	}
+	data, err := h.storage.LoadFile(storage.FileInfo{
+		ID: fileUser.FileId,
+		Storage: fileUser.File.Storage,
+	})
+	if err != nil {
+		utils.OutputError(c, 404000, "File not found", err.Error())
+		return
+	}
 	c.Header("Accept-Ranges", "bytes")
 	c.Header("Content-Type", fileUser.File.MIME)
 	c.Header("Content-Disposition", "attachment; filename*=UTF-8''"+fileUser.Name+"."+fileUser.File.EXT)
 	c.Header("Cache-Control", "no-cache")
 	c.Header("Content-Length", strconv.Itoa(int(fileUser.File.Size)))
-	c.Data(http.StatusOK, fileUser.File.MIME, []byte{})
+	c.Data(http.StatusOK, fileUser.File.MIME, data)
 }
