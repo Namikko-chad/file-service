@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 type IOutputOk struct {
 	Ok     bool        `json:"ok"`
 	Result interface{} `json:"result"`
@@ -27,12 +29,12 @@ type IOutputError struct {
 }
 
 type IListParam struct {
-	Limit        int32  `form:"limit"`
-	Offset       int32  `form:"offset"`
-	Search       string `form:"search"`
-	Order        string `form:"order"`
-	From         string `form:"from"`
-	To           string `form:"to"`
+	Limit        int32     `json:"limit" form:"limit"`
+	Offset       int32     `json:"offset" form:"offset"`
+	Search       string    `json:"search" form:"search"`
+	Order        string    `json:"order" form:"order"`
+	From         time.Time `json:"from" form:"from"`
+	To           time.Time `json:"to" form:"to"`
 	SearchFields []string
-	Where        []string
+	Where []string
 }

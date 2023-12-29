@@ -94,7 +94,7 @@ const docTemplate = `{
                                                         "rows": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/handlers.IFileResponse"
+                                                                "$ref": "#/definitions/handlers.FileResponse"
                                                             }
                                                         }
                                                     }
@@ -107,11 +107,184 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "create file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "Create file",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/types.IOutputOk"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/handlers.FileResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/types.IOutputError"
+                        }
+                    }
+                }
+            }
+        },
+        "/files/:fileId": {
+            "get": {
+                "description": "Retrieve file",
+                "tags": [
+                    "files"
+                ],
+                "summary": "Retrieve file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FileId",
+                        "name": "fileId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update file",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "Update file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FileId",
+                        "name": "fileId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Name",
+                        "name": "name",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Public",
+                        "name": "public",
+                        "in": "body",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.IOutputEmpty"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete file",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "Delete file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FileId",
+                        "name": "fileId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.IOutputEmpty"
+                        }
+                    }
+                }
+            }
+        },
+        "/files/:fileId/info": {
+            "get": {
+                "description": "Retrieve file info",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "files"
+                ],
+                "summary": "Retrieve file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FileId",
+                        "name": "fileId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/types.IOutputOk"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/handlers.FileResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
-        "handlers.IFileResponse": {
+        "handlers.FileResponse": {
             "type": "object",
             "properties": {
                 "ext": {
@@ -135,6 +308,38 @@ const docTemplate = `{
                 "userId": {
                     "type": "string"
                 }
+            }
+        },
+        "types.IOutputEmpty": {
+            "type": "object",
+            "properties": {
+                "ok": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "types.IOutputError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                },
+                "ok": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "types.IOutputOk": {
+            "type": "object",
+            "properties": {
+                "ok": {
+                    "type": "boolean"
+                },
+                "result": {}
             }
         },
         "types.IOutputPagination": {

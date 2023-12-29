@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"file-service/app/auth"
 	"file-service/app/utils"
 
 	"github.com/gin-gonic/gin"
@@ -12,27 +14,33 @@ import (
 // @Schemes
 // @Description  Update file
 // @Tags         files
-// @Param        fileId   param  uuid     true  "FileId"
+// @Param        fileId   path  string   true   "FileId"
+// @Param        name     body  string   false  "Name"
+// @Param        public   body  bool     false  "Public"
 // @Produce      json
 // @Success      200  {object}  types.IOutputEmpty
 // @Router       /files/:fileId [put]
 func (h *Handlers) UpdateFile(c *gin.Context) {
-	var payload IFileEdit
+	var payload FileEdit
 	if err := c.ShouldBind(&payload); err != nil {
 		utils.OutputError(c, 400000, "Validation error", err.Error())
 		return
 	}
-	fileUser, err := h.repositories.FileUser.Retrieve(uuid.MustParse(c.Param("fileId")))
-	if err != nil {
-		utils.OutputError(c, 404000, "File not found", err.Error())
+	var param FileParam
+	if err := c.ShouldBindUri(&param); err != nil {
+		utils.OutputError(c, 400000, "Validation error", err.Error())
 		return
 	}
-	if fileUser.UserId != userId {
-		utils.OutputError(c, 403000, "File is private", err.Error())
+	fileId := uuid.MustParse(param.ID)
+	claims, err := c.Get("claims")
+	if !err {
+		utils.OutputError(c, 403000, "File is private", errors.New("file is private"))
 		return
 	}
-	fileUser.Public = payload.Public
-	fileUser.Name = payload.Name
-	h.repositories.FileUser.Update(&fileUser)
+	userId := claims.(auth.Claims).UserID
+	if err := h.service.UpdateFile(userId, fileId, payload.Name, payload.Public); err != nil {
+		utils.OutputError(c, 500000, "Error updating file", err.Error())
+		return
+	}
 	utils.OutputEmpty(c)
 }

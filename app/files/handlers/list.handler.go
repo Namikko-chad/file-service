@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"file-service/app/auth"
 	"file-service/app/types"
 	"file-service/app/utils"
 
@@ -19,7 +21,7 @@ import (
 // @Param        from    query  string  false  "search text"
 // @Param        to      query  string  false  "search text"
 // @Produce      json
-// @Success      200  {object}  types.IOutputPagination{result=types.IOutputPaginationResult{rows=[]IFileResponse}}
+// @Success      200  {object}  types.IOutputPagination{result=types.IOutputPaginationResult{rows=[]FileResponse}}
 // @Router       /files [get]
 func (h *Handlers) ListFile(c *gin.Context) {
 	var payload types.IListParam
@@ -27,12 +29,18 @@ func (h *Handlers) ListFile(c *gin.Context) {
 		utils.OutputError(c, 400000, "Validation error", err.Error())
 		return
 	}
-	payload.Where = append(payload.Where, "\"FileUsers\".\"userId\" = '"+ userId.String() +"'")
-	fileUsers, count, err := h.repositories.FileUser.List(payload)
-	if err != nil {
-		utils.OutputError(c, 404000, "File not found", err.Error())
+	claims, ex := c.Get("claims")
+	if !ex {
+		utils.OutputError(c, 403000, "File is private", errors.New("file is private"))
 		return
 	}
+	userId := claims.(auth.Claims).UserID
+	fileUsers, count, err := h.service.ListFile(userId, payload);
+	if err != nil {
+		utils.OutputError(c, 403000, "File is private", errors.New("file is private"))
+		return
+	}
+
 	ResArray := make([]interface{}, len(fileUsers))
 	for i, fileUser := range fileUsers {
 		ResArray[i] = fileResponse(&fileUser)

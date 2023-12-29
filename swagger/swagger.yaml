@@ -1,5 +1,5 @@
 definitions:
-  handlers.IFileResponse:
+  handlers.FileResponse:
     properties:
       ext:
         type: string
@@ -15,6 +15,27 @@ definitions:
         type: boolean
       userId:
         type: string
+    type: object
+  types.IOutputEmpty:
+    properties:
+      ok:
+        type: boolean
+    type: object
+  types.IOutputError:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+      ok:
+        type: boolean
+    type: object
+  types.IOutputOk:
+    properties:
+      ok:
+        type: boolean
+      result: {}
     type: object
   types.IOutputPagination:
     properties:
@@ -87,11 +108,119 @@ paths:
                   - properties:
                       rows:
                         items:
-                          $ref: '#/definitions/handlers.IFileResponse'
+                          $ref: '#/definitions/handlers.FileResponse'
                         type: array
                     type: object
               type: object
       summary: List of files
+      tags:
+      - files
+    post:
+      consumes:
+      - multipart/form-data
+      description: create file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.IOutputOk'
+            - properties:
+                result:
+                  $ref: '#/definitions/handlers.FileResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.IOutputError'
+      summary: Create file
+      tags:
+      - files
+  /files/:fileId:
+    delete:
+      description: Delete file
+      parameters:
+      - description: FileId
+        in: path
+        name: fileId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.IOutputEmpty'
+      summary: Delete file
+      tags:
+      - files
+    get:
+      description: Retrieve file
+      parameters:
+      - description: FileId
+        in: path
+        name: fileId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      summary: Retrieve file
+      tags:
+      - files
+    put:
+      description: Update file
+      parameters:
+      - description: FileId
+        in: path
+        name: fileId
+        required: true
+        type: string
+      - description: Name
+        in: body
+        name: name
+        schema:
+          type: string
+      - description: Public
+        in: body
+        name: public
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.IOutputEmpty'
+      summary: Update file
+      tags:
+      - files
+  /files/:fileId/info:
+    get:
+      description: Retrieve file info
+      parameters:
+      - description: FileId
+        in: path
+        name: fileId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/types.IOutputOk'
+            - properties:
+                result:
+                  $ref: '#/definitions/handlers.FileResponse'
+              type: object
+      summary: Retrieve file
       tags:
       - files
 swagger: "2.0"

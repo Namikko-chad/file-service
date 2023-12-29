@@ -2,13 +2,19 @@ package utils
 
 import (
 	"file-service/app/types"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
+
 func OutputOk(c *gin.Context, res interface{}) {
-	c.JSON(http.StatusOK, types.IOutputOk{
+	httpStatus := http.StatusOK
+	if c.Request.Method == http.MethodPost {
+		httpStatus = http.StatusCreated
+	}
+	c.JSON(httpStatus, types.IOutputOk{
 		Ok:     true,
 		Result: res,
 	})
@@ -31,11 +37,17 @@ func OutputEmpty(c *gin.Context) {
 }
 
 func OutputError(c *gin.Context, code uint32, msg string, err interface{}) {
-	c.JSON(int(code/1000), types.IOutputError{
+	fmt.Print("Error ", code, " ", err, "\n")
+	httpCode := code
+	if code >= 100000 {
+		httpCode = code/1000
+	}
+	c.JSON(int(httpCode), types.IOutputError{
 		Ok:   false,
 		Code: code,
 		Data: err,
 		Msg:  msg,
 	},
 	)
+	c.Abort()
 }

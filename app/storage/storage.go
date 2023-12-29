@@ -3,37 +3,34 @@ package storage
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	storages "file-service/app/storage/storages"
 	dbStorage "file-service/app/storage/storages/database"
+	"log"
+	"mime"
+	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Storage struct {
-	storages map[string]storages.IStorage
-	db       *gorm.DB
+	storages   map[string]storages.IStorage
+	db         *gorm.DB
+	repository FileRepository
+	logger     *log.Logger
 }
 
-type FileInfo struct {
-	ID      uuid.UUID
-	EXT     string
-	MIME    string
-	Storage string
-	Hash    string
-	Size    uint64
-}
-
-// md5 := md5.Sum(fileRaw.Payload)
-// file := models.File{
-//   ID:      uuid.New(),
-//   EXT:     filepath.Ext(fileRaw.Filename)[1:],
-//   MIME:    http.DetectContentType(fileRaw.Payload),
-//   Storage: "db",
-//   Hash:    hex.EncodeToString(md5[:]),
-// }
+var (
+	ErrFileNotFound = errors.New("file not found")
+)
 
 func New(db *gorm.DB) (*Storage, error) {
+	logger := log.New(os.Stdout, "[Storage] ", log.LstdFlags)
+	repository := FileRepository{
+		DB: db,
+	}
 	dbStorage, err := dbStorage.New(db)
 	if err != nil {
 		return nil, err
@@ -41,8 +38,10 @@ func New(db *gorm.DB) (*Storage, error) {
 	storages := make(map[string]storages.IStorage)
 	storages[dbStorage.GetName()] = dbStorage
 	return &Storage{
-		storages: storages,
-		db:       db,
+		storages:   storages,
+		db:         db,
+		repository: repository,
+		logger:     logger,
 	}, nil
 }
 
@@ -52,7 +51,7 @@ func (s *Storage) getStorage(size uint64) (storages.IStorage, error) {
 			return storage, nil
 		}
 	}
-	return nil, nil
+	return nil, errors.New("storage not found")
 }
 
 func (s *Storage) getStorageType(storage storages.IStorage) string {
@@ -64,35 +63,70 @@ func (s *Storage) getHash(data []byte) string {
 	return hex.EncodeToString(hash[:])
 }
 
-// func (s *Storage) getEXT() string {
-// 	return ""
-// }
-
-// func (s *Storage) getMime() string {
-// 	return ""
-// }
-
-func (s *Storage) getSize(data []byte) int {
-	return len(data)
-}
-
-func (s *Storage) SaveFile(fileInfo FileInfo, data []byte) (FileInfo, error) {
-	storage, err := s.getStorage(fileInfo.Size)
-	fileInfo.Storage = s.getStorageType(storage)
-	fileInfo.ID = uuid.New()
-	fileInfo.Hash = s.getHash(data)
-	fileInfo.Size = uint64(s.getSize(data))
-	if err != nil {
-		return fileInfo, err
+func (s *Storage) getEXT(mimetype string) string {
+	// TODO add validation from mime type
+	// return filepath.Ext(filename)[1:]
+	ext, err := mime.ExtensionsByType(mimetype)
+	if (err != nil) || (len(ext) == 0) {
+		return ""
 	}
-	storage.SaveFile(fileInfo.ID, data)
-	return fileInfo, nil
+	return ext[0]
 }
 
-func (s *Storage) LoadFile(fileInfo FileInfo) ([]byte, error) {
-	return s.storages[fileInfo.Storage].LoadFile(fileInfo.ID)
+func (s *Storage) getMime(data []byte) string {
+	return http.DetectContentType(data)
 }
 
-func (s *Storage) DeleteFile(fileInfo FileInfo) error {
-	return s.storages[fileInfo.Storage].DeleteFile(fileInfo.ID)
+func (s *Storage) getSize(data []byte) uint64 {
+	return uint64(len(data))
+}
+
+func (s *Storage) SaveFile(data []byte) (*File, error) {
+	file := File{
+		// AbstractModel: database.AbstractModel{
+		// 	CreatedAt: time.Now(),
+		// 	UpdatedAt: time.Now(),
+		// },
+		Hash:    s.getHash(data),
+	}
+	if err := s.repository.Find(&file); err != nil && !errors.Is(err, ErrFileNotFound) {
+		return nil, err
+	}
+	if file.Id != uuid.Nil {
+		return &file, nil
+	}
+	storage, err := s.getStorage(uint64(s.getSize(data)))
+	if err != nil {
+		return nil, err
+	}
+	file.Id = uuid.New()
+	file.MIME = s.getMime(data)
+	file.EXT = s.getEXT(file.MIME)[1:]
+	file.Size = s.getSize(data)
+	file.Storage = s.getStorageType(storage)
+	s.logger.Printf("Save file. Storage: %s, Size: %d, Hash: %s", file.Storage, file.Size, file.Hash)
+	err = s.repository.Create(&file)
+	if err != nil {
+		return nil, err
+	}
+	storage.SaveFile(file.Id, data)
+	return &file, nil
+}
+
+func (s *Storage) LoadFile(fileId uuid.UUID) ([]byte, error) {
+	file, err := s.repository.Retrieve(fileId)
+	if err != nil {
+		return nil, err
+	}
+	s.logger.Printf("Load file. Storage: %s, Size: %d, Hash: %s", file.Storage, file.Size, file.Hash)
+	return s.storages[file.Storage].LoadFile(file.Id)
+}
+
+func (s *Storage) DeleteFile(fileId uuid.UUID) error {
+	file, err := s.repository.Retrieve(fileId)
+	if err != nil {
+		return err
+	}
+	s.logger.Printf("Delete file. Storage: %s, Size: %d, Hash: %s", file.Storage, file.Size, file.Hash)
+	return s.storages[file.Storage].DeleteFile(file.Id)
 }

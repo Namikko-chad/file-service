@@ -36,3 +36,5 @@ sync:
 
 swagger-regen:
 	swag init --output ./swagger
+
+release: test build

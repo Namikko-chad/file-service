@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	"file-service/app/storage"
+	"errors"
+	"file-service/app/auth"
 	"file-service/app/utils"
 	"net/http"
 	"strconv"
@@ -15,23 +16,28 @@ import (
 // @Schemes
 // @Description  Retrieve file
 // @Tags         files
-// @Param        fileId   param  uuid     true  "FileId"
-// @Success      200  {bytes}
+// @Param        fileId   path  string     true  "FileId"
+// @Success      200
 // @Router       /files/:fileId [get]
 func (h *Handlers) RetrieveFile(c *gin.Context) {
-	fileUser, err := h.repositories.FileUser.Retrieve(uuid.MustParse(c.Param("fileId")))
+	var param FileParam
+	if err := c.ShouldBindUri(&param); err != nil {
+		utils.OutputError(c, 400000, "Validation error", err.Error())
+		return
+	}
+	fileId := uuid.MustParse(param.ID)
+	claims, claimError := c.Get("claims")
+	if !claimError {
+		utils.OutputError(c, 403000, "File is private", errors.New("file is private"))
+		return
+	}
+	userId := claims.(auth.Claims).UserID
+	fileUser, err := h.service.RetrieveFileInfo(userId, fileId)
 	if err != nil {
 		utils.OutputError(c, 404000, "File not found", err.Error())
 		return
 	}
-	if fileUser.UserId != userId {
-		utils.OutputError(c, 403000, "File is private", err.Error())
-		return
-	}
-	data, err := h.storage.LoadFile(storage.FileInfo{
-		ID: fileUser.FileId,
-		Storage: fileUser.File.Storage,
-	})
+	data, err := h.service.RetrieveFile(userId, fileId)
 	if err != nil {
 		utils.OutputError(c, 404000, "File not found", err.Error())
 		return

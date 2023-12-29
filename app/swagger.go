@@ -10,6 +10,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+//go:generate swag init --dir ../ --output ../swagger
 func AddSwagger(router *gin.RouterGroup) {
 	swagger.SwaggerInfo.BasePath = "/api"
 	swagger.SwaggerInfo.Host = config.Server.Host + ":" + config.Server.Port

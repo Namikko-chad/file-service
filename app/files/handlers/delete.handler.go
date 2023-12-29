@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"file-service/app/auth"
 	"file-service/app/utils"
 
 	"github.com/gin-gonic/gin"
@@ -12,12 +14,24 @@ import (
 // @Schemes
 // @Description  Delete file
 // @Tags         files
-// @Param        fileId   param  uuid     true  "FileId"
+// @Param        fileId   path  string     true  "FileId"
 // @Produce      json
 // @Success      200  {object}  types.IOutputEmpty
 // @Router       /files/:fileId [delete]
 func (h *Handlers) DeleteFile(c *gin.Context) {
-	fileUser, err := h.repositories.FileUser.Retrieve(uuid.MustParse(c.Param("fileId")))
+	var param FileParam
+	if err := c.ShouldBindUri(&param); err != nil {
+		utils.OutputError(c, 400000, "Validation error", err.Error())
+		return
+	}
+	fileId := uuid.MustParse(param.ID)
+	claims, claimError := c.Get("claims")
+	if !claimError {
+		utils.OutputError(c, 403000, "File is private", errors.New("file is private"))
+		return
+	}
+	userId := claims.(auth.Claims).UserID
+	fileUser, err := h.service.RetrieveFileInfo(userId, fileId)
 	if err != nil {
 		utils.OutputError(c, 404000, "File not found", err.Error())
 		return
@@ -26,6 +40,10 @@ func (h *Handlers) DeleteFile(c *gin.Context) {
 		utils.OutputError(c, 403000, "File is private", err.Error())
 		return
 	}
-	h.repositories.FileUser.Delete(fileUser.Id)
+	err = h.service.DeleteFile(userId, fileId)
+	if err != nil {
+		utils.OutputError(c, 404000, "File not found", err.Error())
+		return
+	}
 	utils.OutputEmpty(c)
 }

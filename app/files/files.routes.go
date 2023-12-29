@@ -2,13 +2,17 @@ package files
 
 import (
 	"github.com/gin-gonic/gin"
+
+	"file-service/app/auth"
 )
 
 func (h *FilesPackage) createRoutes(superRoute *gin.RouterGroup) {
-	superRoute.GET("files", h.handlers.ListFile)
-	superRoute.POST("files", h.handlers.CreateFile)
-	superRoute.GET("files/:fileId", h.handlers.RetrieveFile)
-	superRoute.GET("files/:fileId/info", h.handlers.RetrieveFileInfo)
-	superRoute.PUT("files/:fileId", h.handlers.UpdateFile)
-	superRoute.DELETE("files/:fileId", h.handlers.DeleteFile)
+	filesRoute := superRoute.Group("/files")
+	filesRoute.Use(auth.CheckAccessTokenMiddleware)
+	filesRoute.GET("/", h.handlers.ListFile)
+	filesRoute.POST("/", h.handlers.CreateFile)
+	filesRoute.GET(":fileId", h.handlers.RetrieveFile)
+	filesRoute.GET(":fileId/info", h.handlers.RetrieveFileInfo)
+	filesRoute.PUT(":fileId", h.handlers.UpdateFile)
+	filesRoute.DELETE(":fileId", h.handlers.DeleteFile)
 }

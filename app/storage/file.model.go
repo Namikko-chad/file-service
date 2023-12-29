@@ -1,4 +1,4 @@
-package files
+package storage
 
 import (
 	"file-service/app/database"
@@ -11,5 +11,5 @@ type File struct {
 	Size      uint64 `gorm:"type:bigint;not null"`
 	Storage   string `gorm:"type:varchar(255);not null"`
 	Hash      string `gorm:"type:varchar(255);not null"`
-	FileUsers *[]FileUser
+	// FileUsers *[]FileUser
 }

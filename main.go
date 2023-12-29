@@ -3,8 +3,11 @@ package main
 import (
 	"file-service/app"
 	db "file-service/app/database"
-	models "file-service/app/files/models"
+	modelsFile "file-service/app/files/models"
+	modelsStorage "file-service/app/storage"
 	"os"
+	"os/signal"
+	"syscall"
 
 	logger "log"
 
@@ -30,13 +33,18 @@ func main() {
 	} else {
 		app.CreateServer()
 	}
+
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
+
+	<-exit
 }
 
 func sync() {
 	logger.Print("[Database] Synchronization started")
 	db := db.ConnectDB()
 	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
-	err := db.AutoMigrate(&models.File{}, &models.FileUser{})
+	err := db.AutoMigrate(&modelsStorage.File{}, &modelsFile.FileUser{})
 	if err == nil {
 		logger.Print("[Database] Synchronization completed")
 	} else {

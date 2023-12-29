@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"file-service/app/database"
-	models "file-service/app/files/models"
-	"file-service/app/storage"
+	"errors"
+	"file-service/app/auth"
 	"file-service/app/utils"
 	"io"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 // CreateFile godoc
@@ -18,7 +16,7 @@ import (
 // @Tags         files
 // @Accept       multipart/form-data
 // @Produce      json
-// @Success      200  {object}  types.IOutputOk{result=types.IFileResponse}
+// @Success      200  {object}  types.IOutputOk{result=FileResponse}
 // @Failure      400  {object}  types.IOutputError
 // @Router       /files [post]
 func (h *Handlers) CreateFile(c *gin.Context) {
@@ -37,28 +35,12 @@ func (h *Handlers) CreateFile(c *gin.Context) {
 		utils.OutputError(c, 400000, "File not uploaded", err.Error())
 		return
 	}
-	fileInfo := storage.FileInfo{
-		ID:   uuid.New(),
+	claims, ex := c.Get("claims")
+	if !ex {
+		utils.OutputError(c, 403000, "File is private", errors.New("file is private"))
+		return
 	}
-	h.storage.SaveFile(fileInfo, data)
-	file := models.File{
-		AbstractModel: database.AbstractModel{
-			Id: fileInfo.ID,
-		},
-		EXT: fileInfo.EXT,
-		MIME: fileInfo.MIME,
-		Size: fileInfo.Size,
-		Hash: fileInfo.Hash,
-	}
-	h.repositories.File.Create(&file)
-	fileUser := models.FileUser{
-		AbstractModel: database.AbstractModel{
-			Id: uuid.New(),
-		},
-		FileId: file.Id,
-		UserId: userId,
-		Name:   uploadedFile.Filename,
-	}
-	h.repositories.FileUser.Create(&fileUser)
-	utils.OutputOk(c, fileResponse(&fileUser))
+	userId := claims.(auth.Claims).UserID
+	fileUser, err :=h.service.CreateFile(userId, uploadedFile.Filename, data)
+	utils.OutputOk(c, fileResponse(fileUser))
 }
