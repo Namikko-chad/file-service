@@ -41,7 +41,6 @@ import { UserAccessGuard, } from '../auth/guards/user.guard';
 import { ListDto, OutputEmptyDto, outputErrorDtoGenerator, outputOkDtoGenerator, outputPaginationDtoGenerator, RequestAuth, } from '../dto';
 import { Exception, } from '../utils/Exception';
 import { FileEditDto, FileIdDto, FileInfoDto, } from './dto';
-import { FileUser, } from './entity';
 import { Errors, ErrorsMessages, } from './files.errors';
 import { FilePipe, } from './files.pipe';
 import { FileService, } from './files.service';

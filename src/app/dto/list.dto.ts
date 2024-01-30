@@ -1,7 +1,6 @@
 import { ApiProperty, } from '@nestjs/swagger';
 import { Type, } from 'class-transformer';
 import { IsDate, IsInt, IsObject, IsOptional, IsString, Min, Validate, ValidatorConstraint, ValidatorConstraintInterface, } from 'class-validator';
-import { FindOptionsOrder, } from 'typeorm';
 
 @ValidatorConstraint()
 class OrderDirection implements ValidatorConstraintInterface {
@@ -16,22 +15,7 @@ class OrderDirection implements ValidatorConstraintInterface {
   }
 }
 
-// @ValidatorConstraint()
-// export class OrderProperty<Entity> implements ValidatorConstraintInterface {
-// 	constructor(private readonly entity: Entity) {}
-
-// 	validate(req: Record<string, string>) {
-// 		console.log(this.entity)
-// 		console.log(req)
-// 		return false
-// 	}
-
-// 	defaultMessage(): string {
-// 		return 'order property does not exist';
-// 	}
-// }
-
-export class ListDto<Entity> {
+export class ListDto {
   @ApiProperty({
     required: false,
     default: 10,
@@ -67,8 +51,7 @@ export class ListDto<Entity> {
   @IsObject()
   @IsOptional()
   @Validate(OrderDirection)
-  // @Validate(OrderProperty<Entity>)
-    order: FindOptionsOrder<Entity>;
+    order: Record<string, 'ASC' | 'DESC' | 'asc' | 'desc'>;
 
   @ApiProperty({
     required: false,

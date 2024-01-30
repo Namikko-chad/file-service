@@ -1,16 +1,14 @@
 import { ConfigService, } from '@nestjs/config';
-import { DataSourceOptions, } from 'typeorm/data-source/DataSourceOptions';
+import { Prisma, } from '@prisma/client';
 
-import { CustomNamingStrategy, } from './CustomNamingStrategy';
+export function databaseConfig(configService: ConfigService): Prisma.PrismaClientOptions {
+  const options: Prisma.PrismaClientOptions = {};
+  if (configService.get<boolean>('DEBUG'))
+    // options.log = ['query', 'info', 'warn', 'error'];
+    options.log = [{
+      emit: 'event',
+      level: 'query',
+    }];
 
-export function databaseConfig(configService: ConfigService): DataSourceOptions {
-  return {
-    namingStrategy: new CustomNamingStrategy(),
-    type: 'postgres',
-    
-    url: configService.getOrThrow('DATABASE_LINK'),
-    synchronize: configService.get<string>('NODE_ENV') === 'test',
-    migrationsRun: false,
-    logging: configService.get<string>('DEBUG') === 'true',
-  };
+  return options;
 }

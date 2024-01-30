@@ -30,7 +30,8 @@ export class AuthController {
   @ApiOperation({
     summary: 'Use this endpoint to decode token',
   })
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true, }))
+  @MultipleGuardsReferences(AdminAccessGuard, UserAccessGuard, FileAccessGuard)
+  @UseGuards(MultipleAuthorizeGuard)
   tokenInfo(@Param() params: AuthParamsDTO, @Headers() headers: Record<string, string>): unknown {
     return this._service.decodeToken(params.tokenType, headers['authorization'].slice(7));
   }

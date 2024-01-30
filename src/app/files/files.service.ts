@@ -1,18 +1,19 @@
-import { Injectable, } from '@nestjs/common';
-import { FindOptionsWhere, } from 'typeorm';
+import { Inject, Injectable, } from '@nestjs/common';
 
+import { DatabaseService, } from '../database';
 import { ListDto, } from '../dto';
 import { StorageService, } from '../storage/storage.service';
 import { Exception, } from '../utils/Exception';
 import { Utils, } from '../utils/utils';
 import { FileEditDto, FileInfoDto, } from './dto';
-import { FileUser, } from './entity/file-user.entity';
 import { Errors, ErrorsMessages, } from './files.errors';
-import { FileUserRepository, } from './repositories/file-user.repository';
 
 @Injectable()
 export class FileService {
-  constructor(private readonly _fileUserRepository: FileUserRepository, private readonly _storage: StorageService) {}
+  @Inject(DatabaseService)
+  private readonly _ds: DatabaseService;
+  @Inject(StorageService)
+  private readonly _storage: StorageService;
 
   async list(userId: string, listParam: ListDto<FileUser>): Promise<[FileUser[], number]> {
     const condition = Utils.listParam<FileUser>(listParam, ['name']);

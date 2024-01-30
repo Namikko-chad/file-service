@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "multiSchema"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_LINK")
+  extensions = [uuidOssp(map: "uuid-ossp")]
+  schemas    = ["public", "logs"]
+}
+
+model File {
+  id        String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt DateTime?  @default(dbgenerated("now()")) @db.Timestamptz()
+  updatedAt DateTime?  @default(dbgenerated("now()")) @updatedAt @db.Timestamptz()
+  ext       String     @db.VarChar(10)
+  mime      String     @db.VarChar(255)
+  size      BigInt
+  storage   String     @db.VarChar(255)
+  hash      String     @db.VarChar(255)
+  FileUser  FileUser[]
+
+  @@map("Files")
+  @@schema("public")
+}
+
+model FileUser {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt DateTime? @default(dbgenerated("now()")) @db.Timestamptz()
+  updatedAt DateTime? @default(dbgenerated("now()")) @updatedAt @db.Timestamptz()
+  userId    String    @db.Uuid
+  fileId    String    @db.Uuid
+  name      String    @db.VarChar(255)
+  public    Boolean?  @default(false)
+  File      File      @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@map("FileUsers")
+  @@schema("public")
+}
+
+model Storage {
+  id   String @id @db.Uuid
+  data Bytes
+
+  @@schema("public")
+}
+
+model GoogleDrive {
+  fileId  String @id @db.Uuid
+  driveId String @db.Uuid
+
+  @@schema("public")
+}
+
+enum SchedulerStatus {
+  Started   @map("started")
+  Completed @map("completed")
+  Failed    @map("failed")
+
+  @@map("enum_SchedulerTasks_status")
+  @@schema("logs")
+}
+
+model SchedulerTask {
+  id         String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name       String          @db.VarChar(255)
+  startedAt  DateTime?       @default(dbgenerated("now()")) @db.Timestamptz()
+  finishedAt DateTime?       @db.Timestamptz()
+  status     SchedulerStatus @default(Started)
+  error      String?
+
+  @@map("SchedulerTasks")
+  @@schema("logs")
+}

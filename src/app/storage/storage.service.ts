@@ -2,10 +2,7 @@ import { HttpStatus, Inject, Injectable, Logger, } from '@nestjs/common';
 import crypto from 'crypto';
 import * as fileType from 'file-type';
 import * as mimeType from 'mime-types';
-import { DataSource, In, } from 'typeorm';
 
-import { File, } from '../files/entity';
-import { FileRepository, } from '../files/repositories';
 import { Exception, } from '../utils/Exception';
 import { StorageConfig, } from './storage.config';
 import { FileFormData, IFilename, } from './storage.interface';
@@ -17,14 +14,12 @@ import { AbstractStorage, } from './storages/storage.abstract.service';
 
 @Injectable()
 export class StorageService {
-  @Inject(FileRepository) private readonly _fileRepository: FileRepository;
   @Inject(StorageConfig) private readonly config: StorageConfig;
   protected readonly _logger = new Logger(StorageService.name);
   storages: Map<string, AbstractStorage> = new Map();
 
   constructor(
-    @Inject(DataSource) private readonly _DS: DataSource,
-    @Inject(DBStorage) dbStorage: DBStorage,
+  @Inject(DBStorage) dbStorage: DBStorage,
     @Inject(FolderStorage) folderStorage: FolderStorage
     // @Inject(GoogleDriveStorage) googleDriveStorage: GoogleDriveStorage,
     // @Inject(MegaIOStorage) megaIOStorage: MegaIOStorage

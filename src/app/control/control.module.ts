@@ -1,15 +1,11 @@
 import { Module, } from '@nestjs/common';
-import { TypeOrmModule, } from '@nestjs/typeorm';
 
-import { File, FileRepository, } from '../files';
-import { StorageModule, } from '../storage';
 import { ControlController, } from './control.controller';
 import { ControlService, } from './control.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([File]), StorageModule],
   controllers: [ControlController],
-  providers: [ControlService, FileRepository],
+  providers: [ControlService],
   exports: [ControlService],
 })
 export class ControlModule {}
