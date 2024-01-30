@@ -2,14 +2,11 @@ package main
 
 import (
 	"file-service/app"
-	db "file-service/app/database"
-	modelsFile "file-service/app/files/models"
-	modelsStorage "file-service/app/storage"
+	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
-
-	logger "log"
 
 	"golang.org/x/exp/slices"
 )
@@ -27,28 +24,30 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
+
+	fmt.Print(Compare("#ab#c", "axx##y#c"))
 	argsWithoutProg := os.Args[1:]
 	if slices.Contains(argsWithoutProg, "--sync") {
-		sync()
+		app.Sync()
 	} else {
 		app.CreateServer()
+		exit := make(chan os.Signal, 1)
+		signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
+		<-exit
+		app.StopServer()
 	}
-
-	exit := make(chan os.Signal, 1)
-	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
-
-	<-exit
 }
 
-func sync() {
-	logger.Print("[Database] Synchronization started")
-	db := db.ConnectDB()
-	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
-	err := db.AutoMigrate(&modelsStorage.File{}, &modelsFile.FileUser{})
-	if err == nil {
-		logger.Print("[Database] Synchronization completed")
-	} else {
-		logger.Panic("[Database] Synchronization error", err)
-		panic("Synchronization error")
+func Sanitize(str string) string {
+	for strings.Contains(str, "#") {
+		pos := strings.Index(str, "#")
+		fmt.Print(str[:pos-1])
+		fmt.Print(str[pos+1:])
+		str = str[:pos-1] + str[pos+1:]
 	}
+	return str
+}
+
+func Compare(str1 string, str2 string) bool {
+	return Sanitize(str1) == Sanitize(str2)
 }

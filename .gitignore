@@ -9,3 +9,6 @@ assert
 
 # Builds
 main
+
+# Debug
+*debug*

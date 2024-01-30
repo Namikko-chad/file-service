@@ -1,35 +1,75 @@
 package app
 
 import (
+	"log"
+	"os"
+
 	_ "github.com/joho/godotenv/autoload"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 
 	"file-service/app/auth"
 	"file-service/app/config"
 	"file-service/app/database"
 	"file-service/app/files"
+	"file-service/app/interfaces"
+	"file-service/app/scheduler"
 	"file-service/app/utils"
 )
 
-type Server struct {
-	DB     *gorm.DB
-	Router *gin.Engine
+var server interfaces.Server
+
+func CreateServer() interfaces.Server {
+	gin.SetMode(config.Mode)
+	server = interfaces.Server{
+		Engine: gin.New(),
+		Logger: log.New(os.Stdout, "[FileService] ", log.LstdFlags),
+	}
+	server.DB = database.ConnectDB()
+	server.Engine.Use(gin.Logger())
+	server.Engine.Use(globalRecover)
+	server.Router = server.Engine.Group("/api")
+	schedulerPackage, err := scheduler.New(server.DB, server.Logger)
+	if err != nil {
+		panic(err)
+	}
+	server.Scheduler = schedulerPackage
+	authPackage, err := auth.New(&server)
+	if err != nil {
+		panic(err)
+	}
+	filesPackage, err := files.New(&server)
+	if err != nil {
+		panic(err)
+	}
+	packages := []interfaces.IPackage{
+		authPackage,
+		filesPackage,
+	}
+	for _, p := range packages {
+		err := p.Start()
+		if err != nil {
+			panic(err)
+		}
+	}
+	err = schedulerPackage.Start()
+	if err != nil {
+		panic(err)
+	}
+	AddSwagger(server.Router)
+	server.Engine.SetTrustedProxies([]string{"127.0.0.1"})
+	server.Engine.Run(config.Server.Host + ":" + config.Server.Port)
+	return server
 }
 
-func CreateServer() {
-	db := database.ConnectDB()
-	gin.SetMode(config.Mode)
-	server := gin.New()
-	server.Use(gin.Logger())
-	server.Use(globalRecover)
-	router := server.Group("/api")
-	auth.New(router)
-	files.New(db, router)
-	AddSwagger(router)
-	server.SetTrustedProxies([]string{"127.0.0.1"})
-	server.Run(config.Server.Host + ":" + config.Server.Port)
+func StopServer() {
+	server.Logger.Print("[FileService] Stopping server")
+	for _, p := range server.Packages {
+		err := p.Stop()
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func globalRecover(c *gin.Context) {
