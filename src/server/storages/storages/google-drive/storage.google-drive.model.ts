@@ -14,6 +14,7 @@ export class GoogleDrive extends Model {
 
   @Column({
     type: DataType.UUID,
+    allowNull: false,
   })
   declare driveId: string;
 }

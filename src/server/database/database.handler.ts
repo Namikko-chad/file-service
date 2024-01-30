@@ -36,6 +36,9 @@ export async function initDatabase(config: DatabaseOptions, sync = false): Promi
 
   if (sequelize && (sync || forceSync)) {
     await sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+    await Promise.all(
+      ['public', 'logs'].map( async (schema) => sequelize.query(`CREATE SCHEMA IF NOT EXISTS ${schema}`) )
+    );
     await sequelize.sync();
   }
 
