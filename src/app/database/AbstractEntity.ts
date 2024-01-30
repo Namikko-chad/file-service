@@ -7,11 +7,13 @@ export abstract class AbstractEntity implements ObjectLiteral {
 
   @CreateDateColumn({
     type: 'timestamp with time zone',
+    nullable: true,
   })
     createdAt!: Date;
 
   @UpdateDateColumn({
     type: 'timestamp with time zone',
+    nullable: true,
   })
     updatedAt!: Date;
 }

@@ -8,4 +8,7 @@ export class CustomNamingStrategy extends DefaultNamingStrategy implements Namin
   override primaryKeyName(tableOrName: Table | string): string {
     return `${typeof tableOrName === 'string' ? tableOrName : tableOrName.name}_pkey`;
   }
+
+  //FIXME enum name
+  //TODO remove constraint name
 }

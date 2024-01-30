@@ -22,10 +22,14 @@ export class FileUser extends AbstractEntity {
 
   @Column({
     default: false,
+    nullable: true,
   })
     public: boolean;
 
-  @ManyToOne(() => File)
+  @ManyToOne(() => File, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({
     foreignKeyConstraintName: 'FileUsers_fileId_fkey',
   })

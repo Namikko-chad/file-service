@@ -10,8 +10,7 @@ export class GoogleDrive {
     fileId!: string;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'uuid',
   })
     driveId!: string;
 }
