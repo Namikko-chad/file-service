@@ -8,7 +8,7 @@ export function loadDatabaseConfig(): DatabaseOptions {
   if (!databaseConfig) {
     config();
     databaseConfig = {
-      link: String(process.env['DATABASE_LINK']),
+      link: String(process.env['DATABASE_URL']),
       host: String(process.env['DATABASE_HOST']),
       port: Number(process.env['DATABASE_PORT']),
       username: String(process.env['DATABASE_USERNAME']),
@@ -16,7 +16,7 @@ export function loadDatabaseConfig(): DatabaseOptions {
       database: String(process.env['DATABASE_NAME']),
       development: process.env['NODE_ENV'] === 'development',
       test: process.env['NODE_ENV'] === 'test',
-      test_link: String(process.env['TEST_DATABASE_LINK']),
+      test_link: String(process.env['TEST_DATABASE_URL']),
       logging: process.env['DEBUG'] === 'true',
     };
   }

@@ -9,10 +9,12 @@ import * as Inert from '@hapi/inert';
 import * as Vision from '@hapi/vision';
 
 import { AuthPlugin, } from './server/auth';
+import { CachePlugin, } from './server/cache';
 import { config, pinoConfig,swaggerConfig, } from './server/config';
 import { ControlPlugin, } from './server/control';
 import { Database, loadDatabaseConfig, } from './server/database';
 import { FilesPlugin, } from './server/files';
+import { RedisPlugin, } from './server/redis';
 import { SchedulerPlugin, } from './server/scheduler';
 import { StoragePlugin, } from './server/storages';
 import { handleValidationError, responseHandler, } from './server/utils';
@@ -62,6 +64,9 @@ export async function init(): Promise<Hapi.Server> {
     options: loadDatabaseConfig(),
   });
   await server.register({
+    plugin: RedisPlugin,
+  });
+  await server.register({
     plugin: AuthPlugin,
   });
   await server.register({
@@ -69,6 +74,9 @@ export async function init(): Promise<Hapi.Server> {
   });
   await server.register({
     plugin: SchedulerPlugin,
+  });
+  await server.register({
+    plugin: CachePlugin,
   });
   await server.register({
     plugin: FilesPlugin,
