@@ -8,7 +8,7 @@ export function databaseConfig(configService: ConfigService): DataSourceOptions 
     namingStrategy: new CustomNamingStrategy(),
     type: 'postgres',
     
-    url: configService.getOrThrow('DATABASE_LINK'),
+    url: configService.getOrThrow('DATABASE_URL'),
     synchronize: configService.get<string>('NODE_ENV') === 'test',
     migrationsRun: false,
     logging: configService.get<string>('DEBUG') === 'true',

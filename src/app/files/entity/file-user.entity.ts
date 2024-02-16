@@ -22,7 +22,6 @@ export class FileUser extends AbstractEntity {
 
   @Column({
     default: false,
-    nullable: true,
   })
     public: boolean;
 
