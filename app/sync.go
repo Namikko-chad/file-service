@@ -5,6 +5,7 @@ import (
 	modelsFile "file-service/app/files/models"
 	modelsScheduler "file-service/app/scheduler"
 	modelsStorage "file-service/app/storage"
+	modelsSync "file-service/app/sync"
 
 	logger "log"
 )
@@ -14,11 +15,11 @@ func Sync() {
 	db := db.ConnectDB()
 	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
 	schedulerModel := modelsScheduler.SchedulerTask{}
-	beforeSyncQueries := schedulerModel.BeforeSync();
+	beforeSyncQueries := schedulerModel.BeforeSync()
 	for _, query := range beforeSyncQueries {
 		db.Exec(query)
 	}
-	err := db.AutoMigrate(&modelsStorage.File{}, &modelsFile.FileUser{}, &modelsScheduler.SchedulerTask{})
+	err := db.AutoMigrate(&modelsStorage.File{}, &modelsFile.FileUser{}, &modelsScheduler.SchedulerTask{}, &modelsSync.Sync{})
 	if err == nil {
 		logger.Print("[Database] Synchronization completed")
 	} else {

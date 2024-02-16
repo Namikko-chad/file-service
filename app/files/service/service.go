@@ -18,10 +18,6 @@ func New(db *gorm.DB) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	storage, err := storage.New(db)
-	if err != nil {
-		return nil, err
-	}
 	return &Service{
 		db:           db,
 		repositories: repositories,

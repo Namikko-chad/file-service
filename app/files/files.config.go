@@ -15,7 +15,7 @@ var (
 
 func init() {
 	FilesConfig = &TFilesConfig{
-		Link: utils.GetEnv("DATABASE_LINK", ""),
+		Link: utils.GetEnv("DATABASE_URL", ""),
 		Type: utils.GetEnv("DATABASE_TYPE", "sqlite"),
 	}
 }

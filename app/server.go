@@ -8,13 +8,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"file-service/app/auth"
+	// "file-service/app/auth"
 	"file-service/app/config"
 	"file-service/app/database"
-	"file-service/app/files"
+	"file-service/app/storage"
+
+	// "file-service/app/files"
 	"file-service/app/interfaces"
-	"file-service/app/scheduler"
-	"file-service/app/utils"
+	// "file-service/app/scheduler"
+	"file-service/app/sync"
+	// "file-service/app/utils"
 )
 
 var server interfaces.Server
@@ -26,25 +29,35 @@ func CreateServer() interfaces.Server {
 		Logger: log.New(os.Stdout, "[FileService] ", log.LstdFlags),
 	}
 	server.DB = database.ConnectDB()
-	server.Engine.Use(gin.Logger())
-	server.Engine.Use(globalRecover)
-	server.Router = server.Engine.Group("/api")
-	schedulerPackage, err := scheduler.New(server.DB, server.Logger)
+	// server.Engine.Use(gin.Logger())
+	// server.Engine.Use(globalRecover)
+	// server.Router = server.Engine.Group("/api")
+	// schedulerPackage, err := scheduler.New(server.DB, server.Logger)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// server.Scheduler = schedulerPackage
+	storagePackage, err := storage.New(&server)
 	if err != nil {
 		panic(err)
 	}
-	server.Scheduler = schedulerPackage
-	authPackage, err := auth.New(&server)
-	if err != nil {
-		panic(err)
-	}
-	filesPackage, err := files.New(&server)
+	// authPackage, err := auth.New(&server)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// filesPackage, err := files.New(&server)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	syncPackage, err := sync.New(&server)
 	if err != nil {
 		panic(err)
 	}
 	packages := []interfaces.IPackage{
-		authPackage,
-		filesPackage,
+		storagePackage,
+		// authPackage,
+		// filesPackage,
+		syncPackage,
 	}
 	for _, p := range packages {
 		err := p.Start()
@@ -52,13 +65,13 @@ func CreateServer() interfaces.Server {
 			panic(err)
 		}
 	}
-	err = schedulerPackage.Start()
-	if err != nil {
-		panic(err)
-	}
-	AddSwagger(server.Router)
-	server.Engine.SetTrustedProxies([]string{"127.0.0.1"})
-	server.Engine.Run(config.Server.Host + ":" + config.Server.Port)
+	// err = schedulerPackage.Start()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// AddSwagger(server.Router)
+	// server.Engine.SetTrustedProxies([]string{"127.0.0.1"})
+	// server.Engine.Run(config.Server.Host + ":" + config.Server.Port)
 	return server
 }
 
@@ -72,11 +85,11 @@ func StopServer() {
 	}
 }
 
-func globalRecover(c *gin.Context) {
-	defer func(c *gin.Context) {
-		if rec := recover(); rec != nil {
-			utils.OutputError(c, 500, "Internal server error", make(map[string]string, 0))
-		}
-	}(c)
-	c.Next()
-}
+// func globalRecover(c *gin.Context) {
+// 	defer func(c *gin.Context) {
+// 		if rec := recover(); rec != nil {
+// 			utils.OutputError(c, 500, "Internal server error", make(map[string]string, 0))
+// 		}
+// 	}(c)
+// 	c.Next()
+// }

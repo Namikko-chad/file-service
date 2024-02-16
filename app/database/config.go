@@ -20,7 +20,7 @@ func init() {
 	log.Print("[Database] Load config")
 
 	DataBaseConfig = &TDataBaseConfig{
-		Link: utils.GetEnv("DATABASE_LINK", ""),
+		Link: utils.GetEnv("DATABASE_URL", ""),
 		Type: utils.GetEnv("DATABASE_TYPE", "postgres"),
 		Log:  utils.GetEnv("DEBUG", "false") == "true",
 	}

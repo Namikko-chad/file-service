@@ -26,7 +26,7 @@ var (
 	ErrFileNotFound = errors.New("file not found")
 )
 
-func New(db *gorm.DB) (*Storage, error) {
+func StartStorage(db *gorm.DB) (*Storage, error) {
 	logger := log.New(os.Stdout, "[Storage] ", log.LstdFlags)
 	repository := FileRepository{
 		DB: db,

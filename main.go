@@ -2,10 +2,8 @@ package main
 
 import (
 	"file-service/app"
-	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"golang.org/x/exp/slices"
@@ -24,8 +22,6 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
-
-	fmt.Print(Compare("#ab#c", "axx##y#c"))
 	argsWithoutProg := os.Args[1:]
 	if slices.Contains(argsWithoutProg, "--sync") {
 		app.Sync()
@@ -36,18 +32,4 @@ func main() {
 		<-exit
 		app.StopServer()
 	}
-}
-
-func Sanitize(str string) string {
-	for strings.Contains(str, "#") {
-		pos := strings.Index(str, "#")
-		fmt.Print(str[:pos-1])
-		fmt.Print(str[pos+1:])
-		str = str[:pos-1] + str[pos+1:]
-	}
-	return str
-}
-
-func Compare(str1 string, str2 string) bool {
-	return Sanitize(str1) == Sanitize(str2)
 }
